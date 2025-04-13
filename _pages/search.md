@@ -7,8 +7,10 @@ permalink: /search
 <div class="wrap">
   <h1>Search</h1>
 
-  <div>
-    <input type="text" id="search-input" placeholder="Search notes..." class="search-input">
+  <div class="search-container">
+    <div class="search-field">
+      <input type="text" id="search-input" placeholder="Search notes..." class="search-input">
+    </div>
     <div id="search-results" class="search-results"></div>
   </div>
 
@@ -69,22 +71,39 @@ permalink: /search
   </script>
 
   <style>
+    .search-container {
+      margin: 2rem 0 3rem;
+    }
+    
+    .search-field {
+      position: relative;
+      max-width: 100%;
+      width: 100%;
+    }
+    
     .search-input {
-      width: var(--input-width);
-      padding: 0.8rem;
+      width: 100%;
+      padding: 0.7rem 1rem;
       margin-bottom: 2rem;
-      font-size: 1.1rem;
-      border: 1px solid var(--color-ui-normal);
-      border-radius: var(--border-radius);
+      font-size: 1rem;
+      border: none;
+      border-bottom: 1px solid var(--color-ui-normal);
+      border-radius: 0;
       background: var(--color-bg-primary);
       color: var(--color-tx-normal);
       font-family: var(--font-ui);
+      transition: border-color 0.3s;
+      -webkit-appearance: none;
+    }
+    
+    .search-input::placeholder {
+      color: var(--color-tx-faint);
+      font-style: italic;
     }
     
     .search-input:focus {
       outline: none;
-      border-color: var(--color-action);
-      box-shadow: 0 0 0 2px var(--color-bg-hover);
+      border-bottom: 1px solid var(--color-action);
     }
     
     .search-results ul {
@@ -103,6 +122,12 @@ permalink: /search
       list-style: none;
       padding: 0;
       margin: 0;
+    }
+
+    @media (min-width: 640px) {
+      .search-field {
+        max-width: 30rem;
+      }
     }
   </style>
 </div> 
