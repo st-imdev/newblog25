@@ -269,6 +269,21 @@ nav {
   max-width: var(--wrap-wide);
 }
 
+/* Fix for purple backgrounds on topics */
+.wrap h1, 
+.wrap h2, 
+.wrap h3, 
+.wrap p, 
+.wrap div:not(.backlink-box) {
+  background-color: transparent !important;
+}
+
+/* Make sure section headings like 'Topics' and 'Writing' don't have purple backgrounds */
+main > .wrap > h1,
+main > .wrap > h2,
+main > .wrap > h3 {
+  background-color: transparent !important;
+}
 
 @media (min-width: $media-phone) {
   .dkh {
