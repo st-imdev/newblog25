@@ -85,7 +85,7 @@ permalink: /search
       width: 100%;
       padding: 0.7rem 1rem;
       margin-bottom: 2rem;
-      font-size: 1rem;
+      font-size: 1.2rem;
       border: none;
       border-bottom: 1px solid var(--color-ui-normal);
       border-radius: 0;
