@@ -20,6 +20,36 @@ This is a game-changer because:
 2. It rewards good reasoning even when the final answer is wrong
 3. It dramatically improves performance on tasks requiring tool use
 
+### SWiRL Process Visualized
+
+```mermaid
+flowchart TB
+    subgraph "Stage 1: Generate Synthetic Data"
+      A[Base LLM] --> B[Generate Multiple Reasoning Paths]
+      B --> C[Execute Tool Calls]
+      C --> D[Store Trajectories]
+    end
+    
+    subgraph "Stage 2: Step-Wise Decomposition"
+      D --> E[Break Trajectories into Steps]
+      E --> F[Create Sub-Trajectories]
+    end
+    
+    subgraph "Stage 3: Process Filtering"
+      F --> G[Judge Each Step Quality]
+      G --> H[Filter Based on Step Quality]
+    end
+    
+    subgraph "Stage 4: Step-Wise RL Optimization"
+      H --> I[Calculate Reward for Each Step]
+      I --> J[Optimize Model]
+      J --> K[Improved Multi-Step Reasoning]
+    end
+    
+    style A fill:#b8c9f2,stroke:#333
+    style K fill:#c9f2b8,stroke:#333
+```
+
 ## How SWiRL works
 
 The process has two main stages:
@@ -78,6 +108,41 @@ sub_trajectories = decompose_trajectory(example_trajectory)
 ```
 
 The really clever part is how they decompose each reasoning path into sub-trajectories. If a solution has 5 steps, they create 5 training examples - one for each decision point in the chain. This lets them reward good individual decisions even if the overall outcome wasn't perfect.
+
+### Visualizing Step-Wise Optimization
+
+This diagram shows how SWiRL breaks down a 5-step reasoning trajectory into sub-trajectories and optimizes each step individually:
+
+```mermaid
+sequenceDiagram
+    participant Q as Question
+    participant S1 as Step 1
+    participant S2 as Step 2
+    participant S3 as Step 3
+    participant A as Answer
+    
+    Note over Q,A: Original 5-Step Trajectory
+    Q->>S1: Context
+    S1->>S2: Context + Step 1
+    S2->>S3: Context + Steps 1-2
+    S3->>A: Context + Steps 1-3
+    
+    Note over Q,A: Sub-Trajectories for Training
+    rect rgb(240, 248, 255)
+        Note over Q,S1: Sub-Trajectory 1
+    end
+    rect rgb(245, 245, 220)
+        Note over Q,S2: Sub-Trajectory 2
+    end
+    rect rgb(255, 240, 245)
+        Note over Q,S3: Sub-Trajectory 3
+    end
+    rect rgb(240, 255, 240)
+        Note over Q,A: Sub-Trajectory 4
+    end
+    
+    Note over Q,A: Each sub-trajectory gets its own reward and optimization
+```
 
 ### The actual reinforcement learning magic
 
@@ -140,6 +205,35 @@ print(f"Answer: {answer}")
 ## The coolest finding: Process matters more than outcome
 
 One fascinating discovery was that filtering trajectories based on having good individual reasoning steps (even if the final answer was wrong) produced better results than filtering based on correct final answers. They call this "process filtering":
+
+### Process vs Outcome Filtering Visualization
+
+```mermaid
+graph TD
+    A[Generated Trajectories] --> B{Filtering Approach}
+    B -->|Process Filtering| C[Judge Each Step]
+    B -->|Outcome Filtering| D[Check Final Answer]
+    
+    C --> C1{Step 1 Good?}
+    C1 -->|Yes| C2{Step 2 Good?}
+    C1 -->|No| C3[Discard Trajectory]
+    C2 -->|Yes| C4{Step 3 Good?}
+    C2 -->|No| C3
+    C4 -->|Yes| C5[Keep Trajectory]
+    C4 -->|No| C3
+    
+    D --> D1{Answer Correct?}
+    D1 -->|Yes| D2[Keep Trajectory]
+    D1 -->|No| D3[Discard Trajectory]
+    
+    C5 --> E[Better Generalization]
+    D2 --> F[Worse Generalization]
+    
+    style E fill:#9f9,stroke:#333
+    style F fill:#f99,stroke:#333
+```
+
+The diagram shows why process filtering (judging the quality of each step) is more effective than outcome filtering (judging only the final answer). Even trajectories with incorrect answers can be valuable training examples if the reasoning steps are good!
 
 ```python
 def is_step_reasonable(judge_model, sub_trajectory):

@@ -18,8 +18,45 @@
 
     {% include link-previews.html wrapperQuerySelector="content" %}
     
+    <!-- Mermaid.js Support -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // Initialize mermaid with theme based on site's theme
+        const isDarkMode = document.body.classList.contains('theme-dark');
+        mermaid.initialize({
+          startOnLoad: true,
+          theme: isDarkMode ? 'dark' : 'default',
+          securityLevel: 'loose',
+          fontFamily: 'var(--font-body)'
+        });
+        
+        // Re-render mermaid diagrams when theme changes
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class' && 
+                mutation.target.classList.contains('theme-dark') !== isDarkMode) {
+              // Theme has changed, re-initialize mermaid
+              const newDarkMode = mutation.target.classList.contains('theme-dark');
+              mermaid.initialize({
+                startOnLoad: false,
+                theme: newDarkMode ? 'dark' : 'default'
+              });
+              document.querySelectorAll('.mermaid').forEach(function(elem) {
+                mermaid.render('mermaid-' + Math.random().toString(36).substring(2, 15), 
+                  elem.textContent, function(svgCode) {
+                  elem.innerHTML = svgCode;
+                });
+              });
+            }
+          });
+        });
+        
+        observer.observe(document.body, { 
+          attributes: true
+        });
+        
+        // Handle heading anchors
         const article = document.querySelector('article');
         if (!article) return;
         
