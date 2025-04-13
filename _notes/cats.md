@@ -1,1 +1,0 @@
-../newblog25/animals/cats.md

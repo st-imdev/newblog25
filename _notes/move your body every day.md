@@ -1,1 +1,0 @@
-../newblog25/move your body every day.md

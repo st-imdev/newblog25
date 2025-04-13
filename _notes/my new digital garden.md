@@ -1,1 +1,0 @@
-../newblog25/my new digital garden.md
