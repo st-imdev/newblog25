@@ -1,6 +1,20 @@
----
----
+@import "../.sass/copyright";
+@import "_sass/normalize";
 
-@import "../_sass/normalize";
-@import "../_sass/code";
-@import "../_sass/style";
+@import "_sass/variables";
+@import "_sass/spacing";
+@import "_sass/style";
+
+@import "_sass/content/backlinks";
+@import "_sass/content/code";
+@import "_sass/content/footnotes";
+@import "_sass/content/headings";
+@import "_sass/content/images";
+@import "_sass/content/links";
+@import "_sass/content/lists";
+@import "_sass/content/tables";
+@import "_sass/content/tags";
+
+@import "_sass/components/inputs";
+@import "_sass/components/popovers";
+@import "_sass/components/theme-toggle";

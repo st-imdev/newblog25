@@ -97,3 +97,36 @@ input, textarea, select {
   .theme-dark select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23575653' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' %3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
   }
+
+input[type="email"],
+input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid var(--color-ui-normal);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  width: 60%;
+  max-width: 300px;
+  background-color: var(--color-bg-primary);
+  color: var(--color-tx-normal);
+}
+
+input[type="submit"] {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-action);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+input[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+.embeddable-buttondown-form {
+  margin: 1rem 0;
+}

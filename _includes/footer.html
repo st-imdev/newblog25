@@ -1,1 +1,56 @@
-This is the footer. Include anything you'd like here, like a link to an <a class="internal-link" href="{{ site.baseurl }}/about">About</a> page.
+<div class="pn2 bt">
+  <p><a href="{{ site.baseurl }}/subscribe" class="muted internal-link font-ui">Receive my updates</a></p>
+  <p>Follow me via email, <a href="{{ site.baseurl }}/feed.xml" class="internal-link">RSS</a>, <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener noreferrer">Twitter</a>, and <a href="{{ site.baseurl }}/subscribe" class="internal-link">other options</a></p>
+  <div class="mn2 small font-ui">
+    <form action="https://buttondown.email/api/emails/embed-subscribe/{{ site.buttondown_username }}" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.email/{{ site.buttondown_username }}','popupwindow')" class="embeddable-buttondown-form">
+      <input type="email" name="email" id="bd-email" placeholder="Enter your email">
+      <input type="hidden" value="1" name="embed">
+      <input type="hidden" name="tag" value="via-footer">
+      <input type="submit" value="Sign up">
+    </form>
+  </div>
+</div>
+<div class="pn2">
+  <a href="{{ site.baseurl }}/about" aria-label="About me" title="About me">
+    <!-- You can replace this with your own avatar/logo -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 40 40" width="40px" height="40px" class="round" alt="{{ site.title }}" style="background-color:#FFE1C5; border-radius:50%;">
+      <circle cx="20" cy="20" r="20" fill="#FFE1C5"/>
+      <path fill="#000" d="M20 10a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- Dark mode toggle script -->
+<script>
+  var darkModeToggle = document.querySelector("#theme-toggle");
+
+  function toggleTheme() {
+    document.body.classList.toggle("theme-dark");
+    updateThemeState();
+  }
+
+  function updateThemeState() {
+    let isDarkMode = document.body.classList.contains("theme-dark");
+    let theme = isDarkMode ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    darkModeToggle.setAttribute("aria-checked", isDarkMode.toString());
+  }
+
+  function initializeTheme() {
+    let isDarkMode = document.body.classList.contains("theme-dark");
+    darkModeToggle.setAttribute("aria-checked", isDarkMode.toString());
+  }
+
+  darkModeToggle.addEventListener("click", toggleTheme);
+
+  window.addEventListener('keydown', function(e) {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+      return;
+    }
+    if ((e.key === 'd' || e.key === 'D') && !e.ctrlKey && !e.metaKey) {
+      toggleTheme();
+    }
+  });
+
+  initializeTheme();
+</script>

@@ -5,29 +5,112 @@ id: home
 permalink: /
 ---
 
-# Welcome! 🌱
+<div class="wrap">
+  <p><a href="/notes/latest" class="muted font-ui">Latest</a></p>
 
-<p style="padding: 3em 1em; background: #f5f7ff; border-radius: 4px;">
-  Take a look at <span style="font-weight: bold">[[Your first note]]</span> to get started on your exploration.
-</p>
+  {% assign latest_note = site.notes | sort: "last_modified_at_timestamp" | reverse | first %}
+  {% if latest_note %}
+  <div>
+    <a href="{{ site.baseurl }}{{ latest_note.url }}" class="plain">
+      <h2>{{ latest_note.title }}</h2>
+      <div class="metadata muted small pb font-ui">
+        <time datetime="{{ latest_note.last_modified_at }}">{{ latest_note.last_modified_at | date: "%B %e, %Y" }}</time> · <span class="reading-time" title="Estimated read time">{% assign words = latest_note.content | number_of_words %}{% if words < 360 %}1 minute{% else %}{{ words | divided_by:180 }} minutes{% endif %} read</span>
+      </div>
+      <div class="small muted">
+        {{ latest_note.content | strip_html | truncatewords: 30 }} Keep reading →
+      </div>  
+    </a>
+  </div>
+  {% endif %}
 
-This digital garden template is free, open-source, and [available on GitHub here](https://github.com/maximevaillancourt/digital-garden-jekyll-template).
+  <hr class="mn2 ms2">
 
-The easiest way to get started is to read this [step-by-step guide explaining how to set this up from scratch](https://maximevaillancourt.com/blog/setting-up-your-own-digital-garden-with-jekyll).
+  <p><a href="/topics" class="muted internal-link font-ui">Topics</a></p>
 
-<strong>Recently updated notes</strong>
+  <div class="line-height-loose">
+    {% assign all_tags = "" | split: "" %}
+    {% for note in site.notes %}
+      {% if note.tags.size > 0 %}
+        {% for tag in note.tags %}
+          {% assign all_tags = all_tags | push: tag %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% assign unique_tags = all_tags | uniq | sort %}
+    {% for tag in unique_tags %}
+      <a href="/topics/{{ tag | slugify }}" class="internal-link">{{ tag }}</a>{% unless forloop.last %}<span class="muted">,</span>{% endunless %}
+    {% endfor %}
+  </div>
 
-<ul>
-  {% assign recent_notes = site.notes | sort: "last_modified_at_timestamp" | reverse %}
-  {% for note in recent_notes limit: 5 %}
-    <li>
-      {{ note.last_modified_at | date: "%Y-%m-%d" }} — <a class="internal-link" href="{{ site.baseurl }}{{ note.url }}">{{ note.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+  <hr class="mn2 ms2">
+
+  <p class="muted font-ui"><a href="/writing" class="muted internal-link">Writing</a></p>
+
+  <ul class="list-plain tabular-nums">
+    {% assign sorted_notes = site.notes | sort: "last_modified_at_timestamp" | reverse %}
+    {% for note in sorted_notes %}
+      <li>
+        <a href="{{ site.baseurl }}{{ note.url }}" class="internal-link plain">
+          <flex class="align-baseline">
+            <span class="muted ppr flex-shrink small mh nowrap font-ui">{{ note.last_modified_at | date: "%Y · %m" }}</span>
+            <u>{{ note.title }}</u>
+          </flex>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
 
 <style>
   .wrapper {
     max-width: 46em;
+  }
+  
+  .list-plain {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .mn2 {
+    margin: 2rem 0;
+  }
+  
+  .ms2 {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+  
+  .ppr {
+    padding-right: 1rem;
+  }
+  
+  .pb {
+    padding-bottom: 0.5rem;
+  }
+  
+  .mh {
+    margin-right: 0.5rem;
+  }
+  
+  flex, .flex {
+    display: flex;
+  }
+  
+  .align-baseline {
+    align-items: baseline;
+  }
+  
+  .flex-shrink {
+    flex-shrink: 1;
+  }
+  
+  u {
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-tx-muted);
+  }
+  
+  a.plain:hover u {
+    border-color: var(--color-tx-normal);
   }
 </style>
