@@ -319,16 +319,37 @@ main > .wrap > h3 {
   text-align: center;
   max-width: 100%;
   overflow-x: auto;
+  min-height: 100px;
+}
+
+/* Make sure diagram text is visible in dark mode */
+.theme-dark .mermaid {
+  color: #f8f8f2; /* Light text for dark background */
 }
 
 .theme-dark .mermaid svg {
   filter: brightness(0.9);
 }
 
-.theme-dark .mermaid .messageText, 
+/* Override specific text elements in dark mode */
+.theme-dark .mermaid .label text,
+.theme-dark .mermaid .node text,
+.theme-dark .mermaid .messageText,
 .theme-dark .mermaid text.actor, 
 .theme-dark .mermaid .labelText,
+.theme-dark .mermaid .labelText tspan,
 .theme-dark .mermaid text.taskTextOutsideRight,
-.theme-dark .mermaid text.taskTextOutsideLeft {
+.theme-dark .mermaid text.taskTextOutsideLeft,
+.theme-dark .mermaid .loopText,
+.theme-dark .mermaid .loopText tspan,
+.theme-dark .mermaid .entityLabel,
+.theme-dark .mermaid .edgeLabel {
   fill: var(--color-tx-normal) !important;
+  color: var(--color-tx-normal) !important;
+}
+
+/* Error state in case diagram fails to render */
+.mermaid .error {
+  color: red;
+  padding: 1rem;
 }

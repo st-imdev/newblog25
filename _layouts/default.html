@@ -18,45 +18,53 @@
 
     {% include link-previews.html wrapperQuerySelector="content" %}
     
-    <!-- Mermaid.js Support -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
+      // Mermaid theme handling for dark/light mode
       document.addEventListener('DOMContentLoaded', function() {
-        // Initialize mermaid with theme based on site's theme
-        const isDarkMode = document.body.classList.contains('theme-dark');
-        mermaid.initialize({
-          startOnLoad: true,
-          theme: isDarkMode ? 'dark' : 'default',
-          securityLevel: 'loose',
-          fontFamily: 'var(--font-body)'
-        });
+        // Helper function to re-render mermaid diagrams
+        function updateMermaidTheme() {
+          const isDarkMode = document.body.classList.contains('theme-dark');
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: isDarkMode ? 'dark' : 'default'
+          });
+          
+          // Force redraw all diagrams with the new theme
+          document.querySelectorAll('.mermaid').forEach(function(diagram) {
+            const content = diagram.getAttribute('data-content') || diagram.textContent;
+            // Store original content if not already stored
+            if (!diagram.getAttribute('data-content')) {
+              diagram.setAttribute('data-content', content);
+            }
+            const id = 'mermaid-' + Math.random().toString(36).substring(2);
+            mermaid.render(id, content)
+              .then(function(result) {
+                diagram.innerHTML = result.svg;
+              })
+              .catch(function(error) {
+                console.error('Error rendering mermaid diagram:', error);
+                diagram.innerHTML = '<div class="error">Diagram rendering error</div>';
+              });
+          });
+        }
         
-        // Re-render mermaid diagrams when theme changes
+        // Watch for theme changes
         const observer = new MutationObserver(function(mutations) {
           mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'class' && 
-                mutation.target.classList.contains('theme-dark') !== isDarkMode) {
-              // Theme has changed, re-initialize mermaid
-              const newDarkMode = mutation.target.classList.contains('theme-dark');
-              mermaid.initialize({
-                startOnLoad: false,
-                theme: newDarkMode ? 'dark' : 'default'
-              });
-              document.querySelectorAll('.mermaid').forEach(function(elem) {
-                mermaid.render('mermaid-' + Math.random().toString(36).substring(2, 15), 
-                  elem.textContent, function(svgCode) {
-                  elem.innerHTML = svgCode;
-                });
-              });
+            if (mutation.attributeName === 'class') {
+              updateMermaidTheme();
             }
           });
         });
         
-        observer.observe(document.body, { 
-          attributes: true
-        });
+        observer.observe(document.body, { attributes: true });
         
-        // Handle heading anchors
+        // Initialize once page is loaded
+        setTimeout(updateMermaidTheme, 100);
+      });
+      
+      // Handle heading anchors
+      document.addEventListener('DOMContentLoaded', function() {
         const article = document.querySelector('article');
         if (!article) return;
         
