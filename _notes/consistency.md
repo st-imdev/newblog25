@@ -1,0 +1,1 @@
+../newblog25/consistency.md

@@ -1,0 +1,1 @@
+../newblog25/your-first-note.md

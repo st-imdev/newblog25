@@ -1,0 +1,1 @@
+../newblog25/animals/tigers.md

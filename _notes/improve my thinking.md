@@ -1,0 +1,1 @@
+../newblog25/improve my thinking.md
