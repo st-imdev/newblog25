@@ -1,0 +1,21 @@
+---
+layout: default
+---
+
+<div class="wrap">
+  <h1>{{ page.title }}</h1>
+  
+  {{ content }}
+  
+  <div class="line-height-loose">
+    {% assign notes = site.notes | where_exp: "item", "item.tags contains page.tag" %}
+    {% for note in notes %}
+      <div class="mt-4">
+        <a href="{{ site.baseurl }}{{ note.url }}" class="internal-link">{{ note.title }}</a>
+        <div class="muted small">
+          {{ note.date | date: "%B %e, %Y" }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div> 

@@ -61,3 +61,7 @@ defaults:
       path: "_pages/**/*.md"
     values:
       layout: "page"
+  - scope:
+      path: "_topics/**/*.md"
+    values:
+      layout: "topic"
