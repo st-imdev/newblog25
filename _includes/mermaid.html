@@ -2,21 +2,118 @@
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   
-  // Initialize mermaid
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default',
-    flowchart: { 
-      useMaxWidth: true,
-      htmlLabels: true,
-      curve: 'basis'
-    },
-    securityLevel: 'loose'
+  // Get CSS variables from the site's theme
+  function getFlokiColors() {
+    const style = getComputedStyle(document.documentElement);
+    const isDark = document.body.classList.contains('theme-dark');
+    
+    return {
+      // Primary colors
+      primary: style.getPropertyValue('--color-bg-primary').trim(),
+      secondary: style.getPropertyValue('--color-bg-secondary').trim(),
+      textColor: style.getPropertyValue('--color-tx-normal').trim(),
+      mutedColor: style.getPropertyValue('--color-tx-muted').trim(),
+      
+      // Accent colors - using the site's semantic colors
+      nodeBg: style.getPropertyValue(`--color-${isDark ? 'bl-hover' : 'bl'}`).trim(),
+      nodeBorder: style.getPropertyValue(`--color-${isDark ? 'bl' : 'bl-hover'}`).trim(),
+      edgeColor: style.getPropertyValue('--color-tx-muted').trim(),
+      
+      // Special nodes
+      startNodeBg: style.getPropertyValue(`--color-${isDark ? 'gr-hover' : 'gr'}`).trim(),
+      endNodeBg: style.getPropertyValue(`--color-${isDark ? 'cy-hover' : 'cy'}`).trim(),
+      
+      // Text colors
+      labelColor: style.getPropertyValue('--color-tx-normal').trim(),
+      
+      // Other elements
+      rectBg: style.getPropertyValue('--color-bg-secondary').trim(),
+      rectBorder: style.getPropertyValue('--color-ui-normal').trim(),
+      
+      // Sequence diagram specific
+      actor: style.getPropertyValue(`--color-${isDark ? 'pu-hover' : 'pu'}`).trim(),
+      actorBorder: style.getPropertyValue(`--color-${isDark ? 'pu' : 'pu-hover'}`).trim(),
+      
+      // State diagram specific
+      stateBg: style.getPropertyValue(`--color-${isDark ? 'or-hover' : 'or'}`).trim(),
+      
+      // Decision node
+      decisionBg: style.getPropertyValue(`--color-${isDark ? 'ye-hover' : 'ye'}`).trim()
+    };
+  }
+  
+  function createFlokiTheme() {
+    const colors = getFlokiColors();
+    return {
+      "background": colors.primary,
+      "primaryColor": colors.primary,
+      "secondaryColor": colors.secondary,
+      "tertiaryColor": colors.secondary,
+      
+      "primaryBorderColor": colors.nodeBorder,
+      "secondaryBorderColor": colors.mutedColor,
+      
+      "primaryTextColor": colors.textColor,
+      "secondaryTextColor": colors.textColor,
+      "tertiaryTextColor": colors.textColor,
+      "lineColor": colors.edgeColor,
+      "textColor": colors.textColor,
+      
+      "mainBkg": colors.nodeBg,
+      "secondBkg": colors.startNodeBg,
+      "border1": colors.nodeBorder,
+      "border2": colors.nodeBorder,
+      "arrowheadColor": colors.edgeColor,
+      
+      // Sequence diagram
+      "actorBkg": colors.actor,
+      "actorBorder": colors.actorBorder,
+      "signalColor": colors.mutedColor,
+      "activationBkgColor": colors.secondary,
+      "activationBorderColor": colors.mutedColor,
+      "labelBoxBkgColor": colors.secondary,
+      "labelBoxBorderColor": colors.mutedColor,
+      "labelColor": colors.textColor,
+      "noteBkgColor": colors.secondary,
+      "noteBorderColor": colors.mutedColor,
+      "noteTextColor": colors.textColor,
+      
+      // Flow chart
+      "nodeBorder": colors.nodeBorder,
+      "clusterBkg": "transparent",
+      "clusterBorder": colors.mutedColor,
+      "defaultLinkColor": colors.edgeColor,
+      "edgeLabelBackground": colors.secondary
+    };
+  }
+  
+  // Initialize mermaid with floki theme
+  document.addEventListener('DOMContentLoaded', function() {
+    const flokiTheme = createFlokiTheme();
+    
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: flokiTheme,
+      flowchart: { 
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      sequence: {
+        useMaxWidth: true,
+        boxMargin: 10,
+        mirrorActors: false,
+      },
+      securityLevel: 'loose'
+    });
+    
+    // Process all diagrams on page
+    renderMermaidDiagrams();
   });
   
-  // Process all diagrams on page
-  document.addEventListener('DOMContentLoaded', async function() {
-    // Process all pre.mermaid blocks
+  // Function to render all Mermaid diagrams
+  async function renderMermaidDiagrams() {
     const mermaidBlocks = document.querySelectorAll('pre.mermaid, div.mermaid');
     
     for (let i = 0; i < mermaidBlocks.length; i++) {
@@ -40,24 +137,22 @@
         block.innerHTML = `<div class="mermaid-error">Diagram rendering error: ${error.message}</div>`;
       }
     }
-  });
+  }
   
   // Handle theme changes
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === 'class' && 
-          mutation.target.classList.contains('theme-dark') !== mermaid.getConfig().theme === 'dark') {
+          mutation.target.classList.contains('theme-dark') !== 
+          mermaid.getConfig().themeVariables.primaryTextColor === document.documentElement.style.getPropertyValue('--color-tx-normal')) {
         
-        // Update theme
+        // Update theme variables with new colors
         mermaid.initialize({
-          theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default'
+          themeVariables: createFlokiTheme()
         });
         
-        // Force re-render all diagrams
-        document.querySelectorAll('.mermaid-rendered').forEach(function(diagram) {
-          // Remove the rendered diagram to force a re-render when visible
-          diagram.classList.remove('mermaid-rendered');
-        });
+        // Re-render all diagrams
+        renderMermaidDiagrams();
       }
     });
   });
@@ -77,35 +172,66 @@
   }
   
   .mermaid-error {
-    color: #e74c3c;
+    color: var(--color-re);
     padding: 1rem;
     font-family: var(--font-mono);
     font-size: 0.9rem;
   }
   
-  /* Dark mode fixes */
-  .theme-dark .mermaid {
-    background: var(--color-bg-secondary);
+  /* Style specific Mermaid elements */
+  .mermaid .subgraph rect {
+    fill: var(--color-bg-secondary) !important;
+    stroke: var(--color-ui-normal) !important;
   }
   
-  .theme-dark .mermaid * {
-    color: var(--color-tx-normal);
+  .mermaid .flowchart-link, 
+  .mermaid .messageText,
+  .mermaid .loopText {
+    stroke: var(--color-tx-normal) !important;
+    fill: var(--color-tx-normal) !important;
   }
   
-  .theme-dark .mermaid .node rect,
-  .theme-dark .mermaid .node circle,
-  .theme-dark .mermaid .node polygon,
-  .theme-dark .mermaid .node path {
-    stroke: var(--color-tx-normal);
+  .mermaid .messageText {
+    stroke-width: 0 !important;
   }
   
-  .theme-dark .mermaid .edgeLabel rect {
+  .mermaid .edgeLabel rect {
     fill: var(--color-bg-secondary) !important;
   }
   
-  .theme-dark .mermaid .edgeLabel span,
-  .theme-dark .mermaid .label span,
-  .theme-dark .mermaid .nodeLabel span {
+  /* Decision nodes (rhombuses) */
+  .mermaid .flowchart-node.rhombus rect {
+    fill: var(--color-ye) !important;
+    stroke: var(--color-ye-hover) !important;
+  }
+  
+  /* For decision nodes (using diamond shape in flowcharts) */
+  .mermaid .node.diamond rect {
+    fill: var(--color-ye) !important;
+    stroke: var(--color-ye-hover) !important;
+  }
+  
+  /* Actor styling for sequence diagrams */
+  .mermaid .actor {
+    fill: var(--color-pu) !important;
+    stroke: var(--color-pu-hover) !important;
+  }
+  
+  /* Make sure text is visible in all diagram types */
+  .mermaid .actor text,
+  .mermaid .noteText,
+  .mermaid .node text,
+  .mermaid .label text,
+  .mermaid .labelText,
+  .mermaid .label tspan,
+  .mermaid .labelText tspan,
+  .mermaid .edgeLabel text,
+  .mermaid .edgeLabel tspan,
+  .mermaid text.actor,
+  .mermaid text.taskTextOutsideRight,
+  .mermaid text.taskTextOutsideLeft {
+    fill: var(--color-tx-normal) !important;
     color: var(--color-tx-normal) !important;
+    stroke: none !important;
   }
 </style> 
