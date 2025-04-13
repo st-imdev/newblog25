@@ -1,0 +1,12 @@
+/* Dark mode overrides */
+
+.theme-dark {
+  .text text {
+    fill: #fff !important;
+    text-shadow: none !important;
+  }
+  
+  .text [active] {
+    fill: #fff !important;
+  }
+} 
