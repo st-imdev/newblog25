@@ -51,21 +51,4 @@
       {{ page.title }} &mdash; {{ site.title }}
     {% endif %}
   </title>
-  
-  <!-- Mermaid.js -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize mermaid
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default',
-        flowchart: { 
-          useMaxWidth: true,
-          htmlLabels: true
-        },
-        securityLevel: 'loose'
-      });
-    });
-  </script>
 </head>

@@ -1,0 +1,111 @@
+<!-- Mermaid integration -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  
+  // Initialize mermaid
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default',
+    flowchart: { 
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis'
+    },
+    securityLevel: 'loose'
+  });
+  
+  // Process all diagrams on page
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Process all pre.mermaid blocks
+    const mermaidBlocks = document.querySelectorAll('pre.mermaid, div.mermaid');
+    
+    for (let i = 0; i < mermaidBlocks.length; i++) {
+      const block = mermaidBlocks[i];
+      
+      // Create a unique ID for this diagram
+      const id = `mermaid-diagram-${i}`;
+      
+      // Get the diagram definition
+      const definition = block.textContent.trim();
+      
+      try {
+        // Render the diagram
+        const { svg } = await mermaid.render(id, definition);
+        
+        // Replace the content with the rendered SVG
+        block.innerHTML = svg;
+        block.classList.add('mermaid-rendered');
+      } catch (error) {
+        console.error('Failed to render mermaid diagram:', error);
+        block.innerHTML = `<div class="mermaid-error">Diagram rendering error: ${error.message}</div>`;
+      }
+    }
+  });
+  
+  // Handle theme changes
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'class' && 
+          mutation.target.classList.contains('theme-dark') !== mermaid.getConfig().theme === 'dark') {
+        
+        // Update theme
+        mermaid.initialize({
+          theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default'
+        });
+        
+        // Force re-render all diagrams
+        document.querySelectorAll('.mermaid-rendered').forEach(function(diagram) {
+          // Remove the rendered diagram to force a re-render when visible
+          diagram.classList.remove('mermaid-rendered');
+        });
+      }
+    });
+  });
+  
+  observer.observe(document.body, { attributes: true });
+</script>
+
+<style>
+  pre.mermaid {
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-ui-normal);
+    padding: 1rem;
+    margin: 2rem 0;
+    min-height: 100px;
+    text-align: center;
+  }
+  
+  .mermaid-error {
+    color: #e74c3c;
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+  
+  /* Dark mode fixes */
+  .theme-dark .mermaid {
+    background: var(--color-bg-secondary);
+  }
+  
+  .theme-dark .mermaid * {
+    color: var(--color-tx-normal);
+  }
+  
+  .theme-dark .mermaid .node rect,
+  .theme-dark .mermaid .node circle,
+  .theme-dark .mermaid .node polygon,
+  .theme-dark .mermaid .node path {
+    stroke: var(--color-tx-normal);
+  }
+  
+  .theme-dark .mermaid .edgeLabel rect {
+    fill: var(--color-bg-secondary) !important;
+  }
+  
+  .theme-dark .mermaid .edgeLabel span,
+  .theme-dark .mermaid .label span,
+  .theme-dark .mermaid .nodeLabel span {
+    color: var(--color-tx-normal) !important;
+  }
+</style> 

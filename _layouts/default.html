@@ -17,52 +17,9 @@
     <footer>{% include footer.html %}</footer>
 
     {% include link-previews.html wrapperQuerySelector="content" %}
+    {% include mermaid.html %}
     
     <script>
-      // Mermaid theme handling for dark/light mode
-      document.addEventListener('DOMContentLoaded', function() {
-        // Helper function to re-render mermaid diagrams
-        function updateMermaidTheme() {
-          const isDarkMode = document.body.classList.contains('theme-dark');
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: isDarkMode ? 'dark' : 'default'
-          });
-          
-          // Force redraw all diagrams with the new theme
-          document.querySelectorAll('.mermaid').forEach(function(diagram) {
-            const content = diagram.getAttribute('data-content') || diagram.textContent;
-            // Store original content if not already stored
-            if (!diagram.getAttribute('data-content')) {
-              diagram.setAttribute('data-content', content);
-            }
-            const id = 'mermaid-' + Math.random().toString(36).substring(2);
-            mermaid.render(id, content)
-              .then(function(result) {
-                diagram.innerHTML = result.svg;
-              })
-              .catch(function(error) {
-                console.error('Error rendering mermaid diagram:', error);
-                diagram.innerHTML = '<div class="error">Diagram rendering error</div>';
-              });
-          });
-        }
-        
-        // Watch for theme changes
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'class') {
-              updateMermaidTheme();
-            }
-          });
-        });
-        
-        observer.observe(document.body, { attributes: true });
-        
-        // Initialize once page is loaded
-        setTimeout(updateMermaidTheme, 100);
-      });
-      
       // Handle heading anchors
       document.addEventListener('DOMContentLoaded', function() {
         const article = document.querySelector('article');

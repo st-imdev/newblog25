@@ -22,7 +22,7 @@ This is a game-changer because:
 
 ### SWiRL Process Visualized
 
-```mermaid
+<pre class="mermaid">
 flowchart TB
     subgraph "Stage 1: Generate Synthetic Data"
       A[Base LLM] --> B[Generate Multiple Reasoning Paths]
@@ -45,10 +45,7 @@ flowchart TB
       I --> J[Optimize Model]
       J --> K[Improved Multi-Step Reasoning]
     end
-    
-    style A fill:#b8c9f2,stroke:#333
-    style K fill:#c9f2b8,stroke:#333
-```
+</pre>
 
 ## How SWiRL works
 
@@ -113,7 +110,7 @@ The really clever part is how they decompose each reasoning path into sub-trajec
 
 This diagram shows how SWiRL breaks down a 5-step reasoning trajectory into sub-trajectories and optimizes each step individually:
 
-```mermaid
+<pre class="mermaid">
 sequenceDiagram
     participant Q as Question
     participant S1 as Step 1
@@ -142,7 +139,7 @@ sequenceDiagram
     end
     
     Note over Q,A: Each sub-trajectory gets its own reward and optimization
-```
+</pre>
 
 ### The actual reinforcement learning magic
 
@@ -208,7 +205,7 @@ One fascinating discovery was that filtering trajectories based on having good i
 
 ### Process vs Outcome Filtering Visualization
 
-```mermaid
+<pre class="mermaid">
 graph TD
     A[Generated Trajectories] --> B{Filtering Approach}
     B -->|Process Filtering| C[Judge Each Step]
@@ -228,10 +225,7 @@ graph TD
     
     C5 --> E[Better Generalization]
     D2 --> F[Worse Generalization]
-    
-    style E fill:#9f9,stroke:#333
-    style F fill:#f99,stroke:#333
-```
+</pre>
 
 The diagram shows why process filtering (judging the quality of each step) is more effective than outcome filtering (judging only the final answer). Even trajectories with incorrect answers can be valuable training examples if the reasoning steps are good!
 
