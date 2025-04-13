@@ -15,13 +15,13 @@ permalink: /search
   <script>
     // JSON containing all searchable notes
     const notes = [
-      {% assign sorted_notes = site.notes | sort: "last_modified_at_timestamp" | reverse %}
+      {% assign sorted_notes = site.notes | sort: "date" | reverse %}
       {% for note in sorted_notes %}
         {
           "title": "{{ note.title | escape }}",
           "content": {{ note.content | strip_html | strip_newlines | jsonify }},
           "url": "{{ site.baseurl }}{{ note.url }}",
-          "date": "{{ note.last_modified_at | date: "%Y-%m-%d" }}"
+          "date": "{{ note.date | date: "%B %e, %Y" }}"
         }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ];
@@ -42,18 +42,20 @@ permalink: /search
       });
       
       if (results.length === 0) {
-        resultsContainer.innerHTML = '<p>No results found.</p>';
+        resultsContainer.innerHTML = '<p class="muted">No results found.</p>';
         return;
       }
       
-      let resultsHtml = '<ul>';
+      let resultsHtml = '<ul class="list-plain">';
       results.forEach(note => {
         resultsHtml += `
-          <li>
+          <li class="mt-4">
             <a href="${note.url}" class="internal-link">
               ${note.title}
             </a>
-            <span class="muted small">${note.date}</span>
+            <div class="muted small">
+              ${note.date}
+            </div>
           </li>
         `;
       });
@@ -68,18 +70,39 @@ permalink: /search
 
   <style>
     .search-input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
+      width: var(--input-width);
+      padding: 0.8rem;
+      margin-bottom: 2rem;
       font-size: 1.1rem;
+      border: 1px solid var(--color-ui-normal);
+      border-radius: var(--border-radius);
+      background: var(--color-bg-primary);
+      color: var(--color-tx-normal);
+      font-family: var(--font-ui);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-action);
+      box-shadow: 0 0 0 2px var(--color-bg-hover);
+    }
+    
+    .search-results ul {
+      margin-top: 1rem;
     }
     
     .search-results li {
-      margin-bottom: 0.8rem;
+      margin-bottom: 1.2rem;
     }
     
-    .search-results .muted {
-      margin-left: 0.5rem;
+    .mt-4 {
+      margin-top: 1rem;
+    }
+    
+    .list-plain {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
   </style>
 </div> 

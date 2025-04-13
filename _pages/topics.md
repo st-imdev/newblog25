@@ -22,18 +22,29 @@ permalink: /topics
     
     {% for tag in unique_tags %}
       <h3 id="{{ tag | slugify }}">{{ tag }}</h3>
-      <ul>
-        {% for note in site.notes %}
-          {% if note.tags contains tag %}
-            <li>
-              <a href="{{ site.baseurl }}{{ note.url }}" class="internal-link">{{ note.title }}</a>
-              <span class="muted small">
-                {{ note.last_modified_at | date: "%B %e, %Y" }}
-              </span>
-            </li>
-          {% endif %}
+      <ul class="list-plain">
+        {% assign tag_notes = site.notes | where_exp: "note", "note.tags contains tag" | sort: "date" | reverse %}
+        {% for note in tag_notes %}
+          <li class="mt-4">
+            <a href="{{ site.baseurl }}{{ note.url }}" class="internal-link">{{ note.title }}</a>
+            <div class="muted small">
+              {{ note.date | date: "%B %e, %Y" }}
+            </div>
+          </li>
         {% endfor %}
       </ul>
     {% endfor %}
   </div>
-</div> 
+</div>
+
+<style>
+  .list-plain {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+  }
+  
+  .mt-4 {
+    margin-top: 1rem;
+  }
+</style> 
