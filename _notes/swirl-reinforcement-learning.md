@@ -31,11 +31,11 @@ def generate_trajectory(llm, tool, question, max_steps):
     trajectory = []
     context = {"question": question, "history": []}
     for step in range(max_steps):
-        action = llm(context) # LLM decides to generate CoT, tool call, or answer
+        action = llm(context)  # LLM decides to generate CoT, tool call, or answer
         trajectory.append(action)
         if "<search_query>" in action or "<math_exp>" in action:
             query = extract_query(action)
-            result = tool(query) # Execute the tool call
+            result = tool(query)  # Execute the tool call
             context["history"].append({"action": action, "result": result})
         elif "<answer>" in action:
             break
@@ -61,7 +61,7 @@ def decompose_trajectory(trajectory):
     current_context = []
     for i, action in enumerate(trajectory):
         current_context.append(action)
-        sub_trajectories.append(list(current_context)) # Create a sub-trajectory up to the current action
+        sub_trajectories.append(list(current_context))  # Create a sub-trajectory up to the current action
         # In a real implementation, the environment response would also be part of the context
     return sub_trajectories
 
@@ -85,7 +85,7 @@ The really clever part is how they decompose each reasoning path into sub-trajec
 def calculate_step_wise_reward(reward_model, sub_trajectory):
     context = sub_trajectory[:-1]
     action = sub_trajectory[-1]
-    reward = reward_model(context, action) # Reward model evaluates the action given the context
+    reward = reward_model(context, action)  # Reward model evaluates the action given the context
     return reward
 
 def optimize_model_step_wise(base_model, synthetic_data, reward_model, optimizer):
@@ -93,7 +93,7 @@ def optimize_model_step_wise(base_model, synthetic_data, reward_model, optimizer
         sub_trajectories = decompose_trajectory(trajectory)
         for sub_trajectory in sub_trajectories:
             reward = calculate_step_wise_reward(reward_model, sub_trajectory)
-            loss = -reward * base_model.log_prob(sub_trajectory) # Policy gradient-like objective
+            loss = -reward * base_model.log_prob(sub_trajectory)  # Policy gradient-like objective
             optimizer.backward(loss)
             optimizer.step()
             optimizer.zero_grad()
@@ -131,7 +131,7 @@ def perform_multi_step_inference(llm, tool, question, max_queries):
 
 # Example of inference
 question = "Who is older Glenn Hughes or Ross Lynch?"
-tool = SearchEngine() # or Calculator() depending on the question type
+tool = SearchEngine()  # or Calculator() depending on the question type
 llm_swirl_tuned = SWiRLTunedGemma2()
 answer = perform_multi_step_inference(llm_swirl_tuned, tool, question, max_queries=5)
 print(f"Answer: {answer}")
@@ -145,7 +145,7 @@ One fascinating discovery was that filtering trajectories based on having good i
 def is_step_reasonable(judge_model, sub_trajectory):
     context = sub_trajectory[:-1]
     action = sub_trajectory[-1]
-    judgment = judge_model(context, action) # Judge model (e.g., Gemini 1.5 Pro Thinking)
+    judgment = judge_model(context, action)  # Judge model (e.g., Gemini 1.5 Pro Thinking)
     return "GOOD" in judgment
 
 def filter_by_process(synthetic_data, judge_model):
