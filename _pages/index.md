@@ -8,13 +8,13 @@ permalink: /
 <div class="wrap">
   <p><a href="/notes/latest" class="muted font-ui">Latest</a></p>
 
-  {% assign latest_note = site.notes | sort: "last_modified_at_timestamp" | reverse | first %}
+  {% assign latest_note = site.notes | sort: "date" | reverse | first %}
   {% if latest_note %}
   <div>
     <a href="{{ site.baseurl }}{{ latest_note.url }}" class="plain">
       <h2>{{ latest_note.title }}</h2>
       <div class="metadata muted small pb font-ui">
-        <time datetime="{{ latest_note.last_modified_at }}">{{ latest_note.last_modified_at | date: "%B %e, %Y" }}</time> · <span class="reading-time" title="Estimated read time">{% assign words = latest_note.content | number_of_words %}{% if words < 360 %}1 minute{% else %}{{ words | divided_by:180 }} minutes{% endif %} read</span>
+        <time datetime="{{ latest_note.date }}">{{ latest_note.date | date: "%B %e, %Y" }}</time> · <span class="reading-time" title="Estimated read time">{% assign words = latest_note.content | number_of_words %}{% if words < 360 %}1 minute{% else %}{{ words | divided_by:180 }} minutes{% endif %} read</span>
       </div>
       <div class="small muted">
         {{ latest_note.content | strip_html | truncatewords: 30 }} Keep reading →
@@ -47,12 +47,12 @@ permalink: /
   <p class="muted font-ui"><a href="/writing" class="muted internal-link">Writing</a></p>
 
   <ul class="list-plain tabular-nums">
-    {% assign sorted_notes = site.notes | sort: "last_modified_at_timestamp" | reverse %}
+    {% assign sorted_notes = site.notes | sort: "date" | reverse %}
     {% for note in sorted_notes %}
       <li>
         <a href="{{ site.baseurl }}{{ note.url }}" class="internal-link plain">
           <flex class="align-baseline">
-            <span class="muted ppr flex-shrink small mh nowrap font-ui">{{ note.last_modified_at | date: "%Y · %m" }}</span>
+            <span class="muted ppr flex-shrink small mh nowrap font-ui">{{ note.date | date: "%Y · %m" }}</span>
             <u>{{ note.title }}</u>
           </flex>
         </a>
