@@ -9,10 +9,99 @@
     var script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js";
     script.onload = function() {
-      // Initialize Mermaid
+      // Initialize Mermaid with custom Flexoki theme
+      const isDarkMode = document.body.classList.contains('theme-dark');
+      
+      // Define custom themes based on Flexoki colors
+      const flexokiTheme = {
+        light: {
+          primaryColor: '#24837B', // cyan-600
+          primaryTextColor: '#100F0F', // black
+          primaryBorderColor: '#6F6E69', // 600
+          lineColor: '#575653', // 700
+          secondaryColor: '#CECDC3', // 200
+          tertiaryColor: '#F2F0E5', // 50
+          
+          // Class colors
+          nodeBorder: '#6F6E69', // 600
+          clusterBkg: '#F2F0E5', // 50
+          clusterBorder: '#B7B5AC', // 300
+          
+          // Color list for different node types
+          mainBkg: '#F2F0E5', // 50
+          
+          // Colors
+          edgeLabelBackground: '#FFFCF0', // paper
+          
+          // Text colors
+          titleColor: '#100F0F', // black
+          textColor: '#100F0F', // black
+          cText: '#100F0F', // black
+          
+          // Other colors
+          labelBoxBorderColor: '#6F6E69', // 600
+          labelTextColor: '#100F0F', // black
+          
+          // Colors for specific diagram elements
+          actorBorder: '#BC5215', // orange-600
+          actorBkg: '#FFE7CE', // orange-50
+          actorTextColor: '#100F0F', // black
+          actorLineColor: '#575653', // 700
+          
+          signalColor: '#100F0F', // black
+          signalTextColor: '#100F0F', // black
+          
+          noteTextColor: '#100F0F', // black
+          noteBkg: '#F6E2A0', // yellow-100
+          noteBorder: '#AD8301', // yellow-600
+        },
+        dark: {
+          primaryColor: '#3AA99F', // cyan-400
+          primaryTextColor: '#CECDC3', // 200
+          primaryBorderColor: '#403E3C', // 800
+          lineColor: '#878580', // 500
+          secondaryColor: '#1C1B1A', // 950
+          tertiaryColor: '#343331', // 850
+          
+          // Class colors
+          nodeBorder: '#403E3C', // 800
+          clusterBkg: '#1C1B1A', // 950
+          clusterBorder: '#575653', // 700
+          
+          // Color list for different node types
+          mainBkg: '#1C1B1A', // 950
+          
+          // Background colors
+          edgeLabelBackground: '#100F0F', // black
+          
+          // Text colors
+          titleColor: '#CECDC3', // 200
+          textColor: '#CECDC3', // 200
+          cText: '#CECDC3', // 200
+          
+          // Other colors
+          labelBoxBorderColor: '#403E3C', // 800
+          labelTextColor: '#CECDC3', // 200
+          
+          // Colors for specific diagram elements
+          actorBorder: '#DA702C', // orange-400
+          actorBkg: '#27180E', // orange-950
+          actorTextColor: '#CECDC3', // 200
+          actorLineColor: '#878580', // 500
+          
+          signalColor: '#CECDC3', // 200
+          signalTextColor: '#CECDC3', // 200
+          
+          noteTextColor: '#1C1B1A', // 950
+          noteBkg: '#F1D67E', // yellow-150
+          noteBorder: '#D0A215', // yellow-400
+        }
+      };
+      
+      // Register the custom themes
       mermaid.initialize({
         startOnLoad: true,
-        theme: document.body.classList.contains('theme-dark') ? 'dark' : 'default',
+        theme: isDarkMode ? 'flexoki-dark' : 'flexoki-light',
         flowchart: { 
           useMaxWidth: true,
           htmlLabels: true,
@@ -22,6 +111,7 @@
           diagramMarginX: 50,
           diagramMarginY: 10
         },
+        themeVariables: isDarkMode ? flexokiTheme.dark : flexokiTheme.light,
         securityLevel: 'loose'
       });
     };
@@ -32,9 +122,97 @@
       mutations.forEach(function(mutation) {
         if (mutation.attributeName === 'class' && window.mermaid) {
           const isDarkMode = document.body.classList.contains('theme-dark');
-          // Reinitialize with new theme
+          
+          // Define theme variables for Flexoki
+          const flexokiTheme = {
+            light: {
+              primaryColor: '#24837B', // cyan-600
+              primaryTextColor: '#100F0F', // black
+              primaryBorderColor: '#6F6E69', // 600
+              lineColor: '#575653', // 700
+              secondaryColor: '#CECDC3', // 200
+              tertiaryColor: '#F2F0E5', // 50
+              
+              // Class colors
+              nodeBorder: '#6F6E69', // 600
+              clusterBkg: '#F2F0E5', // 50
+              clusterBorder: '#B7B5AC', // 300
+              
+              // Color list for different node types
+              mainBkg: '#F2F0E5', // 50
+              
+              // Background colors
+              edgeLabelBackground: '#FFFCF0', // paper
+              
+              // Text colors
+              titleColor: '#100F0F', // black
+              textColor: '#100F0F', // black
+              cText: '#100F0F', // black
+              
+              // Other colors
+              labelBoxBorderColor: '#6F6E69', // 600
+              labelTextColor: '#100F0F', // black
+              
+              // Colors for specific diagram elements
+              actorBorder: '#BC5215', // orange-600
+              actorBkg: '#FFE7CE', // orange-50
+              actorTextColor: '#100F0F', // black
+              actorLineColor: '#575653', // 700
+              
+              signalColor: '#100F0F', // black
+              signalTextColor: '#100F0F', // black
+              
+              noteTextColor: '#100F0F', // black
+              noteBkg: '#F6E2A0', // yellow-100
+              noteBorder: '#AD8301', // yellow-600
+            },
+            dark: {
+              primaryColor: '#3AA99F', // cyan-400
+              primaryTextColor: '#CECDC3', // 200
+              primaryBorderColor: '#403E3C', // 800
+              lineColor: '#878580', // 500
+              secondaryColor: '#1C1B1A', // 950
+              tertiaryColor: '#343331', // 850
+              
+              // Class colors
+              nodeBorder: '#403E3C', // 800
+              clusterBkg: '#1C1B1A', // 950
+              clusterBorder: '#575653', // 700
+              
+              // Color list for different node types
+              mainBkg: '#1C1B1A', // 950
+              
+              // Background colors
+              edgeLabelBackground: '#100F0F', // black
+              
+              // Text colors
+              titleColor: '#CECDC3', // 200
+              textColor: '#CECDC3', // 200
+              cText: '#CECDC3', // 200
+              
+              // Other colors
+              labelBoxBorderColor: '#403E3C', // 800
+              labelTextColor: '#CECDC3', // 200
+              
+              // Colors for specific diagram elements
+              actorBorder: '#DA702C', // orange-400
+              actorBkg: '#27180E', // orange-950
+              actorTextColor: '#CECDC3', // 200
+              actorLineColor: '#878580', // 500
+              
+              signalColor: '#CECDC3', // 200
+              signalTextColor: '#CECDC3', // 200
+              
+              noteTextColor: '#1C1B1A', // 950
+              noteBkg: '#F1D67E', // yellow-150
+              noteBorder: '#D0A215', // yellow-400
+            }
+          };
+          
+          // Reinitialize with current theme
           window.mermaid.initialize({
-            theme: isDarkMode ? 'dark' : 'default'
+            theme: isDarkMode ? 'flexoki-dark' : 'flexoki-light',
+            themeVariables: isDarkMode ? flexokiTheme.dark : flexokiTheme.light
           });
           
           // Force reload of all diagrams
@@ -62,31 +240,47 @@
     max-width: 100%;
   }
   
-  /* Dark mode fixes */
-  .theme-dark .mermaid text,
-  .theme-dark .mermaid .messageText,
-  .theme-dark .mermaid .loopText,
-  .theme-dark .mermaid .labelText,
-  .theme-dark .mermaid .titleText,
+  /* Extra fixes for dark mode elements that may not be covered by the theme */
+  .theme-dark .mermaid .marker {
+    fill: var(--flexoki-cyan-400) !important;
+    stroke: var(--flexoki-cyan-400) !important;
+  }
+  
+  .theme-dark .mermaid .flowchart-link {
+    stroke: var(--flexoki-500) !important;
+  }
+  
+  .theme-dark .mermaid .flowchart-label text {
+    fill: var(--flexoki-200) !important;
+  }
+  
   .theme-dark .mermaid .node rect,
+  .theme-dark .mermaid .node polygon,
   .theme-dark .mermaid .node circle,
+  .theme-dark .mermaid .node ellipse {
+    stroke: var(--flexoki-800) !important;
+    fill: var(--flexoki-950) !important;
+  }
+  
+  .theme-dark .mermaid .node .label {
+    fill: var(--flexoki-200) !important;
+  }
+  
   .theme-dark .mermaid .cluster rect {
-    fill: var(--color-tx-normal) !important;
-    stroke: var(--color-tx-normal) !important;
+    fill: var(--flexoki-950) !important;
+    stroke: var(--flexoki-700) !important;
   }
   
-  .theme-dark .mermaid .edgePath .path,
-  .theme-dark .mermaid line,
-  .theme-dark .mermaid .loopLine {
-    stroke: var(--color-tx-normal) !important;
-  }
-  
-  .theme-dark .mermaid .arrowheadPath {
-    fill: var(--color-tx-normal) !important;
-    stroke: var(--color-tx-normal) !important;
+  .theme-dark .mermaid .edgeLabel {
+    background-color: var(--flexoki-black) !important;
+    color: var(--flexoki-200) !important;
   }
   
   .theme-dark .mermaid .edgeLabel rect {
-    fill: var(--color-bg-secondary) !important;
+    fill: var(--flexoki-black) !important;
+  }
+  
+  .theme-dark .mermaid .labelBkg {
+    fill: var(--flexoki-black) !important;
   }
 </style> 
