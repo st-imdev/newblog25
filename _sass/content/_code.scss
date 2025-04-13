@@ -1,0 +1,96 @@
+code, kbd {
+    font-family: var(--font-mono);
+    background: var(--color-bg-secondary);
+    padding: 0.1em 0.2em;
+    border-radius: 4px;
+    font-size: 90%;
+  }
+  kbd {
+    font-weight: 600;
+    border: 1px solid var(--color-ui-hover);
+  }
+  pre {
+    font-family: var(--font-mono);
+    border-radius: 4px;
+    padding: 1em;
+    font-size: 90%;
+    border: 1px solid var(--color-ui-normal);
+    white-space: pre-wrap;
+  }
+  pre code {
+    background-color: transparent;
+  }
+  
+  div.highlight {
+    display: grid;
+  }
+  
+  .highlight  {
+    border-radius: 4px;
+    overflow: auto;
+    margin: 1em 0;
+  
+    .c  { color: var(--color-tx-faint); } /* Comment */
+    .err { color: var(--color-re);} /* Error */
+    .k  { color: var(--color-gr); } /* Keyword */
+    .o  { } /* Operator */
+    .p { color: var(--color-tx-muted); } /* Punctuation */
+    .cm { color: var(--color-tx-faint); } /* Comment.Multiline */
+    .cp { color: var(--color-tx-faint); } /* Comment.Preproc */
+    .c1 { color: var(--color-tx-faint); } /* Comment.Single */
+    .cs { color: var(--color-tx-faint); } /* Comment.Special */
+    .gd {  } /* Generic.Deleted */
+    .gd .x { } /* Generic.Deleted.Specific */
+    .ge { font-style: italic } /* Generic.Emph */
+    .gr { color: var(--color-re); } /* Generic.Error */
+    .gh { color: var(--color-tx-faint) } /* Generic.Heading */
+    .gi { } /* Generic.Inserted */
+    .gi .x { } /* Generic.Inserted.Specific */
+    .go { color: var(--color-tx-muted); } /* Generic.Output */
+    .gp { color: var(--color-tx-muted); } /* Generic.Prompt */
+    .gs { } /* Generic.Strong */
+    .gu { color: var(--color-tx-muted); } /* Generic.Subheading */
+    .gt { color: var(--color-re); } /* Generic.Traceback */
+    .kc { color: var(--color-bl); } /* Keyword.Constant */
+    .kd { color: var(--color-bl); } /* Keyword.Declaration */
+    .kp { color: var(--color-bl); } /* Keyword.Pseudo */
+    .kr { color: var(--color-bl); } /* Keyword.Reserved */
+    .kt { color: var(--color-bl); } /* Keyword.Type */
+    .m { color: var(--color-pu); } /* Literal.Number */
+    .s  { color: var(--color-gr) } /* Literal.String */
+    .na { color: var(--color-or) } /* Name.Attribute */
+    .nb { color: var(--color-gr); } /* Name.Builtin */
+    .nc { color:var(--color-bl); } /* Name.Class */
+    .no { color: var(--color-cy) } /* Name.Constant */
+    .ni {  } /* Name.Entity */
+    .ne {  } /* Name.Exception */
+    .nf {  } /* Name.Function */
+    .nn { color: var(--color-tx-muted); } /* Name.Namespace */
+    .nt {  } /* Name.Tag */
+    .nv { color: var(--color-cy) } /* Name.Variable */
+    .nx {  }
+    .o  { color: var(--color-re); }
+    .ow { } /* Operator.Word */
+    .w  { color: var(--color-tx-faint); } /* Text.Whitespace */
+    .mf { color: var(--color-pu); } /* Literal.Number.Float */
+    .mh { color: var(--color-pu); } /* Literal.Number.Hex */
+    .mi { color: var(--color-pu); } /* Literal.Number.Integer */
+    .mo { color: var(--color-pu); } /* Literal.Number.Oct */
+    .sb { color: var(--color-gr) } /* Literal.String.Backtick */
+    .sc { color: var(--color-gr) } /* Literal.String.Char */
+    .sd { color: var(--color-gr) } /* Literal.String.Doc */
+    .s2 { color: var(--color-cy) } /* Literal.String.Double */
+    .se { color: var(--color-re) } /* Literal.String.Escape */
+    .sh { color: var(--color-gr) } /* Literal.String.Heredoc */
+    .si { color: var(--color-gr) } /* Literal.String.Interpol */
+    .sx { color: var(--color-gr) } /* Literal.String.Other */
+    .sr { color: var(--color-re) } /* Literal.String.Regex */
+    .s1 { color: var(--color-cy) } /* Literal.String.Single */
+    .ss { color: var(--color-re) } /* Literal.String.Symbol */
+    .bp { color: var(--color-tx-faint) } /* Name.Builtin.Pseudo */
+    .vc { color: var(--color-cy) } /* Name.Variable.Class */
+    .vg { color: var(--color-cy) } /* Name.Variable.Global */
+    .vi { color: var(--color-cy) } /* Name.Variable.Instance */
+    .il { color: var(--color-pu); } /* Literal.Number.Integer.Long */
+  
+  }

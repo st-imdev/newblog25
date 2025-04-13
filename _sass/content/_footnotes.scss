@@ -1,0 +1,26 @@
+.footnote {
+    color: var(--color-tx-muted);
+    text-decoration: none;
+    font-weight: 500;
+    padding-left: 0.1em;
+  }
+  .reversefootnote {
+    color: var(--color-tx-muted);
+    text-decoration: none;
+  }
+  .footnotes {
+  
+    &:before {
+      content: "Footnotes";
+      padding-bottom: 0.25em;
+      color: var(--color-tx-muted);
+      display: block;
+    }
+    padding-top: 4em;
+    li {
+      p {
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+      }
+    }
+  }
