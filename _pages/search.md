@@ -6,10 +6,17 @@ permalink: /search
 
 <div class="wrap">
   <h1>Search</h1>
+  <p class="search-description">Find notes, articles and other content across the site</p>
 
   <div class="search-container">
     <div class="search-field">
-      <input type="text" id="search-input" placeholder="Search notes..." class="search-input">
+      <input type="text" id="search-input" placeholder="Type to search..." class="search-input">
+      <div class="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
     </div>
     <div id="search-results" class="search-results"></div>
   </div>
@@ -44,19 +51,23 @@ permalink: /search
       });
       
       if (results.length === 0) {
-        resultsContainer.innerHTML = '<p class="muted">No results found.</p>';
+        resultsContainer.innerHTML = '<p class="no-results">No results found. Try different keywords.</p>';
         return;
       }
       
-      let resultsHtml = '<ul class="list-plain">';
+      let resultsHtml = '<div class="results-count">' + results.length + ' results found</div>';
+      resultsHtml += '<ul class="search-results-list">';
       results.forEach(note => {
         resultsHtml += `
-          <li class="mt-4">
-            <a href="${note.url}" class="internal-link">
+          <li class="search-result-item">
+            <a href="${note.url}" class="internal-link search-result-title">
               ${note.title}
             </a>
-            <div class="muted small">
+            <div class="search-result-date">
               ${note.date}
+            </div>
+            <div class="search-result-preview">
+              ${note.content.substring(0, 150)}...
             </div>
           </li>
         `;
@@ -71,6 +82,11 @@ permalink: /search
   </script>
 
   <style>
+    .search-description {
+      color: var(--color-tx-subtle);
+      margin-bottom: 2rem;
+    }
+    
     .search-container {
       margin: 2rem 0 3rem;
     }
@@ -83,50 +99,91 @@ permalink: /search
     
     .search-input {
       width: 100%;
-      padding: 0.7rem 1rem;
-      margin-bottom: 2rem;
+      padding: 0.9rem 1rem 0.9rem 3rem;
+      margin-bottom: 1.5rem;
       font-size: 1.2rem;
-      border: none;
-      border-bottom: 1px solid var(--color-ui-normal);
-      border-radius: 0;
+      border: 1px solid var(--color-ui-normal);
+      border-radius: 8px;
       background: var(--color-bg-primary);
       color: var(--color-tx-normal);
       font-family: var(--font-ui);
-      transition: border-color 0.3s;
+      transition: all 0.3s;
       -webkit-appearance: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-tx-faint);
+      pointer-events: none;
+      margin-top: -0.75rem;
     }
     
     .search-input::placeholder {
       color: var(--color-tx-faint);
-      font-style: italic;
     }
     
     .search-input:focus {
       outline: none;
-      border-bottom: 1px solid var(--color-action);
+      border-color: var(--color-action);
+      box-shadow: 0 0 0 3px rgba(var(--color-action-rgb), 0.15);
     }
     
-    .search-results ul {
-      margin-top: 1rem;
+    .results-count {
+      margin-bottom: 1.5rem;
+      color: var(--color-tx-subtle);
+      font-size: 0.95rem;
     }
     
-    .search-results li {
-      margin-bottom: 1.2rem;
+    .no-results {
+      padding: 2rem 0;
+      text-align: center;
+      color: var(--color-tx-subtle);
+      font-style: italic;
     }
     
-    .mt-4 {
-      margin-top: 1rem;
-    }
-    
-    .list-plain {
+    .search-results-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+    
+    .search-result-item {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-ui-faint);
+    }
+    
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .search-result-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--color-action);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    
+    .search-result-date {
+      color: var(--color-tx-subtle);
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+    
+    .search-result-preview {
+      color: var(--color-tx-normal);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
 
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
       .search-field {
-        max-width: 30rem;
+        max-width: 38rem;
       }
     }
   </style>
