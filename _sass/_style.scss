@@ -269,6 +269,27 @@ nav {
   max-width: var(--wrap-wide);
 }
 
+/* Site Title and Avatar Styles */
+.site-title-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-title {
+  font-family: 'DM Serif Text', serif;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.avatar-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-ui-normal);
+}
+
 /* Fix for purple backgrounds on topics */
 .wrap h1, 
 .wrap h2, 
