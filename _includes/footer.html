@@ -1,4 +1,5 @@
-<div class="pn2 bt">
+<div class="pn2" style="padding-top: 0;">
+  <hr class="ms2" style="margin-top: 0; margin-bottom: 1rem;">
   <p class="muted font-ui">Currently building</p>
   
   <!-- Font Awesome CDN - using solid icons with custom styling to make them appear more minimal -->
@@ -30,7 +31,7 @@
     </div>
   </div>
   
-  <div class="small font-ui mt3">
+  <div class="small font-ui" style="margin-top: 20rem;">
     <p>Follow me via <a href="{{ site.baseurl }}/feed.xml" class="internal-link">RSS</a>, <a href="https://x.com/{{ site.twitter_username }}" target="_blank" rel="noopener noreferrer">𝕏</a>, or <a href="mailto:your-email@example.com">email</a></p>
   </div>
 </div>
@@ -61,11 +62,10 @@
   }
   
   .project-title {
-    font-weight: 500;
+    font-weight: normal;
     display: block;
     margin-bottom: 0;
-    text-decoration: none;
-    border-bottom: none; /* Remove underline */
+    text-decoration: underline;
     color: var(--color-tx-normal);
     background-color: transparent;
   }
