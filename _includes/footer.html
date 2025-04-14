@@ -45,6 +45,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
+    background-color: transparent; /* Ensure project item has no background */
   }
   
   .project-item i {
@@ -69,10 +70,19 @@
   
   a.project-title {
     color: var(--color-tx-normal); /* Match text color */
+    background-color: transparent; /* Ensure link has no background */
   }
   
   a.project-title:hover {
     color: var(--color-action); /* Change color on hover */
+    background-color: transparent; /* Prevent background change on hover */
+  }
+  
+  a.project-title:active, a.project-title:focus {
+    color: var(--color-action); /* Change color on active/focus state */
+    background-color: transparent; /* Prevent background change on active/focus */
+    outline: none; /* Remove outline */
+    text-decoration: none; /* Ensure no underline is added */
   }
   
   .project-details p {
