@@ -45,7 +45,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-    background-color: transparent; /* Ensure project item has no background */
+    background-color: transparent !important; /* Ensure project item always has transparent background */
   }
   
   .project-item i {
@@ -61,28 +61,64 @@
   }
   
   .project-title {
-    font-weight: normal;
+    font-weight: 500;
     display: block;
     margin-bottom: 0;
     text-decoration: none;
     border-bottom: none; /* Remove underline */
+    color: var(--color-tx-normal);
+    background-color: transparent;
   }
   
-  a.project-title {
-    color: var(--color-tx-normal); /* Match text color */
-    background-color: transparent !important; /* Ensure link has no background */
+  .project-title:hover {
+    color: var(--color-action);
+    text-decoration: none;
+    background-color: transparent;
   }
   
-  a.project-title:hover {
-    color: var(--color-action); /* Change color on hover */
-    background-color: transparent !important; /* Prevent background change on hover */
+  .project-title:focus, 
+  .project-title:active {
+    outline: none;
+    background-color: transparent;
+    color: var(--color-action);
   }
   
-  a.project-title:active, a.project-title:focus, a.project-title:visited {
-    color: var(--color-action); /* Change color on active/focus state */
-    background-color: transparent !important; /* Prevent background change on active/focus */
-    outline: none; /* Remove outline */
-    text-decoration: none; /* Ensure no underline is added */
+  .project-items {
+    line-height: 1.5;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 25px;
+    row-gap: 6px;
+  }
+  
+  .project-items a {
+    text-decoration: none;
+    background-color: transparent;
+  }
+  
+  .project-items a:hover,
+  .project-items a:focus,
+  .project-items a:active {
+    color: var(--color-action);
+    text-decoration: none;
+    background-color: transparent !important;
+  }
+  
+  .project-items a:focus {
+    outline: none;
+    background-color: transparent;
+    color: var(--color-action);
+    text-decoration: underline;
+  }
+  
+  .project-items a:active {
+    background-color: transparent;
+  }
+  
+  @media (max-width: 500px) {
+    .project-items {
+      grid-template-columns: 1fr;
+    }
   }
   
   .project-details p {

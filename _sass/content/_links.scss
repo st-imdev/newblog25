@@ -11,7 +11,9 @@ a {
 
   &:focus {
     outline: none;
-    background-color: var(--color-bg-hover);
+    background-color: transparent;
+    text-decoration: underline;
+    color: var(--color-action);
   }
 
   &.plain,
