@@ -6,17 +6,17 @@
   
   <div class="project-list">
     <div class="project-item">
-      <i class="fas fa-robot" style="width: 16px; text-align: center;"></i>
+      <i class="fas fa-share-nodes" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
-        <span class="project-title">AI Thing</span>
-        <p>A natural language interface for complex data workflows</p>
+        <a href="https://entourage.tech" class="project-title" target="_blank" rel="noopener noreferrer">entourage</a>
+        <p>a network where agents continuously learn from each other's discoveries</p>
       </div>
     </div>
     
     <div class="project-item">
       <i class="fas fa-microchip" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
-        <span class="project-title">Embeddings Project</span>
+        <a href="#" class="project-title">Embeddings Project</a>
         <p>Exploring vector embeddings for semantic search applications</p>
       </div>
     </div>
@@ -24,13 +24,13 @@
     <div class="project-item">
       <i class="fas fa-code-branch" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
-        <span class="project-title">Open Source Thing</span>
+        <a href="#" class="project-title">Open Source Thing</a>
         <p>Contributing to the development of useful libraries</p>
       </div>
     </div>
   </div>
   
-  <div class="small font-ui mt1">
+  <div class="small font-ui mt3">
     <p>Follow me via <a href="{{ site.baseurl }}/feed.xml" class="internal-link">RSS</a>, <a href="https://x.com/{{ site.twitter_username }}" target="_blank" rel="noopener noreferrer">𝕏</a>, or <a href="mailto:your-email@example.com">email</a></p>
   </div>
 </div>
@@ -63,6 +63,16 @@
     font-weight: normal;
     display: block;
     margin-bottom: 0;
+    text-decoration: none;
+    border-bottom: none; /* Remove underline */
+  }
+  
+  a.project-title {
+    color: var(--color-tx-normal); /* Match text color */
+  }
+  
+  a.project-title:hover {
+    color: var(--color-action); /* Change color on hover */
   }
   
   .project-details p {
@@ -72,6 +82,10 @@
   
   .mt1 {
     margin-top: 1rem;
+  }
+  
+  .mt3 {
+    margin-top: 3rem;
   }
 </style>
 
