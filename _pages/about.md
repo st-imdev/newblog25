@@ -28,5 +28,5 @@ permalink: /about
   
   <h2>Connect</h2>
   
-  <p>The best way to reach me is <a href="/subscribe">via email</a>. You can also find me on <a href="https://twitter.com/scottyt" target="_blank">Twitter</a> or check out my work on <a href="https://github.com/scottmagic" target="_blank">GitHub</a>.</p>
+  <p>The best way to reach me is <a href="https://x.com/ScottTaylor">via 𝕏</a>. 
 </div>
