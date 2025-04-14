@@ -28,5 +28,5 @@ permalink: /about
   
   <h2>Connect</h2>
   
-  <p>The best way to reach me is <a href="https://x.com/ScottTaylor">via 𝕏</a>. 
+  <p>The best way to reach me is <a href="https://x.com/ScottTaylor">via 𝕏</a>.</p>
 </div>
