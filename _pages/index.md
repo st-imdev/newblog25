@@ -1,13 +1,9 @@
 ---
-layout: home
+layout: page
 title: Home
 id: home
 permalink: /
 ---
-
-# Scott Taylor
-
-I write about technology, AI, and productivity. I'm interested in how emerging technologies shape our world and how we can use them effectively.
 
 <div class="wrap">
   <p><a href="/notes/latest" class="muted font-ui">Latest</a></p>

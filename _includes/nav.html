@@ -1,17 +1,18 @@
-<div class="flex align-center justify-between font-ui">
-  <div class="site-title-container">
-    <a class="internal-link plain site-title-link" href="{{ site.baseurl }}/">
-      <span class="site-title">{{ site.title }}</span>
-    </a>
-  </div>
-  <div class="nav-links">
+<div class="flex align-center font-ui">
+  <a href="{{ site.baseurl }}/about" aria-label="About me" title="About me" class="mr-2">
+    <img src="{{ site.baseurl }}/assets/images/profile.jpg" width="32px" height="32px" alt="{{ site.title }}" class="round" style="border-radius:50%; object-fit: cover; vertical-align: middle;" />
+  </a>
+  <span class="flex-grow">
+    <a class="internal-link plain" href="{{ site.baseurl }}/">{{ site.title }}</a>
+  </span>
+  <span class="flex-shrink ssr">
     <a href="{{ site.baseurl }}/writing" class="muted plain">Writing</a>
     <a href="{{ site.baseurl }}/about" class="muted plain ssl">About</a>
     <a href="{{ site.baseurl }}/now" class="muted plain ssl mh">Now</a>
     <a href="{{ site.baseurl }}/search" class="muted plain ssl mh">Search</a>
-    <span id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode" type="button" role="switch">
-      <div class="theme-toggle-slide"></div>
-      <div class="theme-toggle-switch"></div>
-    </span>
-  </div>
+  </span>
+  <span id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode" type="button" role="switch">
+    <div class="theme-toggle-slide"></div>
+    <div class="theme-toggle-switch"></div>
+  </span>
 </div>
