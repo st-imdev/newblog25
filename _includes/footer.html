@@ -70,17 +70,17 @@
   
   a.project-title {
     color: var(--color-tx-normal); /* Match text color */
-    background-color: transparent; /* Ensure link has no background */
+    background-color: transparent !important; /* Ensure link has no background */
   }
   
   a.project-title:hover {
     color: var(--color-action); /* Change color on hover */
-    background-color: transparent; /* Prevent background change on hover */
+    background-color: transparent !important; /* Prevent background change on hover */
   }
   
-  a.project-title:active, a.project-title:focus {
+  a.project-title:active, a.project-title:focus, a.project-title:visited {
     color: var(--color-action); /* Change color on active/focus state */
-    background-color: transparent; /* Prevent background change on active/focus */
+    background-color: transparent !important; /* Prevent background change on active/focus */
     outline: none; /* Remove outline */
     text-decoration: none; /* Ensure no underline is added */
   }
