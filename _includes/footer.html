@@ -1,12 +1,12 @@
 <div class="pn2 bt">
   <h3>Currently building</h3>
   
-  <!-- Font Awesome CDN - using light (line) icons -->
+  <!-- Font Awesome CDN - using solid icons with custom styling to make them appear more minimal -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
   <div class="project-list">
     <div class="project-item">
-      <i class="fa-regular fa-robot" style="width: 20px; text-align: center;"></i>
+      <i class="fas fa-robot" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
         <span class="project-title">AI Thing</span>
         <p>A natural language interface for complex data workflows</p>
@@ -14,7 +14,7 @@
     </div>
     
     <div class="project-item">
-      <i class="fa-regular fa-microchip" style="width: 20px; text-align: center;"></i>
+      <i class="fas fa-microchip" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
         <span class="project-title">Embeddings Project</span>
         <p>Exploring vector embeddings for semantic search applications</p>
@@ -22,7 +22,7 @@
     </div>
     
     <div class="project-item">
-      <i class="fa-regular fa-code-branch" style="width: 20px; text-align: center;"></i>
+      <i class="fas fa-code-branch" style="width: 16px; text-align: center;"></i>
       <div class="project-details">
         <span class="project-title">Open Source Thing</span>
         <p>Contributing to the development of useful libraries</p>
@@ -37,8 +37,6 @@
 
 <!-- Styles for the project list -->
 <style>
-  /* Note: Font Awesome 'light' style requires Pro subscription, 
-     we'll use 'regular' (far) outline icons instead with custom styling */
   .project-list {
     margin-top: 1rem;
   }
@@ -53,7 +51,8 @@
     margin-right: 0.75rem;
     margin-top: 0.25rem;
     color: var(--color-tx-normal);
-    font-weight: 100; /* Make icons thinner */
+    opacity: 0.8; /* Make icons slightly transparent for a lighter look */
+    font-size: 14px; /* Smaller size for more minimal appearance */
   }
   
   .project-details {
@@ -64,11 +63,12 @@
     font-weight: normal;
     display: block;
     margin-bottom: 0.25rem;
+    font-size: 1rem;
   }
   
   .project-details p {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1rem; /* Same size as project title */
     opacity: 0.5; /* 50% alpha transparency */
   }
   
