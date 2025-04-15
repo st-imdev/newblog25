@@ -1,0 +1,1 @@
+../newblog25/fixing-the-coffee-machine.md
