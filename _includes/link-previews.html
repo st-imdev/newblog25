@@ -88,8 +88,14 @@
         iframe.src = event.target.href
         iframe.onload = function() {
           tooltipContentHtml = ''
-          tooltipContentHtml += '<div style="font-weight: bold;">' + iframe.contentWindow.document.querySelector('h1').innerHTML + '</div>'
-          tooltipContentHtml += iframe.contentWindow.document.querySelector('content').innerHTML
+          const h1Element = iframe.contentWindow.document.querySelector('h1');
+          if (h1Element) {
+             tooltipContentHtml += '<div style="font-weight: bold;">' + h1Element.innerHTML + '</div>'
+          }
+          const contentElement = iframe.contentWindow.document.querySelector('content');
+          if (contentElement) {
+            tooltipContentHtml += contentElement.innerHTML
+          }
 
           tooltipContent.innerHTML = tooltipContentHtml
           linkHistories[event.target.href] = tooltipContentHtml

@@ -18,7 +18,7 @@ ul > li {
     }
   }
   
-  @media (min-width:$media-phone) {
+  @media (min-width: var(--media-phone)) {
     ul.list-plain  {
       padding-inline-start: 0;
       margin-left: 0;
@@ -28,7 +28,7 @@ ul > li {
     }
   }
   
-  @media (max-width:$media-phone) {
+  @media (max-width: var(--media-phone)) {
     ol > li,
     ul > li {
       padding: 0.25rem 0;

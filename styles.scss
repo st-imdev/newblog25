@@ -1,22 +1,23 @@
-@import "../.sass/copyright";
-@import "_sass/normalize";
+---
+---
+@use "_sass/normalize";
 
-@import "_sass/variables";
-@import "_sass/spacing";
-@import "_sass/style";
+@use "_sass/variables";
+@use "_sass/spacing";
+@use "_sass/style";
 
-@import "_sass/content/backlinks";
-@import "_sass/content/code";
-@import "_sass/content/footnotes";
-@import "_sass/content/headings";
-@import "_sass/content/images";
-@import "_sass/content/links";
-@import "_sass/content/lists";
-@import "_sass/content/tables";
-@import "_sass/content/tags";
+@use "_sass/content/backlinks";
+@use "_sass/content/code";
+@use "_sass/content/footnotes";
+@use "_sass/content/headings";
+@use "_sass/content/images";
+@use "_sass/content/links";
+@use "_sass/content/lists";
+@use "_sass/content/tables";
+@use "_sass/content/tags";
 
-@import "_sass/components/inputs";
-@import "_sass/components/popovers";
-@import "_sass/components/theme-toggle";
+@use "_sass/components/inputs";
+@use "_sass/components/popovers";
+@use "_sass/components/theme-toggle";
 
-@import "_sass/dark_mode";
+@use "_sass/dark_mode";

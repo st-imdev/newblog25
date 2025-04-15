@@ -44,7 +44,7 @@ table {
     font-size: var(--font-small);
   }
   
-  @media (max-width: $media-phone) {
+  @media (max-width: var(--media-phone)) {
     .table-mobile-wide table {
       width: 106%;
       td {

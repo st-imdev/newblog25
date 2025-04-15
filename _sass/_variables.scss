@@ -1,7 +1,7 @@
 $wrap-wide: 54em;
-$media-phone: 600px;
 
 :root {
+  --media-phone: 600px;
   --font-content: -apple-system, BlinkMacSystemFont, "Inter", "IBM Plex Sans", Segoe UI, Helvetica, Arial, sans-serif;
   --font-ui: var(--font-content);
   --font-mono:  ui-monospace, SFMono-Regular, "Cascadia Code", "IBM Plex Mono", "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco, "Consolas", "Source Code Pro", monospace;
@@ -29,6 +29,25 @@ $media-phone: 600px;
   }
 }
 
+/* Start New Palette */
+:root {
+  --palette-ruby: #864A4F;
+  --palette-green: #838368;
+  --palette-light-beige: #EFEBE0;
+  --palette-beige: #DACABA;
+  --palette-gold: #F7C680;
+
+  --palette-dark-neutral: #2a2a2a;
+  --palette-darker-neutral: #3a3a3a;
+  --palette-darkest-neutral: #1a1a1a;
+
+  --palette-light-beige-rgb: 239, 235, 224;
+  --palette-dark-neutral-rgb: 42, 42, 42;
+  --palette-darkest-neutral-rgb: 26, 26, 26;
+}
+/* End New Palette */
+
+/* Start Commented Out Flexoki Palette
 :root {
   --flexoki-black: #100F0F;
   --flexoki-black-rgb: 16,15,15;
@@ -163,7 +182,92 @@ $media-phone: 600px;
   --flexoki-magenta-900:     #39172B;
   --flexoki-magenta-950:     #24131D;
 }
+End Commented Out Flexoki Palette */
 
+/* Start New Themes */
+:root,
+.theme-light {
+  --color-bg-primary: var(--palette-light-beige);
+  --color-bg-primary-rgb: var(--palette-light-beige-rgb);
+  --color-inverted-rgb: var(--palette-dark-neutral-rgb);
+
+  --color-bg-secondary: var(--palette-beige);
+
+  --color-tx-normal: var(--palette-dark-neutral);
+  --color-tx-normal-rgb: var(--palette-dark-neutral-rgb);
+  --color-tx-muted: rgba(var(--palette-dark-neutral-rgb), 0.6);
+  --color-tx-faint: rgba(var(--palette-dark-neutral-rgb), 0.4);
+
+  --color-ui-normal: var(--palette-beige);
+  --color-ui-hover: var(--palette-green);
+  --color-ui-active: var(--palette-ruby);
+
+  --color-highlight: var(--palette-gold);
+
+  --color-action: var(--palette-ruby);
+  --color-bg-hover: rgba(var(--palette-ruby), 0.1);
+  --color-selection: rgba(var(--palette-green), 0.2);
+
+  --color-re: var(--palette-ruby);
+  --color-re-hover: var(--palette-green);
+  --color-or: var(--palette-gold);
+  --color-or-hover: var(--palette-beige);
+  --color-ye: var(--palette-gold);
+  --color-ye-hover: var(--palette-beige);
+  --color-gr: var(--palette-green);
+  --color-gr-hover: var(--palette-beige);
+  --color-cy: var(--palette-green);
+  --color-cy-hover: var(--palette-beige);
+  --color-bl: var(--palette-green);
+  --color-bl-hover: var(--palette-beige);
+  --color-pu: var(--palette-ruby);
+  --color-pu-hover: var(--palette-green);
+  --color-ma: var(--palette-ruby);
+  --color-ma-hover: var(--palette-green);
+}
+
+.theme-dark {
+  --color-bg-primary: var(--palette-darkest-neutral);
+  --color-bg-primary-rgb: var(--palette-darkest-neutral-rgb);
+  --color-inverted-rgb: var(--palette-light-beige-rgb);
+
+  --color-bg-secondary: var(--palette-dark-neutral);
+
+  --color-tx-normal: var(--palette-light-beige);
+  --color-tx-normal-rgb: var(--palette-light-beige-rgb);
+  --color-tx-muted: var(--palette-beige);
+  --color-tx-faint: var(--palette-green);
+
+  --color-ui-normal: var(--palette-dark-neutral);
+  --color-ui-hover: var(--palette-darker-neutral);
+  --color-ui-active: var(--palette-dark-neutral);
+
+  --color-highlight: var(--palette-gold);
+
+  --color-action: var(--palette-ruby);
+  --color-bg-hover: rgba(var(--palette-ruby), 0.2);
+  --color-selection: rgba(var(--palette-green), 0.3);
+
+  --color-re: var(--palette-ruby);
+  --color-re-hover: var(--palette-gold);
+  --color-or: var(--palette-gold);
+  --color-or-hover: var(--palette-light-beige);
+  --color-ye: var(--palette-gold);
+  --color-ye-hover: var(--palette-light-beige);
+  --color-gr: var(--palette-green);
+  --color-gr-hover: var(--palette-beige);
+  --color-cy: var(--palette-green);
+  --color-cy-hover: var(--palette-beige);
+  --color-bl: var(--palette-green);
+  --color-bl-hover: var(--palette-beige);
+  --color-pu: var(--palette-ruby);
+  --color-pu-hover: var(--palette-gold);
+  --color-ma: var(--palette-ruby);
+  --color-ma-hover: var(--palette-gold);
+}
+/* End New Themes */
+
+/* Start Commented Out Old Themes
 :root,
 .theme-light {
   --color-bg-primary: var(--flexoki-paper);
@@ -245,6 +349,7 @@ $media-phone: 600px;
   --color-ma: var(--flexoki-magenta-400);
   --color-ma-hover: var(--flexoki-magenta-600);
 }
+End Commented Out Old Themes */
 
 /* Base tones semantic */
 .bg {
