@@ -73,19 +73,29 @@ class BidirectionalLinksGenerator < Jekyll::Generator
       )
     end
 
-    # Identify note backlinks and add them to each note
+    # Combine all documents (notes, pages, topics) to process for node graph
+    all_docs_for_graph = all_notes + all_pages + site.collections['topics'].docs
+
+    # Generate graph nodes for all included document types
+    all_docs_for_graph.each do |current_doc|
+      # Skip the index note itself if it exists in _notes folder
+      next if current_doc.path.include?('_notes/index.html')
+
+      graph_nodes << {
+        id: note_id_from_doc(current_doc), # Use a generic ID function
+        path: "#{site.baseurl}#{current_doc.url}#{link_extension}",
+        label: current_doc.data['title'],
+        # Add excerpt only if it exists (mainly for notes), otherwise empty string
+        excerpt: (current_doc.data['excerpt']&.to_s&.strip || '') 
+      }
+    end
+
+    # Identify note backlinks (only processing notes for backlink data)
     all_notes.each do |current_note|
-      # Nodes: Jekyll
+      # Nodes: Jekyll (already done above for graph)
       notes_linking_to_current_note = all_notes.filter do |e|
         e.url != current_note.url && e.content.include?(current_note.url)
       end
-
-      # Nodes: Graph
-      graph_nodes << {
-        id: note_id_from_note(current_note),
-        path: "#{site.baseurl}#{current_note.url}#{link_extension}",
-        label: current_note.data['title'],
-      } unless current_note.path.include?('_notes/index.html')
 
       # Edges: Jekyll
       current_note.data['backlinks'] = notes_linking_to_current_note
@@ -93,8 +103,8 @@ class BidirectionalLinksGenerator < Jekyll::Generator
       # Edges: Graph
       notes_linking_to_current_note.each do |n|
         graph_edges << {
-          source: note_id_from_note(n),
-          target: note_id_from_note(current_note),
+          source: note_id_from_doc(n), # Use generic ID function
+          target: note_id_from_doc(current_note), # Use generic ID function
         }
       end
     end
@@ -105,7 +115,9 @@ class BidirectionalLinksGenerator < Jekyll::Generator
     }))
   end
 
-  def note_id_from_note(note)
-    note.data['title'].bytes.join
+  # Updated function to handle notes, pages, topics
+  def note_id_from_doc(doc)
+    # Use path as a more reliable unique ID than title for pages/topics
+    doc.path.bytes.join 
   end
 end
