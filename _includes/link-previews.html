@@ -92,7 +92,7 @@
           if (h1Element) {
              tooltipContentHtml += '<div style="font-weight: bold;">' + h1Element.innerHTML + '</div>'
           }
-          const contentElement = iframe.contentWindow.document.querySelector('content');
+          const contentElement = iframe.contentWindow.document.querySelector('div.content');
           if (contentElement) {
             tooltipContentHtml += contentElement.innerHTML
           }

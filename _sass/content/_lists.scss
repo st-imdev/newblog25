@@ -18,13 +18,14 @@ ul > li {
     }
   }
   
+  ul.list-plain > li {
+    list-style: none;
+  }
+  
   @media (min-width: var(--media-phone)) {
-    ul.list-plain  {
+    ul.list-plain {
       padding-inline-start: 0;
       margin-left: 0;
-      > li {
-        list-style: none;
-      }
     }
   }
   
