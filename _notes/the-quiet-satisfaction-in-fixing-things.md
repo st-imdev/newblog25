@@ -1,0 +1,1 @@
+../newblog25/the-quiet-satisfaction-in-fixing-things.md
