@@ -1,6 +1,6 @@
 ---
 title: "Fixing the Coffee Machine and Finding a Little Zen"
-date: 2024-06-09
+date: 2025-04-15
 layout: post
 tags: [coffee, repair, zen, philosophy, diy, maintenance]
 ---
