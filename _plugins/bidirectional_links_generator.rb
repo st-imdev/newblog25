@@ -109,7 +109,8 @@ class BidirectionalLinksGenerator < Jekyll::Generator
       end
     end
 
-    File.write('_includes/notes_graph.json', JSON.dump({
+    # Write to assets directory instead of _includes
+    File.write('assets/notes_graph.json', JSON.dump({
       edges: graph_edges,
       nodes: graph_nodes,
     }))

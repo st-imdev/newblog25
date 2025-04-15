@@ -63,8 +63,8 @@
   var tooltipWrapper = document.getElementById('tooltip-wrapper');
   var tooltipContent = document.getElementById('tooltip-content');
 
-  // Fetch graph data on load
-  fetch('{{ site.baseurl }}/_includes/notes_graph.json')
+  // Fetch graph data on load from /assets/
+  fetch('{{ site.baseurl }}/assets/notes_graph.json')
     .then(response => response.json())
     .then(data => {
       notesGraphData = data.nodes; // Store only the nodes array
