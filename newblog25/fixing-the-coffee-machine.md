@@ -1,5 +1,5 @@
 ---
-title: "Fixing the Coffee Machine and Finding a Little Zen"
+title: "Fixing the coffee mchine and finding a little zen"
 date: 2025-04-15
 tags: [coffee, repair, zen, philosophy, diy, maintenance]
 ---
