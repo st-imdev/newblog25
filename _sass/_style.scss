@@ -1,5 +1,5 @@
 /* Variables */
-$media-phone: 600px;
+// Remove $media-phone SCSS var, use --media-phone CSS var instead
 $wrap-wide: 1200px;
 
 *, *:before, *:after {
@@ -285,7 +285,7 @@ main > .wrap > h3 {
   background-color: transparent !important;
 }
 
-@media (min-width: $media-phone) {
+@media (min-width: var(--media-phone)) {
   .dkh {
     display: none;
   }
@@ -300,7 +300,7 @@ main > .wrap > h3 {
   }
 }
 
-@media (max-width: $media-phone) {
+@media (max-width: var(--media-phone)) {
   .mh {
     display: none;
   }

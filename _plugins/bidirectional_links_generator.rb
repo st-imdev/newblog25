@@ -109,6 +109,26 @@ class BidirectionalLinksGenerator < Jekyll::Generator
       end
     end
 
+    # Add edges based on tags
+    all_topics = site.collections['topics'].docs
+    all_topics.each do |topic|
+      # Find notes tagged with this topic
+      topic_tag = topic.data['title'] # Assuming title is the tag name
+      unless topic_tag.nil?
+        tagged_notes = all_notes.filter do |note|
+          (note.data['tags'] || []).map(&:downcase).include?(topic_tag.downcase)
+        end
+        
+        # Create edges from topic to tagged notes
+        tagged_notes.each do |note|
+          graph_edges << {
+            source: note_id_from_doc(topic), # Topic is the source
+            target: note_id_from_doc(note),  # Note is the target
+          }
+        end
+      end
+    end
+
     # Write to assets directory instead of _includes
     File.write('assets/notes_graph.json', JSON.dump({
       edges: graph_edges,
