@@ -44,6 +44,8 @@ $wrap-wide: 54em;
   --palette-light-beige-rgb: 239, 235, 224;
   --palette-dark-neutral-rgb: 42, 42, 42;
   --palette-darkest-neutral-rgb: 26, 26, 26;
+  --palette-green-rgb: 131, 131, 104;
+  --palette-ruby-rgb: 134, 74, 79;
 }
 /* End New Palette */
 
@@ -206,7 +208,7 @@ End Commented Out Flexoki Palette */
 
   --color-action: var(--palette-ruby);
   --color-bg-hover: rgba(var(--palette-ruby), 0.1);
-  --color-selection: rgba(var(--palette-green), 0.2);
+  --color-selection: rgba(var(--palette-ruby-rgb), 0.25);
 
   --color-re: var(--palette-ruby);
   --color-re-hover: var(--palette-green);
@@ -246,7 +248,7 @@ End Commented Out Flexoki Palette */
 
   --color-action: var(--palette-ruby);
   --color-bg-hover: rgba(var(--palette-ruby), 0.2);
-  --color-selection: rgba(var(--palette-green), 0.3);
+  --color-selection: rgba(var(--palette-green), 0.6);
 
   --color-re: var(--palette-ruby);
   --color-re-hover: var(--palette-gold);
