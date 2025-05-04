@@ -4,15 +4,24 @@
 <div class="fleeting-calendar">
   {% for entry in recent_fleeting %}
     {% assign entry_seconds = entry.date | date: "%s" | plus: 0 %}
-    {% assign diff_days = today_seconds | minus: entry_seconds | abs | divided_by: 86400 %}
-    {% if diff_days > 4 %}{% assign diff_days = 4 %}{% endif %}
-    {% case diff_days %}
-      {% when 0 %}{% assign fade_class = "today" %}
-      {% when 1 %}{% assign fade_class = "fade1" %}
-      {% when 2 %}{% assign fade_class = "fade2" %}
-      {% when 3 %}{% assign fade_class = "fade3" %}
-      {% else %}{% assign fade_class = "fade4" %}
-    {% endcase %}
+    {% assign raw_diff = entry_seconds | minus: today_seconds %}
+    {% assign diff_days = raw_diff | abs | divided_by: 86400 %}
+
+    {% if raw_diff == 0 %}
+      {% assign fade_class = "today" %}
+    {% elsif raw_diff > 0 %} {# future #}
+      {% if diff_days == 1 %}
+        {% assign fade_class = "fade3" %}
+      {% else %}
+        {% assign fade_class = "fade4" %}
+      {% endif %}
+    {% else %} {# past #}
+      {% case diff_days %}
+        {% when 1 %}{% assign fade_class = "fade1" %}
+        {% when 2 %}{% assign fade_class = "fade2" %}
+        {% else %}{% assign fade_class = "fade3" %}
+      {% endcase %}
+    {% endif %}
     <a href="{{ site.baseurl }}{{ entry.url }}" class="calendar-cell {{ fade_class }}">
       <span class="dow">{{ entry.date | date: "%a" }}</span>
       <span class="day">{{ entry.date | date: "%b %e" }}</span>
