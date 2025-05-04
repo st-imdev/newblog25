@@ -9,13 +9,13 @@
 
     {% if raw_diff == 0 %}
       {% assign fade_class = "today" %}
-    {% elsif raw_diff > 0 %} {# future #}
+    {% elsif raw_diff > 0 %}
       {% if diff_days == 1 %}
         {% assign fade_class = "fade3" %}
       {% else %}
         {% assign fade_class = "fade4" %}
       {% endif %}
-    {% else %} {# past #}
+    {% else %}
       {% case diff_days %}
         {% when 1 %}{% assign fade_class = "fade1" %}
         {% when 2 %}{% assign fade_class = "fade2" %}
