@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 export async function handler(event) {
   // Accept POST only
   if (event.httpMethod !== "POST") {
