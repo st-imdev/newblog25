@@ -19,10 +19,10 @@
     </a>
   {% endfor %}
 
-  {# Future placeholders for tomorrow and day after #}
+  {% comment %}Future placeholders for tomorrow and the day after{% endcomment %}
   {% for offset in (1..2) %}
-    {% assign future_seconds = today_seconds | plus: offset | times: 86400 %}
-    {% assign future_date = future_seconds | date: "%Y-%m-%d" %}
+    {% assign offset_sec = offset | times: 86400 %}
+    {% assign future_seconds = today_seconds | plus: offset_sec %}
     {% assign dn = future_seconds | date: "%e" %}
     {% assign mon = future_seconds | date: "%b" %}
     {% assign dow = future_seconds | date: "%a" %}
