@@ -65,8 +65,6 @@ permalink: /
   <p class="muted font-ui"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
 
   {% include fleeting_calendar.html %}
-
-  <hr class="mn2 ms2">
 </div>
 
 <style>
