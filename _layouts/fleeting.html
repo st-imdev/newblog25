@@ -3,7 +3,23 @@ layout: default
 ---
 
 <article class="wrap">
-  <h1>{{ page.title }}</h1>
+  {% if page.title %}
+    <h1>{{ page.title }}</h1>
+  {% else %}
+    {% capture day_num %}{{ page.date | date: "%-d" }}{% endcapture %}
+    {% assign suffix = "th" %}
+    {% assign remainder = day_num | plus: 0 | modulo: 10 %}
+    {% if day_num == '11' or day_num == '12' or day_num == '13' %}
+      {% assign suffix = 'th' %}
+    {% elsif remainder == 1 %}
+      {% assign suffix = 'st' %}
+    {% elsif remainder == 2 %}
+      {% assign suffix = 'nd' %}
+    {% elsif remainder == 3 %}
+      {% assign suffix = 'rd' %}
+    {% endif %}
+    <h1>{{ page.date | date: "%A, %B " }}{{ day_num }}{{ suffix }}</h1>
+  {% endif %}
   <div class="content">
     {{ content }}
   </div>
