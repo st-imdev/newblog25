@@ -3,11 +3,12 @@
 {% assign today_seconds = site.time | date: "%s" | plus: 0 %}
 <div class="fleeting-calendar">
   {% for entry in recent_fleeting %}
+    {% assign fade_class = "" %}
     {% assign entry_seconds = entry.date | date: "%s" | plus: 0 %}
     {% assign raw_diff = entry_seconds | minus: today_seconds %}
     {% assign diff_days = raw_diff | abs | divided_by: 86400 %}
 
-    {% if raw_diff == 0 %}
+    {% if diff_days == 0 %}
       {% assign fade_class = "today" %}
     {% elsif raw_diff > 0 %}
       {% if diff_days == 1 %}
