@@ -48,7 +48,7 @@ collections:
     permalink: /topics/:slug
   fleeting:
     output: true
-    permalink: /fleeting/:slug
+    permalink: /fleeting/:name
 
 defaults:
   - scope:
