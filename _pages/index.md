@@ -59,6 +59,26 @@ permalink: /
       </li>
     {% endfor %}
   </ul>
+
+  <hr class="mn2 ms2">
+
+  <p class="muted font-ui"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
+
+  <ul class="list-plain tabular-nums">
+    {% assign recent_fleeting = site.fleeting | sort: "date" | reverse %}
+    {% for fleeting in recent_fleeting limit:7 %}
+      <li>
+        <a href="{{ site.baseurl }}{{ fleeting.url }}" class="internal-link plain">
+          <flex class="align-baseline">
+            <span class="muted ppr flex-shrink small mh nowrap font-ui">{{ fleeting.date | date: "%Y · %m · %d" }}</span>
+            <u>{{ fleeting.title | default: "Fleeting note" }}</u>
+          </flex>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <hr class="mn2 ms2">
 </div>
 
 <style>

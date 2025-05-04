@@ -43,6 +43,9 @@ collections:
   topics:
     output: true
     permalink: /topics/:slug
+  fleeting:
+    output: true
+    permalink: /fleeting/:slug
 
 defaults:
   - scope:
@@ -65,3 +68,7 @@ defaults:
       path: "_topics/**/*.md"
     values:
       layout: "topic"
+  - scope:
+      path: "_fleeting/**/*.md"
+    values:
+      layout: "fleeting"
