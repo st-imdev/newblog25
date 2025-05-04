@@ -22,10 +22,6 @@
   {% endif %}
 
   {% assign display_title = nil %}
-  {% if page.title %}
-    {% capture display_title_tmp %}{{ page.title | strip }}{% endcapture %}
-    {% unless display_title_tmp == "" %}{% assign display_title = display_title_tmp %}{% endunless %}
-  {% endif %}
 
   {% if page.layout == 'fleeting' and page.date %}
     {% capture dn %}{{ page.date | date: "%-d" }}{% endcapture %}
@@ -33,6 +29,10 @@
     {% assign rem = dn | plus:0 | modulo:10 %}
     {% if dn == '11' or dn == '12' or dn == '13' %}{% assign suf='th' %}{% elsif rem == 1 %}{% assign suf='st' %}{% elsif rem==2 %}{% assign suf='nd' %}{% elsif rem==3 %}{% assign suf='rd' %}{% endif %}
     {% capture display_title %}Thoughts from {{ page.date | date: "%B " }}{{ dn }}{{ suf }}, {{ page.date | date: "%Y" }}{% endcapture %}
+  {% else %}
+    {% if page.title %}
+      {% assign display_title = page.title %}
+    {% endif %}
   {% endif %}
 
   {% if display_title and display_title != "" %}
