@@ -1,0 +1,51 @@
+---
+layout: page
+title: Add Fleeting Note
+permalink: /new-fleeting
+---
+
+<div class="wrap">
+  <h1>Add Fleeting Note</h1>
+  <p class="small muted">Enter your thought or link below. It will be appended to today's note.</p>
+  <textarea id="note" rows="6" style="width:100%;"></textarea>
+  <div style="margin-top:0.5rem;">
+    <input type="password" id="secret" placeholder="Secret" style="width:100%;" />
+  </div>
+  <button id="send" style="margin-top:1rem;">Publish</button>
+  <p id="status" class="small muted" style="margin-top:1rem;"></p>
+</div>
+
+<script>
+(async function() {
+  const sendBtn = document.getElementById("send");
+  const noteEl  = document.getElementById("note");
+  const secretEl= document.getElementById("secret");
+  const statusEl= document.getElementById("status");
+
+  sendBtn.addEventListener("click", async () => {
+    const note   = noteEl.value.trim();
+    const secret = secretEl.value.trim();
+    if (!note || !secret) {
+      statusEl.textContent = "Note and secret required";
+      return;
+    }
+    statusEl.textContent = "Sending…";
+    try {
+      const res = await fetch("/.netlify/functions/add-fleeting-note", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-secret": secret
+        },
+        body: JSON.stringify({ note })
+      });
+      statusEl.textContent = await res.text();
+      if (res.ok) {
+        noteEl.value = "";
+      }
+    } catch (err) {
+      statusEl.textContent = "Error: " + err.message;
+    }
+  });
+})();
+</script> 

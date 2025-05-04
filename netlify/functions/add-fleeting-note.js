@@ -31,14 +31,18 @@ export async function handler(event) {
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
   const ghUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(mdPath)}`;
 
-  // Check if the file exists to get its SHA
   let sha = undefined;
+  let newContentEncoded;
   const checkRes = await fetch(ghUrl, {
     headers: { Authorization: `token ${GH_TOKEN}` },
   });
   if (checkRes.ok) {
     const json = await checkRes.json();
     sha = json.sha;
+    const existing = Buffer.from(json.content, "base64").toString("utf8");
+    newContentEncoded = Buffer.from(existing.trimEnd() + "\n\n" + note + "\n").toString("base64");
+  } else {
+    newContentEncoded = Buffer.from(mdContent).toString("base64");
   }
 
   // Create or update file
@@ -50,7 +54,7 @@ export async function handler(event) {
     },
     body: JSON.stringify({
       message: `update fleeting note ${yyyyMmDd}`,
-      content: Buffer.from(mdContent).toString("base64"),
+      content: newContentEncoded,
       sha,
     }),
   });
