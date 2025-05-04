@@ -7,6 +7,9 @@ exclude:             []
 baseurl:             ''
 url:                 'https://st.im'
 
+# Use local timezone so weekday names in Fleeting Notes are correct
+timezone: Europe/London
+
 # Social settings
 twitter_username:    ScottTaylor
 github_username:     ScottTaylor
