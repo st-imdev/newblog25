@@ -25,7 +25,7 @@ export async function handler(event) {
   const now = new Date();
   const yyyyMmDd = now.toISOString().slice(0, 10); // YYYY-MM-DD
   const mdPath = `_fleeting/${yyyyMmDd}.md`;
-  const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\n---\n\n${note}\n`;
+  const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\nslug: ${yyyyMmDd}\nlayout: fleeting\n---\n\n${note}\n`;
 
   // GitHub details from env vars
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
