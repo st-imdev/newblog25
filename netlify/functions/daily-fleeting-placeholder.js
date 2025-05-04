@@ -20,7 +20,7 @@ export const handler = async () => {
     // Check if exists
     const exists = await fetch(ghUrl, { headers: { Authorization: `token ${GH_TOKEN}` } });
     if (!exists.ok) {
-      const placeholder = `---\ndate: ${yyyyMmDd}\nslug: ${yyyyMmDd}\nlayout: fleeting\n---\n\n`;
+      const placeholder = `---\ndate: ${yyyyMmDd}\nslug: "${yyyyMmDd}"\nlayout: fleeting\n---\n\n`;
       await fetch(ghUrl, {
         method: "PUT",
         headers: {
