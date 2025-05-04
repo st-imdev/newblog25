@@ -65,4 +65,29 @@ export async function handler(event) {
   }
 
   return { statusCode: 200, body: "Note saved; site rebuilding." };
+
+  // ----- 6. ensure placeholder for tomorrow and next day -----
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  for (let offset = 1; offset <= 2; offset++) {
+    const future = new Date(now.getTime() + offset * ONE_DAY_MS);
+    const fDate = future.toISOString().slice(0, 10);
+    const fPath = `_fleeting/${fDate}.md`;
+    const fUrl  = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(fPath)}`;
+
+    const exists = await fetch(fUrl, { headers: { Authorization: `token ${GH_TOKEN}` } });
+    if (!exists.ok) {
+      const placeholder = `---\ndate: ${fDate}\n---\n\n`;
+      await fetch(fUrl, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GH_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `add placeholder for ${fDate}`,
+          content: Buffer.from(placeholder).toString("base64"),
+        }),
+      });
+    }
+  }
 } 

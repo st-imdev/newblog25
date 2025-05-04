@@ -32,7 +32,7 @@
     {% assign suf='th' %}
     {% assign rem = dn | plus:0 | modulo:10 %}
     {% if dn == '11' or dn == '12' or dn == '13' %}{% assign suf='th' %}{% elsif rem == 1 %}{% assign suf='st' %}{% elsif rem==2 %}{% assign suf='nd' %}{% elsif rem==3 %}{% assign suf='rd' %}{% endif %}
-    {% capture display_title %}{{ page.date | date: "%A, %B " }}{{ dn }}{{ suf }}{% endcapture %}
+    {% capture display_title %}Thoughts from {{ page.date | date: "%B " }}{{ dn }}{{ suf }}, {{ page.date | date: "%Y" }}{% endcapture %}
   {% endif %}
 
   {% if display_title and display_title != "" %}
