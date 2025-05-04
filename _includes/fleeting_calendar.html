@@ -18,6 +18,20 @@
       <span class="day">{{ entry.date | date: "%b %e" }}</span>
     </a>
   {% endfor %}
+
+  {# Future placeholders for tomorrow and day after #}
+  {% for offset in (1..2) %}
+    {% assign future_seconds = today_seconds | plus: offset | times: 86400 %}
+    {% assign future_date = future_seconds | date: "%Y-%m-%d" %}
+    {% assign dn = future_seconds | date: "%e" %}
+    {% assign mon = future_seconds | date: "%b" %}
+    {% assign dow = future_seconds | date: "%a" %}
+    {% assign fade_class = offset == 1 ? 'fade3' : 'fade4' %}
+    <span class="calendar-cell {{ fade_class }}">
+      <span class="dow">{{ dow }}</span>
+      <span class="day">{{ mon }} {{ dn }}</span>
+    </span>
+  {% endfor %}
 </div>
 
 <style>
