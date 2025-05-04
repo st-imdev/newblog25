@@ -1,10 +1,21 @@
 {% assign recent_fleeting = site.fleeting | sort: "date" | reverse | limit:10 %}
 {% assign recent_fleeting = recent_fleeting | sort: "date" %}
+{% assign today_seconds = site.time | date: "%s" | plus: 0 %}
 <div class="fleeting-calendar">
   {% for entry in recent_fleeting %}
-    <a href="{{ site.baseurl }}{{ entry.url }}" class="calendar-cell">
+    {% assign entry_seconds = entry.date | date: "%s" | plus: 0 %}
+    {% assign diff_days = today_seconds | minus: entry_seconds | abs | divided_by: 86400 %}
+    {% if diff_days > 4 %}{% assign diff_days = 4 %}{% endif %}
+    {% case diff_days %}
+      {% when 0 %}{% assign fade_class = "today" %}
+      {% when 1 %}{% assign fade_class = "fade1" %}
+      {% when 2 %}{% assign fade_class = "fade2" %}
+      {% when 3 %}{% assign fade_class = "fade3" %}
+      {% else %}{% assign fade_class = "fade4" %}
+    {% endcase %}
+    <a href="{{ site.baseurl }}{{ entry.url }}" class="calendar-cell {{ fade_class }}">
       <span class="dow">{{ entry.date | date: "%a" }}</span>
-      <span class="day">{{ entry.date | date: "%e" }}</span>
+      <span class="day">{{ entry.date | date: "%b %e" }}</span>
     </a>
   {% endfor %}
 </div>
@@ -31,10 +42,15 @@
   }
   .calendar-cell .day {
     font-weight: 600;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
     line-height: 1.2;
   }
   .calendar-cell:hover .day {
     text-decoration: underline;
   }
+  .calendar-cell.today {color: var(--color-tx-normal);}
+  .calendar-cell.fade1 {opacity: 0.8;}
+  .calendar-cell.fade2 {opacity: 0.6;}
+  .calendar-cell.fade3 {opacity: 0.4;}
+  .calendar-cell.fade4 {opacity: 0.25;}
 </style> 

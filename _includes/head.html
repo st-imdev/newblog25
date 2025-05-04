@@ -21,7 +21,12 @@
   <meta property="og:description" content="{{ site.title | strip_html | strip_newlines | truncate: 160 }}"/>
   {% endif %}
 
-  {% capture display_title %}{{ page.title }}{% endcapture %}
+  {% assign display_title = nil %}
+  {% if page.title %}
+    {% capture display_title_tmp %}{{ page.title | strip }}{% endcapture %}
+    {% unless display_title_tmp == "" %}{% assign display_title = display_title_tmp %}{% endunless %}
+  {% endif %}
+
   {% if page.layout == 'fleeting' and page.date %}
     {% capture dn %}{{ page.date | date: "%-d" }}{% endcapture %}
     {% assign suf='th' %}
@@ -30,7 +35,7 @@
     {% capture display_title %}{{ page.date | date: "%A, %B " }}{{ dn }}{{ suf }}{% endcapture %}
   {% endif %}
 
-  {% if display_title %}
+  {% if display_title and display_title != "" %}
     <meta property="og:title" content="{{ display_title }}">
     <meta property="og:type" content="article">
   {% else %}
@@ -53,7 +58,7 @@
     {% if page.id == "home" %}
       {{ site.title }}
     {% else %}
-      {% if display_title %}{{ display_title }}{% else %}{{ page.title }}{% endif %} &mdash; {{ site.title }}
+      {% if display_title and display_title != "" %}{{ display_title }}{% elsif page.title %}{{ page.title }}{% else %}{{ page.date | date: "%Y-%m-%d" }}{% endif %} &mdash; {{ site.title }}
     {% endif %}
   </title>
   
