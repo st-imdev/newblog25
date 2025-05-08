@@ -25,12 +25,10 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background-color: var(--color-bg-primary);
-  /* Subtle dotted grid that softly fades toward the edges */
-  background-image:
-    radial-gradient(circle at center, rgba(var(--color-bg-primary-rgb), 0) 0%, rgba(var(--color-bg-primary-rgb), 1) 85%),
-    radial-gradient(circle, rgba(var(--color-tx-normal-rgb), 0.08) 1px, transparent 1px);
-  background-size: auto, 22px 22px;
-  background-repeat: no-repeat, repeat;
+  /* Dotted background pattern without the problematic radial gradient */
+  background-image: radial-gradient(circle, rgba(var(--color-tx-normal-rgb), 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-repeat: repeat;
   font-family: var(--font-content);
   margin: 2vw auto 0 auto;
   line-height: var(--line-height);
