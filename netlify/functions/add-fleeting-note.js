@@ -84,8 +84,15 @@ export async function handler(event) {
       });
       
       if (!exists.ok) {
-        // Create placeholder file
-        const placeholder = `---\ndate: ${dateStr}\nslug: "${dateStr}"\nlayout: fleeting\n---\n\n`;
+        // Create placeholder file with actual minimal content to ensure Jekyll processes it
+        const placeholder = `---
+date: ${dateStr}
+slug: "${dateStr}"
+layout: fleeting
+---
+
+Placeholder for future notes.
+`;
         const createRes = await fetch(fileUrl, {
           method: "PUT",
           headers: {
