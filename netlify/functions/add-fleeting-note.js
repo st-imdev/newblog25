@@ -21,11 +21,40 @@ export async function handler(event) {
     return { statusCode: 400, body: "note field required" };
   }
 
+  // Helper function to get ordinal suffix for a number
+  function getOrdinalSuffix(day) {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  }
+
+  // Format the date for the title (e.g., "8th May, 2025")
+  function formatTitleDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDate();
+    const suffix = getOrdinalSuffix(day);
+    
+    // Format the month as full name
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day}${suffix} ${month}, ${year}`;
+  }
+
   // Build markdown content and path
   const now = new Date();
   const yyyyMmDd = now.toISOString().slice(0, 10); // YYYY-MM-DD
   const mdPath = `_fleeting/${yyyyMmDd}.md`;
-  const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\nslug: "${yyyyMmDd}"\nlayout: fleeting\n---\n\n${note}\n`;
+  const formattedTitle = formatTitleDate(yyyyMmDd);
+  const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\nslug: "${yyyyMmDd}"\ntitle: "${formattedTitle}"\nlayout: fleeting\n---\n\n${note}\n`;
 
   // GitHub details from env vars
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
@@ -84,10 +113,12 @@ export async function handler(event) {
       });
       
       if (!exists.ok) {
-        // Create placeholder file with actual minimal content to ensure Jekyll processes it
+        // Create placeholder file with title
+        const placeholderTitle = formatTitleDate(dateStr);
         const placeholder = `---
-date: ${dateStr}
+date: ${dateStr} 12:00
 slug: "${dateStr}"
+title: "${placeholderTitle}"
 layout: fleeting
 ---
 

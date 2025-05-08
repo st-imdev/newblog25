@@ -25,7 +25,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p><a href="/topics" class="muted internal-link font-ui">Topics</a></p>
+  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/topics" class="muted internal-link font-ui">Topics</a></p>
 
   <div class="line-height-loose">
     {% assign all_tags = "" | split: "" %}
@@ -44,7 +44,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui"><a href="/writing" class="muted internal-link">Writing</a></p>
+  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/writing" class="muted internal-link">Writing</a></p>
 
   <ul class="list-plain tabular-nums">
     {% assign sorted_notes = site.notes | sort: "date" | reverse %}
@@ -62,7 +62,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui" style="margin-top: 2rem; margin-bottom: 1.5rem;"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
+  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
 
   {% include fleeting_calendar.html %}
 </div>

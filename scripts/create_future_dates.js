@@ -13,6 +13,34 @@ if (!fs.existsSync(FLEETING_DIR)) {
   process.exit(1);
 }
 
+// Helper function to get ordinal suffix for a number
+function getOrdinalSuffix(day) {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
+  }
+}
+
+// Helper function to format date as "8th May, 2025"
+function formatTitleDate(dateStr) {
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const suffix = getOrdinalSuffix(day);
+  
+  // Format the month as full name
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  
+  return `${day}${suffix} ${month}, ${year}`;
+}
+
 const now = new Date();
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -28,10 +56,14 @@ for (let offset = 0; offset <= 7; offset++) {
     continue;
   }
   
+  // Format the title
+  const formattedTitle = formatTitleDate(dateStr);
+  
   // Create content for the file
   const content = `---
-date: ${dateStr}
+date: ${dateStr} 12:00
 slug: "${dateStr}"
+title: "${formattedTitle}"
 layout: fleeting
 ---
 
@@ -41,10 +73,10 @@ Placeholder for future notes.
   // Write the file
   try {
     fs.writeFileSync(filePath, content);
-    console.log(`Created ${dateStr}.md`);
+    console.log(`Created ${dateStr}.md with title "${formattedTitle}"`);
   } catch (err) {
     console.error(`ERROR creating ${dateStr}.md:`, err);
   }
 }
 
-console.log('Done creating fleeting note files'); 
+console.log('Done creating fleeting note files.'); 
