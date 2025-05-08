@@ -27,7 +27,7 @@ body {
   background-color: var(--color-bg-primary);
   /* Subtle dotted grid that softly fades toward the edges */
   background-image:
-    radial-gradient(circle at center, rgba(var(--color-bg-primary-rgb), 0) 0%, rgba(var(--color-bg-primary-rgb), 1) 70%),
+    radial-gradient(circle at center, rgba(var(--color-bg-primary-rgb), 0) 0%, rgba(var(--color-bg-primary-rgb), 1) 85%),
     radial-gradient(circle, rgba(var(--color-tx-normal-rgb), 0.08) 1px, transparent 1px);
   background-size: auto, 22px 22px;
   background-repeat: no-repeat, repeat;
