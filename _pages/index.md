@@ -6,7 +6,7 @@ permalink: /
 ---
 
 <div class="wrap">
-  <p><a href="/notes/latest" class="muted font-ui">Latest</a></p>
+  <h2 class="section-heading"><a href="/notes/latest" class="internal-link">Latest</a></h2>
 
   {% assign latest_note = site.notes | sort: "date" | reverse | first %}
   {% if latest_note %}
@@ -25,7 +25,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/topics" class="muted internal-link font-ui">Topics</a></p>
+  <h2 class="section-heading"><a href="/topics" class="internal-link">Topics</a></h2>
 
   <div class="line-height-loose" style="margin-bottom: 3rem;">
     {% assign all_tags = "" | split: "" %}
@@ -44,7 +44,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/writing" class="muted internal-link">Writing</a></p>
+  <h2 class="section-heading"><a href="/writing" class="internal-link">Writing</a></h2>
 
   <ul class="list-plain tabular-nums" style="margin-bottom: 3rem;">
     {% assign sorted_notes = site.notes | sort: "date" | reverse %}
@@ -62,7 +62,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
+  <h2 class="section-heading"><a href="/fleeting" class="internal-link">Fleeting Notes</a></h2>
 
   {% include fleeting_calendar.html %}
 </div>
