@@ -1,31 +1,41 @@
-{% assign recent_fleeting = site.fleeting | sort: "date" | reverse | limit:12 %}
-{% assign recent_fleeting = recent_fleeting | sort: "date" %}
+{% assign today_date = site.time | date: "%Y-%m-%d" %}
 {% assign today_seconds = site.time | date: "%s" | plus: 0 %}
-<div class="fleeting-calendar">
-  {% for entry in recent_fleeting %}
-    {% assign fade_class = "" %}
-    {% assign entry_seconds = entry.date | date: "%s" | plus: 0 %}
-    {% assign raw_diff = entry_seconds | minus: today_seconds %}
-    {% assign diff_days = raw_diff | abs | divided_by: 86400 %}
 
-    {% if diff_days == 0 %}
+{% assign days_array = "" | split: "" %}
+
+{% comment %}Generate exactly 7 dates: today, 3 before, and 3 after{% endcomment %}
+{% for offset in (-3..3) %}
+  {% assign offset_seconds = offset | times: 86400 | plus: today_seconds %}
+  {% assign date_string = offset_seconds | date: "%Y-%m-%d" %}
+  {% assign day_hash = "" | split: "" %}
+  {% assign day_hash = day_hash | push: date_string %}
+  {% assign day_hash = day_hash | push: offset %}
+  {% assign days_array = days_array | push: day_hash %}
+{% endfor %}
+
+<div class="fleeting-calendar">
+  {% for day_info in days_array %}
+    {% assign date_string = day_info[0] %}
+    {% assign offset = day_info[1] | plus: 0 %}
+    
+    {% assign fade_class = "" %}
+    {% if offset == 0 %}
       {% assign fade_class = "today" %}
-    {% elsif raw_diff > 0 %}
-      {% if diff_days == 1 %}
-        {% assign fade_class = "fade3" %}
-      {% else %}
-        {% assign fade_class = "fade4" %}
-      {% endif %}
     {% else %}
-      {% case diff_days %}
+      {% assign abs_offset = offset | abs %}
+      {% case abs_offset %}
         {% when 1 %}{% assign fade_class = "fade1" %}
         {% when 2 %}{% assign fade_class = "fade2" %}
-        {% else %}{% assign fade_class = "fade3" %}
+        {% when 3 %}{% assign fade_class = "fade3" %}
       {% endcase %}
     {% endif %}
-    <a href="{{ site.baseurl }}{{ entry.url }}" class="calendar-cell {{ fade_class }}">
-      <span class="dow">{{ entry.date | date: "%a" }}</span>
-      <span class="day">{{ entry.date | date: "%b %e" }}</span>
+    
+    {% assign link_url = "/fleeting/" | append: date_string %}
+    
+    <a href="{{ site.baseurl }}{{ link_url }}" class="calendar-cell {{ fade_class }}">
+      {% assign date_obj = date_string | date: "%s" | date: "%Y-%m-%d" %}
+      <span class="dow">{{ date_obj | date: "%a" }}</span>
+      <span class="day">{{ date_obj | date: "%b %e" }}</span>
     </a>
   {% endfor %}
 </div>
@@ -58,9 +68,8 @@
   .calendar-cell:hover .day {
     text-decoration: underline;
   }
-  .calendar-cell.today {color: var(--color-tx-normal); opacity:1;}
-  .calendar-cell.fade1 {opacity: 0.4;}
-  .calendar-cell.fade2 {opacity: 0.3;}
+  .calendar-cell.today {color: var(--color-tx-normal); opacity: 1;}
+  .calendar-cell.fade1 {opacity: 0.8;}
+  .calendar-cell.fade2 {opacity: 0.5;}
   .calendar-cell.fade3 {opacity: 0.25;}
-  .calendar-cell.fade4 {opacity: 0.15;}
 </style> 

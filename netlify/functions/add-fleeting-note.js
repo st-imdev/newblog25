@@ -64,30 +64,53 @@ export async function handler(event) {
     return { statusCode: res.status, body: text };
   }
 
-  return { statusCode: 200, body: "Note saved; site rebuilding." };
-
-  // ----- 6. ensure placeholder for tomorrow and next day -----
+  // ----- Create placeholder files for past and future days -----
   const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-  for (let offset = 1; offset <= 2; offset++) {
-    const future = new Date(now.getTime() + offset * ONE_DAY_MS);
-    const fDate = future.toISOString().slice(0, 10);
-    const fPath = `_fleeting/${fDate}.md`;
-    const fUrl  = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(fPath)}`;
+  const results = [];
+  
+  // Create placeholders for 3 days in the past and 3 days in the future
+  for (let offset = -3; offset <= 3; offset++) {
+    if (offset === 0) continue; // Skip today as it's already created above
+    
+    const targetDate = new Date(now.getTime() + offset * ONE_DAY_MS);
+    const dateStr = targetDate.toISOString().slice(0, 10);
+    const filePath = `_fleeting/${dateStr}.md`;
+    const fileUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(filePath)}`;
 
-    const exists = await fetch(fUrl, { headers: { Authorization: `token ${GH_TOKEN}` } });
-    if (!exists.ok) {
-      const placeholder = `---\ndate: ${fDate}\n---\n\n`;
-      await fetch(fUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GH_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `add placeholder for ${fDate}`,
-          content: Buffer.from(placeholder).toString("base64"),
-        }),
+    try {
+      // Check if file already exists
+      const exists = await fetch(fileUrl, { 
+        headers: { Authorization: `token ${GH_TOKEN}` } 
       });
+      
+      if (!exists.ok) {
+        // Create placeholder file
+        const placeholder = `---\ndate: ${dateStr}\nslug: "${dateStr}"\nlayout: fleeting\n---\n\n`;
+        const createRes = await fetch(fileUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${GH_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `add placeholder for ${dateStr}`,
+            content: Buffer.from(placeholder).toString("base64"),
+          }),
+        });
+        
+        if (createRes.ok) {
+          results.push(`Created placeholder for ${dateStr}`);
+        } else {
+          results.push(`Failed to create placeholder for ${dateStr}`);
+        }
+      }
+    } catch (err) {
+      console.error(`Error with date ${dateStr}:`, err);
     }
   }
+
+  return { 
+    statusCode: 200, 
+    body: `Note saved; site rebuilding. ${results.length ? '\n' + results.join('\n') : ''}` 
+  };
 } 
