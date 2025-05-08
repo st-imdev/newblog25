@@ -27,7 +27,7 @@ permalink: /
 
   <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/topics" class="muted internal-link font-ui">Topics</a></p>
 
-  <div class="line-height-loose">
+  <div class="line-height-loose" style="margin-bottom: 3rem;">
     {% assign all_tags = "" | split: "" %}
     {% for note in site.notes %}
       {% if note.tags.size > 0 %}
@@ -46,7 +46,7 @@ permalink: /
 
   <p class="muted font-ui" style="margin-top: 3rem; margin-bottom: 2.5rem;"><a href="/writing" class="muted internal-link">Writing</a></p>
 
-  <ul class="list-plain tabular-nums">
+  <ul class="list-plain tabular-nums" style="margin-bottom: 3rem;">
     {% assign sorted_notes = site.notes | sort: "date" | reverse %}
     {% for note in sorted_notes %}
       <li>
