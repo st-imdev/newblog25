@@ -5,7 +5,7 @@ permalink: /fleeting
 ---
 
 <div class="wrap">
-  <p class="muted font-ui">Recent fleeting notes (past 10&nbsp;days)</p>
+  <p class="muted font-ui" style="margin-bottom: 1.5rem;">Recent fleeting notes (past 10&nbsp;days)</p>
   
   {% include fleeting_calendar.html %}
   <p class="small muted font-ui" style="margin-top:2rem;">Older fleeting notes are not listed publicly.</p>

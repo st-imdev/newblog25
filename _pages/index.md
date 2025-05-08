@@ -62,7 +62,7 @@ permalink: /
 
   <hr class="mn2 ms2">
 
-  <p class="muted font-ui"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
+  <p class="muted font-ui" style="margin-bottom: 1.5rem;"><a href="/fleeting" class="muted internal-link">Fleeting&nbsp;Notes</a></p>
 
   {% include fleeting_calendar.html %}
 </div>
@@ -70,6 +70,10 @@ permalink: /
 <style>
   .wrapper {
     max-width: 46em;
+  }
+  
+  .wrap {
+    margin-bottom: 2rem;
   }
   
   .list-plain {

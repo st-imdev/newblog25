@@ -18,7 +18,7 @@ layout: default
     {% elsif remainder == 3 %}
       {% assign suffix = 'rd' %}
     {% endif %}
-    <h1>Thoughts from {{ page.date | date: "%A, %B " }}{{ day_num }}{{ suffix }}</h1>
+    <h1>Thoughts from {{ page.date | date: "%B %-d" }}{{ suffix }}, {{ page.date | date: "%Y" }}</h1>
   {% endif %}
   <div class="content">
     {{ content }}
