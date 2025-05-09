@@ -120,7 +120,7 @@ Placeholder for future notes.
         run: |
           git add _fleeting/*.md
           git commit -m "Auto-create fleeting notes for $(date +'%Y-%m-%d')"
-          echo "::set-output name=commit::true"
+          echo "commit=true" >> $GITHUB_OUTPUT
         continue-on-error: true
       
       - name: Push changes
