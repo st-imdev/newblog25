@@ -1,0 +1,136 @@
+name: Daily Fleeting Notes
+
+on:
+  schedule:
+    # Run at midnight UTC (adjust to your timezone if needed)
+    - cron: '0 0 * * *'
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  create-fleeting-notes:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          
+      - name: Create fleeting notes script
+        run: |
+          mkdir -p _fleeting
+          cat > create-notes.js << 'EOF'
+          #!/usr/bin/env node
+          
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Helper function to get ordinal suffix for a number
+          function getOrdinalSuffix(day) {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+              case 1: return 'st';
+              case 2: return 'nd';
+              case 3: return 'rd';
+              default: return 'th';
+            }
+          }
+          
+          // Helper function to format date as "8th May, 2025"
+          function formatTitleDate(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const suffix = getOrdinalSuffix(day);
+            
+            // Format the month as full name
+            const monthNames = [
+              "January", "February", "March", "April", "May", "June", 
+              "July", "August", "September", "October", "November", "December"
+            ];
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${day}${suffix} ${month}, ${year}`;
+          }
+          
+          const now = new Date();
+          const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+          let createdFiles = false;
+          
+          // Create files for today and the next 3 days if they don't exist
+          for (let offset = 0; offset <= 3; offset++) {
+            const targetDate = new Date(now.getTime() + offset * ONE_DAY_MS);
+            const dateStr = targetDate.toISOString().slice(0, 10); // YYYY-MM-DD
+            const filePath = path.join('_fleeting', `${dateStr}.md`);
+            
+            // Check if file already exists
+            if (fs.existsSync(filePath)) {
+              console.log(`File ${dateStr}.md already exists, skipping`);
+              continue;
+            }
+            
+            // Format the title
+            const formattedTitle = formatTitleDate(dateStr);
+            
+            // Create content for the file
+            const content = `---
+date: ${dateStr} 12:00
+slug: "${dateStr}"
+title: "${formattedTitle}"
+layout: fleeting
+---
+
+Placeholder for future notes.
+`;
+            
+            // Write the file
+            try {
+              fs.writeFileSync(filePath, content);
+              console.log(`Created ${dateStr}.md with title "${formattedTitle}"`);
+              createdFiles = true;
+            } catch (err) {
+              console.error(`ERROR creating ${dateStr}.md:`, err);
+            }
+          }
+          
+          // Signal if we created new files
+          process.exit(createdFiles ? 0 : 1);
+          EOF
+          
+          chmod +x create-notes.js
+      
+      - name: Create new fleeting notes
+        id: create-notes
+        run: node create-notes.js
+        continue-on-error: true
+      
+      - name: Configure Git
+        if: steps.create-notes.outcome == 'success'
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+      
+      - name: Commit changes
+        id: commit
+        if: steps.create-notes.outcome == 'success'
+        run: |
+          git add _fleeting/*.md
+          git commit -m "Auto-create fleeting notes for $(date +'%Y-%m-%d')"
+          echo "::set-output name=commit::true"
+        continue-on-error: true
+      
+      - name: Push changes
+        if: steps.commit.outputs.commit == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      
+      - name: Trigger Netlify build
+        if: steps.commit.outputs.commit == 'true'
+        run: |
+          curl -X POST -d {} ${{ secrets.NETLIFY_BUILD_HOOK }} || true 
