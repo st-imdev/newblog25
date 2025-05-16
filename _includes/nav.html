@@ -8,10 +8,10 @@
   
   <!-- Desktop navigation -->
   <span class="flex-shrink desktop-nav">
-    <a href="{{ site.baseurl }}/writing" class="nav-link">Writing</a>
-    <a href="{{ site.baseurl }}/about" class="nav-link">About</a>
-    <a href="{{ site.baseurl }}/now" class="nav-link mh">Now</a>
-    <a href="{{ site.baseurl }}/search" class="nav-link mh">Search</a>
+    <a href="{{ site.baseurl }}/writing" class="nav-link plain">Writing</a>
+    <a href="{{ site.baseurl }}/about" class="nav-link plain">About</a>
+    <a href="{{ site.baseurl }}/now" class="nav-link plain mh">Now</a>
+    <a href="{{ site.baseurl }}/search" class="nav-link plain mh">Search</a>
   </span>
   
   <!-- Mobile hamburger button -->
@@ -59,10 +59,11 @@
     .nav-link {
       position: relative;
       color: var(--color-tx-muted);
-      text-decoration: none;
+      text-decoration: none !important; /* Force no underline */
       font-size: 1.6rem;
       padding: 0.5rem 0;
       transition: color 0.2s ease;
+      border-bottom: none !important; /* Ensure no default borders */
     }
     
     .nav-link:hover {
