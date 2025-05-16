@@ -38,6 +38,11 @@
 </div>
 
 <style>
+  /* Remove tap highlight color on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
   /* Desktop/mobile visibility */
   .desktop-nav {
     display: none;
@@ -96,6 +101,15 @@
     padding: 0;
     margin-right: 1rem;
     z-index: 200;
+    outline: none;
+    -webkit-tap-highlight-color: transparent !important; /* Remove tap highlight specifically for this button */
+    user-select: none;
+    touch-action: manipulation;
+  }
+  
+  /* Remove focus outline for mobile */
+  .mobile-menu-button:focus {
+    outline: none;
   }
   
   @media (min-width: 768px) {
