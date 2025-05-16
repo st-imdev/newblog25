@@ -43,16 +43,7 @@
     display: none;
   }
   
-  @media (min-width: 768px) {
-    .desktop-nav {
-      display: flex;
-    }
-    .mobile-menu-button {
-      display: none;
-    }
-  }
-  
-  /* Hamburger button styling */
+  /* Mobile menu button - only visible on mobile */
   .mobile-menu-button {
     display: flex;
     flex-direction: column;
@@ -67,6 +58,16 @@
     z-index: 200;
   }
   
+  @media (min-width: 768px) {
+    .desktop-nav {
+      display: flex;
+    }
+    .mobile-menu-button {
+      display: none !important; /* Force hide on desktop */
+    }
+  }
+  
+  /* Hamburger line styling */
   .hamburger-line {
     width: 100%;
     height: 2px;
