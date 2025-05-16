@@ -2,135 +2,82 @@ name: Daily Fleeting Notes
 
 on:
   schedule:
-    # Run at midnight UTC (adjust to your timezone if needed)
-    - cron: '0 0 * * *'
-  # Allow manual triggering for testing
+    # Run at 6:00 AM UTC every day
+    - cron: '0 6 * * *'
+  # Allow manual triggering
   workflow_dispatch:
 
 jobs:
-  create-fleeting-notes:
+  create-fleeting-note:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/checkout@v3
         with:
-          node-version: '16'
+          fetch-depth: 0
           
-      - name: Create fleeting notes script
-        run: |
-          mkdir -p _fleeting
-          cat > create-notes.js << 'EOF'
-          #!/usr/bin/env node
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
           
-          const fs = require('fs');
-          const path = require('path');
-          
-          // Helper function to get ordinal suffix for a number
-          function getOrdinalSuffix(day) {
-            if (day > 3 && day < 21) return 'th';
-            switch (day % 10) {
-              case 1: return 'st';
-              case 2: return 'nd';
-              case 3: return 'rd';
-              default: return 'th';
-            }
-          }
-          
-          // Helper function to format date as "8th May, 2025"
-          function formatTitleDate(dateStr) {
-            const date = new Date(dateStr);
-            const day = date.getDate();
-            const suffix = getOrdinalSuffix(day);
-            
-            // Format the month as full name
-            const monthNames = [
-              "January", "February", "March", "April", "May", "June", 
-              "July", "August", "September", "October", "November", "December"
-            ];
-            const month = monthNames[date.getMonth()];
-            const year = date.getFullYear();
-            
-            return `${day}${suffix} ${month}, ${year}`;
-          }
-          
-          const now = new Date();
-          const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-          let createdFiles = false;
-          
-          // Create files for today and the next 3 days if they don't exist
-          for (let offset = 0; offset <= 3; offset++) {
-            const targetDate = new Date(now.getTime() + offset * ONE_DAY_MS);
-            const dateStr = targetDate.toISOString().slice(0, 10); // YYYY-MM-DD
-            const filePath = path.join('_fleeting', `${dateStr}.md`);
-            
-            // Check if file already exists
-            if (fs.existsSync(filePath)) {
-              console.log(`File ${dateStr}.md already exists, skipping`);
-              continue;
-            }
-            
-            // Format the title
-            const formattedTitle = formatTitleDate(dateStr);
-            
-            // Create content for the file
-            const content = `---
-date: ${dateStr} 12:00
-slug: "${dateStr}"
-title: "${formattedTitle}"
-layout: fleeting
----
-
-Placeholder for future notes.
-`;
-            
-            // Write the file
-            try {
-              fs.writeFileSync(filePath, content);
-              console.log(`Created ${dateStr}.md with title "${formattedTitle}"`);
-              createdFiles = true;
-            } catch (err) {
-              console.error(`ERROR creating ${dateStr}.md:`, err);
-            }
-          }
-          
-          // Signal if we created new files
-          process.exit(createdFiles ? 0 : 1);
-          EOF
-          
-          chmod +x create-notes.js
-      
-      - name: Create new fleeting notes
-        id: create-notes
-        run: node create-notes.js
-        continue-on-error: true
-      
       - name: Configure Git
-        if: steps.create-notes.outcome == 'success'
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-      
-      - name: Commit changes
-        id: commit
-        if: steps.create-notes.outcome == 'success'
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          
+      - name: Create new fleeting note if needed
         run: |
-          git add _fleeting/*.md
-          git commit -m "Auto-create fleeting notes for $(date +'%Y-%m-%d')"
-          echo "commit=true" >> $GITHUB_OUTPUT
-        continue-on-error: true
-      
-      - name: Push changes
-        if: steps.commit.outputs.commit == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-      
+          # Get today's date
+          TODAY=$(date +%Y-%m-%d)
+          FLEETING_DIR="_fleeting"
+          FILE_PATH="${FLEETING_DIR}/${TODAY}.md"
+          
+          # Check if file already exists
+          if [ -f "$FILE_PATH" ]; then
+            echo "File $FILE_PATH already exists, no need to create it"
+          else
+            # Format the date for the title
+            # Get day (without leading zero)
+            DAY=$(date +%-d)
+            
+            # Get month name
+            MONTH=$(date +%B)
+            
+            # Get year
+            YEAR=$(date +%Y)
+            
+            # Get ordinal suffix for the day
+            if [ $DAY -eq 1 ] || [ $DAY -eq 21 ] || [ $DAY -eq 31 ]; then
+              SUFFIX="st"
+            elif [ $DAY -eq 2 ] || [ $DAY -eq 22 ]; then
+              SUFFIX="nd"
+            elif [ $DAY -eq 3 ] || [ $DAY -eq 23 ]; then
+              SUFFIX="rd"
+            else
+              SUFFIX="th"
+            fi
+            
+            TITLE="${DAY}${SUFFIX} ${MONTH}, ${YEAR}"
+            
+            # Create the file content
+            echo "---" > "$FILE_PATH"
+            echo "date: ${TODAY} 12:00" >> "$FILE_PATH"
+            echo "slug: \"${TODAY}\"" >> "$FILE_PATH"
+            echo "title: \"${TITLE}\"" >> "$FILE_PATH"
+            echo "layout: fleeting" >> "$FILE_PATH"
+            echo "---" >> "$FILE_PATH"
+            echo "" >> "$FILE_PATH"
+            echo "Daily notes for ${TITLE}." >> "$FILE_PATH"
+            
+            echo "Created fleeting note for $TODAY"
+            
+            # Commit and push changes
+            git add "$FILE_PATH"
+            git commit -m "Add fleeting note for $TODAY"
+            git push
+          fi
+          
       - name: Trigger Netlify build
-        if: steps.commit.outputs.commit == 'true'
         run: |
-          curl -X POST -d {} ${{ secrets.NETLIFY_BUILD_HOOK }} || true 
+          curl -X POST -d {} https://api.netlify.com/build_hooks/681d86f9941c4c4e9bef4ede 
