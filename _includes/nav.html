@@ -8,10 +8,10 @@
   
   <!-- Desktop navigation -->
   <span class="flex-shrink desktop-nav">
-    <a href="{{ site.baseurl }}/writing" class="muted plain">Writing</a>
-    <a href="{{ site.baseurl }}/about" class="muted plain ssl">About</a>
-    <a href="{{ site.baseurl }}/now" class="muted plain ssl mh">Now</a>
-    <a href="{{ site.baseurl }}/search" class="muted plain ssl mh">Search</a>
+    <a href="{{ site.baseurl }}/writing" class="nav-link">Writing</a>
+    <a href="{{ site.baseurl }}/about" class="nav-link">About</a>
+    <a href="{{ site.baseurl }}/now" class="nav-link mh">Now</a>
+    <a href="{{ site.baseurl }}/search" class="nav-link mh">Search</a>
   </span>
   
   <!-- Mobile hamburger button -->
@@ -43,6 +43,46 @@
     display: none;
   }
   
+  /* Desktop navigation styling */
+  @media (min-width: 768px) {
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem; /* Increased spacing between nav items */
+    }
+    
+    .nav-link {
+      position: relative;
+      color: var(--color-tx-muted);
+      text-decoration: none;
+      font-size: 1.6rem;
+      padding: 0.5rem 0;
+      transition: color 0.2s ease;
+    }
+    
+    .nav-link:hover {
+      color: var(--color-action);
+    }
+    
+    /* Subtle indicator for active link */
+    .nav-link.active::after,
+    .nav-link:hover::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-action);
+      transform: scaleX(0.7);
+      transition: transform 0.2s ease;
+    }
+    
+    .nav-link:hover::after {
+      transform: scaleX(1);
+    }
+  }
+  
   /* Mobile menu button - only visible on mobile */
   .mobile-menu-button {
     display: flex;
@@ -59,11 +99,14 @@
   }
   
   @media (min-width: 768px) {
-    .desktop-nav {
-      display: flex;
-    }
     .mobile-menu-button {
       display: none !important; /* Force hide on desktop */
+    }
+    
+    /* Improve overall navigation bar spacing */
+    .nav-bar {
+      padding: 1rem 0;
+      gap: 1rem;
     }
   }
   
@@ -135,6 +178,16 @@
   document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
+    
+    // Set active class on current page nav link
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const linkPath = link.getAttribute('href');
+      if (currentPath === linkPath || 
+          (linkPath !== '{{ site.baseurl }}/' && currentPath.startsWith(linkPath))) {
+        link.classList.add('active');
+      }
+    });
     
     mobileMenuButton.addEventListener('click', function() {
       mobileMenuButton.classList.toggle('active');
