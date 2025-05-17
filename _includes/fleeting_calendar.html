@@ -32,7 +32,7 @@
     
     {% assign link_url = "/fleeting/" | append: date_string %}
     
-    <a href="{{ site.baseurl }}{{ link_url }}" class="calendar-cell internal-link {{ fade_class }}">
+    <a href="{{ site.baseurl }}{{ link_url }}" class="calendar-cell internal-link {{ fade_class }} {% if abs_offset > 2 %}desktop-only{% endif %}">
       {% assign date_obj = date_string | date: "%s" | date: "%Y-%m-%d" %}
       <span class="dow">{{ date_obj | date: "%a" }}</span>
       <span class="day">{{ date_obj | date: "%b %e" }}</span>
@@ -87,6 +87,9 @@
     .calendar-cell {
       margin: 0 0.3rem 1rem;
       min-width: 40px;
+    }
+    .desktop-only {
+      display: none;
     }
   }
 </style> 
