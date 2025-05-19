@@ -8,6 +8,8 @@
   content: attr(data-time);
   color: var(--color-tx-muted);
   font-family: var(--font-ui);
+  font-size: 0.875em;
+  opacity: 0.8;
   min-width: 4em;
   margin-right: 0.5em;
 }
