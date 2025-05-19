@@ -37,8 +37,15 @@ function formatTitleDate(dateStr) {
   ];
   const month = monthNames[date.getMonth()];
   const year = date.getFullYear();
-  
+
   return `${day}${suffix} ${month}, ${year}`;
+}
+
+function getLocalDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 const now = new Date();
@@ -47,7 +54,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 // Create files for today and the next 7 days
 for (let offset = 0; offset <= 7; offset++) {
   const targetDate = new Date(now.getTime() + offset * ONE_DAY_MS);
-  const dateStr = targetDate.toISOString().slice(0, 10); // YYYY-MM-DD
+  const dateStr = getLocalDateString(targetDate);
   const filePath = path.join(FLEETING_DIR, `${dateStr}.md`);
   
   // Check if file already exists

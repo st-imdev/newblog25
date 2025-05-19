@@ -45,13 +45,20 @@ export async function handler(event) {
     ];
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
-    
+
     return `${day}${suffix} ${month}, ${year}`;
+  }
+
+  function getLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // Build markdown content and path
   const now = new Date();
-  const yyyyMmDd = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  const yyyyMmDd = getLocalDateString(now);
   const mdPath = `_fleeting/${yyyyMmDd}.md`;
   const formattedTitle = formatTitleDate(yyyyMmDd);
   const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\nslug: "${yyyyMmDd}"\ntitle: "${formattedTitle}"\nlayout: fleeting\n---\n\n${note}\n`;
@@ -102,7 +109,7 @@ export async function handler(event) {
     if (offset === 0) continue; // Skip today as it's already created above
     
     const targetDate = new Date(now.getTime() + offset * ONE_DAY_MS);
-    const dateStr = targetDate.toISOString().slice(0, 10);
+    const dateStr = getLocalDateString(targetDate);
     const filePath = `_fleeting/${dateStr}.md`;
     const fileUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(filePath)}`;
 

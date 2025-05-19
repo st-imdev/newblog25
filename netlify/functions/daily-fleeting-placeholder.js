@@ -2,6 +2,13 @@
 // It ensures placeholder markdown files exist for tomorrow and the day after
 // so the calendar strip always shows two future days.
 
+function getLocalDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export const handler = async () => {
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
   if (!GH_TOKEN) {
@@ -13,7 +20,7 @@ export const handler = async () => {
 
   for (let offset = 1; offset <= 2; offset++) {
     const future = new Date(today.getTime() + offset * ONE_DAY);
-    const yyyyMmDd = future.toISOString().slice(0, 10);
+    const yyyyMmDd = getLocalDateString(future);
     const mdPath = `_fleeting/${yyyyMmDd}.md`;
     const ghUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(mdPath)}`;
 
