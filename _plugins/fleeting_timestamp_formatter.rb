@@ -5,4 +5,3 @@ Jekyll::Hooks.register [:fleeting], :pre_render do |doc|
     "<p class=\"fleeting-entry\" data-time=\"#{time}\">#{text}</p>"
   end
 end
-
