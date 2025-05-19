@@ -71,12 +71,12 @@ layout: default
         {% assign evening_entries = true %}
       {% endif %}
       
-      <!-- Display time sections with entries -->
+      <!-- Display entries organized by time -->
       <div class="fleeting-sections">
         {% if morning_entries %}
           <div class="time-section" id="morning">
-            <h2 class="time-heading">Morning</h2>
-            <div class="time-entries morning-entries">
+            <span class="time-section-marker">Morning</span>
+            <div class="morning-entries">
               {{ content }}
             </div>
           </div>
@@ -84,8 +84,8 @@ layout: default
         
         {% if afternoon_entries %}
           <div class="time-section" id="afternoon">
-            <h2 class="time-heading">Afternoon</h2>
-            <div class="time-entries afternoon-entries">
+            <span class="time-section-marker">Afternoon</span>
+            <div class="afternoon-entries">
               {{ content }}
             </div>
           </div>
@@ -93,29 +93,16 @@ layout: default
         
         {% if evening_entries %}
           <div class="time-section" id="evening">
-            <h2 class="time-heading">Evening</h2>
-            <div class="time-entries evening-entries">
+            <span class="time-section-marker">Evening</span>
+            <div class="evening-entries">
               {{ content }}
             </div>
           </div>
         {% endif %}
       </div>
-      
-      <!-- Jump to time navigation -->
-      <div class="time-jumper">
-        {% if morning_entries %}
-          <a href="#morning" class="time-jump-link" data-time="morning">Morning</a>
-        {% endif %}
-        {% if afternoon_entries %}
-          <a href="#afternoon" class="time-jump-link" data-time="afternoon">Afternoon</a>
-        {% endif %}
-        {% if evening_entries %}
-          <a href="#evening" class="time-jump-link" data-time="evening">Evening</a>
-        {% endif %}
-      </div>
     {% else %}
       <div class="empty-day">
-        <p class="empty-message">No notes yet for this day.</p>
+        <p>No notes yet for this day.</p>
       </div>
     {% endif %}
   </div>
@@ -189,8 +176,6 @@ layout: default
       const entries = section.querySelectorAll('.fleeting-entry');
       if (entries.length === 0) {
         section.style.display = 'none';
-        const jumpLink = document.querySelector(`.time-jump-link[data-time="${section.id}"]`);
-        if (jumpLink) jumpLink.style.display = 'none';
       }
     });
   });
