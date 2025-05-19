@@ -2,27 +2,196 @@
 layout: default
 ---
 
-<article class="wrap">
-  {% if page.title %}
-    <h1>{{ page.title }}</h1>
-  {% else %}
-    {% capture day_num %}{{ page.date | date: "%-d" }}{% endcapture %}
-    {% assign suffix = "th" %}
-    {% assign remainder = day_num | plus: 0 | modulo: 10 %}
-    {% if day_num == '11' or day_num == '12' or day_num == '13' %}
-      {% assign suffix = 'th' %}
-    {% elsif remainder == 1 %}
-      {% assign suffix = 'st' %}
-    {% elsif remainder == 2 %}
-      {% assign suffix = 'nd' %}
-    {% elsif remainder == 3 %}
-      {% assign suffix = 'rd' %}
+<article class="wrap fleeting-page">
+  <header class="fleeting-header">
+    {% if page.title %}
+      <h1>{{ page.title }}</h1>
+    {% else %}
+      {% capture day_num %}{{ page.date | date: "%-d" }}{% endcapture %}
+      {% assign suffix = "th" %}
+      {% assign remainder = day_num | plus: 0 | modulo: 10 %}
+      {% if day_num == '11' or day_num == '12' or day_num == '13' %}
+        {% assign suffix = 'th' %}
+      {% elsif remainder == 1 %}
+        {% assign suffix = 'st' %}
+      {% elsif remainder == 2 %}
+        {% assign suffix = 'nd' %}
+      {% elsif remainder == 3 %}
+        {% assign suffix = 'rd' %}
+      {% endif %}
+      <h1>Thoughts from {{ page.date | date: "%B %-d" }}{{ suffix }}, {{ page.date | date: "%Y" }}</h1>
     {% endif %}
-    <h1>Thoughts from {{ page.date | date: "%B %-d" }}{{ suffix }}, {{ page.date | date: "%Y" }}</h1>
-  {% endif %}
-  <div class="content">
-    {{ content }}
+    
+    <!-- Fleeting notes navigation -->
+    <div class="fleeting-nav">
+      {% assign page_date = page.date | date: "%Y-%m-%d" %}
+      {% assign today_date = site.time | date: "%Y-%m-%d" %}
+      {% assign page_seconds = page.date | date: "%s" | plus: 0 %}
+      
+      {% assign prev_day_seconds = page_seconds | minus: 86400 %}
+      {% assign next_day_seconds = page_seconds | plus: 86400 %}
+      
+      {% assign prev_day = prev_day_seconds | date: "%Y-%m-%d" %}
+      {% assign next_day = next_day_seconds | date: "%Y-%m-%d" %}
+      
+      {% assign prev_path = "/fleeting/" | append: prev_day %}
+      {% assign next_path = "/fleeting/" | append: next_day %}
+      
+      <span class="fleeting-nav-prev">
+        <a href="{{ site.baseurl }}{{ prev_path }}" class="nav-arrow">&larr; Previous day</a>
+      </span>
+      
+      <span class="fleeting-calendar-mini">
+        {{ page.date | date: "%a, %b %-d" }}
+      </span>
+      
+      <span class="fleeting-nav-next">
+        <a href="{{ site.baseurl }}{{ next_path }}" class="nav-arrow">Next day &rarr;</a>
+      </span>
+    </div>
+  </header>
+  
+  <div class="fleeting-content">
+    {% assign content_with_markers = content | strip %}
+    {% if content_with_markers != "" and content_with_markers != "Placeholder for future notes." %}
+      {% assign morning_entries = false %}
+      {% assign afternoon_entries = false %}
+      {% assign evening_entries = false %}
+      
+      <!-- Check for entries in different parts of the day -->
+      {% if content contains 'data-time="0' or content contains 'data-time="1' or content contains 'data-time="2' or content contains 'data-time="3' or content contains 'data-time="4' or content contains 'data-time="5' or content contains 'data-time="6' or content contains 'data-time="7' or content contains 'data-time="8' or content contains 'data-time="9' or content contains 'data-time="10' or content contains 'data-time="11' %}
+        {% assign morning_entries = true %}
+      {% endif %}
+      
+      {% if content contains 'data-time="12' or content contains 'data-time="13' or content contains 'data-time="14' or content contains 'data-time="15' or content contains 'data-time="16' or content contains 'data-time="17' %}
+        {% assign afternoon_entries = true %}
+      {% endif %}
+      
+      {% if content contains 'data-time="18' or content contains 'data-time="19' or content contains 'data-time="20' or content contains 'data-time="21' or content contains 'data-time="22' or content contains 'data-time="23' %}
+        {% assign evening_entries = true %}
+      {% endif %}
+      
+      <!-- Display time sections with entries -->
+      <div class="fleeting-sections">
+        {% if morning_entries %}
+          <div class="time-section" id="morning">
+            <h2 class="time-heading">Morning</h2>
+            <div class="time-entries morning-entries">
+              {{ content }}
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if afternoon_entries %}
+          <div class="time-section" id="afternoon">
+            <h2 class="time-heading">Afternoon</h2>
+            <div class="time-entries afternoon-entries">
+              {{ content }}
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if evening_entries %}
+          <div class="time-section" id="evening">
+            <h2 class="time-heading">Evening</h2>
+            <div class="time-entries evening-entries">
+              {{ content }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Jump to time navigation -->
+      <div class="time-jumper">
+        {% if morning_entries %}
+          <a href="#morning" class="time-jump-link" data-time="morning">Morning</a>
+        {% endif %}
+        {% if afternoon_entries %}
+          <a href="#afternoon" class="time-jump-link" data-time="afternoon">Afternoon</a>
+        {% endif %}
+        {% if evening_entries %}
+          <a href="#evening" class="time-jump-link" data-time="evening">Evening</a>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="empty-day">
+        <p class="empty-message">No notes yet for this day.</p>
+      </div>
+    {% endif %}
   </div>
+  
+  <footer class="fleeting-footer">
+    <div class="fleeting-nav bottom-nav">
+      <span class="fleeting-nav-prev">
+        <a href="{{ site.baseurl }}{{ prev_path }}" class="nav-arrow">&larr; Previous day</a>
+      </span>
+      
+      <span class="fleeting-calendar-mini">
+        <a href="{{ site.baseurl }}/" class="home-link">Home</a>
+      </span>
+      
+      <span class="fleeting-nav-next">
+        <a href="{{ site.baseurl }}{{ next_path }}" class="nav-arrow">Next day &rarr;</a>
+      </span>
+    </div>
+  </footer>
 </article>
 
-</html> 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Filter entries by time section
+    const morningEntries = document.querySelector('.morning-entries');
+    const afternoonEntries = document.querySelector('.afternoon-entries');
+    const eveningEntries = document.querySelector('.evening-entries');
+    
+    if (morningEntries) {
+      const allEntries = morningEntries.querySelectorAll('.fleeting-entry');
+      allEntries.forEach(entry => {
+        const time = entry.getAttribute('data-time');
+        if (time) {
+          const hour = parseInt(time.split(':')[0]);
+          
+          // Move entries to correct section based on time
+          if (hour >= 12 && hour < 18 && afternoonEntries) {
+            afternoonEntries.appendChild(entry);
+          } else if (hour >= 18 && eveningEntries) {
+            eveningEntries.appendChild(entry);
+          }
+          
+          // Add category class if present
+          if (entry.textContent.includes('#quick') || entry.textContent.includes('#thought')) {
+            entry.classList.add('category-thought');
+          } else if (entry.textContent.includes('#idea')) {
+            entry.classList.add('category-idea');
+          } else if (entry.textContent.includes('#link') || entry.textContent.includes('#read')) {
+            entry.classList.add('category-link');
+          }
+          
+          // Handle collapsible long entries
+          if (entry.textContent.length > 300) {
+            entry.classList.add('long-entry');
+            const toggleButton = document.createElement('button');
+            toggleButton.className = 'toggle-expand';
+            toggleButton.textContent = 'Show more';
+            toggleButton.addEventListener('click', function() {
+              entry.classList.toggle('expanded');
+              toggleButton.textContent = entry.classList.contains('expanded') ? 'Show less' : 'Show more';
+            });
+            entry.appendChild(toggleButton);
+          }
+        }
+      });
+    }
+    
+    // Remove empty sections
+    const sections = document.querySelectorAll('.time-section');
+    sections.forEach(section => {
+      const entries = section.querySelectorAll('.fleeting-entry');
+      if (entries.length === 0) {
+        section.style.display = 'none';
+        const jumpLink = document.querySelector(`.time-jump-link[data-time="${section.id}"]`);
+        if (jumpLink) jumpLink.style.display = 'none';
+      }
+    });
+  });
+</script> 

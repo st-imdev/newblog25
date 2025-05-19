@@ -1,7 +1,11 @@
 .fleeting-entry {
   display: flex;
   align-items: baseline;
-  margin: 0.4em 0;
+  margin: 0.4em 0 1.2em;
+  position: relative;
+  padding: 0.5em 0;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 .fleeting-entry::before {
@@ -13,4 +17,216 @@
   margin-right: 0.7em;
   opacity: 0.75;
   font-variant-numeric: tabular-nums;
+}
+
+/* Category styling */
+.category-thought {
+  border-left: 2px solid rgba(var(--color-tx-normal-rgb), 0.1);
+  padding-left: 0.5em;
+}
+
+.category-idea {
+  border-left: 2px solid rgba(125, 170, 220, 0.3);
+  padding-left: 0.5em;
+}
+
+.category-link {
+  border-left: 2px solid rgba(120, 190, 120, 0.3);
+  padding-left: 0.5em;
+}
+
+/* Long entry styling */
+.long-entry {
+  max-height: 150px;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 2em;
+}
+
+.long-entry.expanded {
+  max-height: none;
+}
+
+.toggle-expand {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 0.9em;
+  color: var(--color-action);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  padding: 0.2em 0.5em;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-expand:hover {
+  opacity: 1;
+}
+
+/* Fleeting page layout */
+.fleeting-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.fleeting-header {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-ui-normal);
+  padding-bottom: 1rem;
+}
+
+.fleeting-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.9em;
+}
+
+.nav-arrow {
+  color: var(--color-tx-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-arrow:hover {
+  color: var(--color-action);
+  text-decoration: none;
+}
+
+.fleeting-calendar-mini {
+  font-size: 0.85em;
+  color: var(--color-tx-muted);
+}
+
+.home-link {
+  color: var(--color-tx-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.home-link:hover {
+  color: var(--color-action);
+}
+
+/* Time sections */
+.time-section {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.time-heading {
+  font-size: 1.1rem;
+  color: var(--color-tx-muted);
+  margin-bottom: 1rem;
+  font-weight: 500;
+  position: relative;
+  display: inline-block;
+}
+
+.time-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 2rem;
+  height: 2px;
+  background-color: var(--color-ui-normal);
+}
+
+.time-entries {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+/* Morning/Afternoon/Evening color coding */
+#morning .time-heading::after {
+  background-color: rgba(255, 200, 100, 0.5);
+}
+
+#afternoon .time-heading::after {
+  background-color: rgba(100, 175, 255, 0.5);
+}
+
+#evening .time-heading::after {
+  background-color: rgba(170, 130, 220, 0.5);
+}
+
+/* Time jumper */
+.time-jumper {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 0.9em;
+}
+
+.time-jump-link {
+  color: var(--color-tx-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0.25em 0.75em;
+  border-radius: 20px;
+  background-color: rgba(var(--color-tx-normal-rgb), 0.05);
+}
+
+.time-jump-link:hover {
+  color: var(--color-action);
+  background-color: rgba(var(--color-tx-normal-rgb), 0.08);
+}
+
+/* Empty day styling */
+.empty-day {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 10rem;
+}
+
+.empty-message {
+  color: var(--color-tx-muted);
+  font-style: italic;
+}
+
+/* Footer */
+.fleeting-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-ui-normal);
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+  .fleeting-nav {
+    font-size: 0.8em;
+  }
+  
+  .time-jumper {
+    gap: 0.5rem;
+    font-size: 0.8em;
+  }
+  
+  .long-entry {
+    max-height: 120px;
+  }
+}
+
+/* Timeline effect */
+.time-entries::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background-color: var(--color-ui-normal);
+  opacity: 0.2;
 }
