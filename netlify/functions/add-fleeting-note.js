@@ -16,8 +16,8 @@ export async function handler(event) {
     return { statusCode: 400, body: "Invalid JSON" };
   }
 
-  const note = (body.note || "").trim();
-  if (!note) {
+  const rawNote = (body.note || "").trim();
+  if (!rawNote) {
     return { statusCode: 400, body: "note field required" };
   }
 
@@ -61,7 +61,9 @@ export async function handler(event) {
   const yyyyMmDd = getLocalDateString(now);
   const mdPath = `_fleeting/${yyyyMmDd}.md`;
   const formattedTitle = formatTitleDate(yyyyMmDd);
-  const mdContent = `---\ndate: ${yyyyMmDd} ${now.toTimeString().slice(0, 5)}\nslug: "${yyyyMmDd}"\ntitle: "${formattedTitle}"\nlayout: fleeting\n---\n\n${note}\n`;
+  const timestamp = now.toTimeString().slice(0, 5);
+  const note = `${timestamp} - ${rawNote}`;
+  const mdContent = `---\ndate: ${yyyyMmDd} ${timestamp}\nslug: "${yyyyMmDd}"\ntitle: "${formattedTitle}"\nlayout: fleeting\n---\n\n${note}\n`;
 
   // GitHub details from env vars
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
