@@ -64,6 +64,29 @@ function getLocalDateString(date) {
   return `${year}-${month}-${day}`;
 }
 
+// Update yesterday's note if it only contains the default placeholder
+function updatePreviousDay(now) {
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  const prev = new Date(now.getTime() - ONE_DAY_MS);
+  const prevStr = getLocalDateString(prev);
+  const prevPath = path.join(FLEETING_DIR, `${prevStr}.md`);
+  if (!fs.existsSync(prevPath)) return null;
+
+  const content = fs.readFileSync(prevPath, 'utf8');
+  const match = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!match) return null;
+
+  const body = match[2].trim();
+  if (/^Placeholder for future notes\.?(\s*)$/i.test(body)) {
+    const frontmatter = `---\n${match[1]}\n---`;
+    const newContent = `${frontmatter}\n\nNo entries recorded.\n`;
+    fs.writeFileSync(prevPath, newContent);
+    return prevPath;
+  }
+
+  return null;
+}
+
 // Helper function to trigger Netlify build hook
 function triggerNetlifyBuild() {
   return new Promise((resolve, reject) => {
@@ -93,16 +116,18 @@ function triggerNetlifyBuild() {
   });
 }
 
+
+// Trigger Netlify build hook even if no new file was created
+// This ensures any existing content gets deployed
 // Get today's date
 const now = new Date();
 const dateStr = getLocalDateString(now);
 const filePath = path.join(FLEETING_DIR, `${dateStr}.md`);
 
-// Check if file already exists
-if (fs.existsSync(filePath)) {
-  console.log(`File ${dateStr}.md already exists, no need to create it`);
-} else {
-  // Create the new fleeting note
+const filesToCommit = [];
+
+// Create today's fleeting note if it doesn't exist
+if (!fs.existsSync(filePath)) {
   const formattedTitle = formatTitleDate(dateStr);
   const content = `---
 date: ${dateStr} 12:00
@@ -113,39 +138,39 @@ layout: fleeting
 
 Daily notes for ${formattedTitle}.
 `;
-  
-  // Write the file
   try {
     fs.writeFileSync(filePath, content);
     console.log(`Created ${dateStr}.md with title "${formattedTitle}"`);
-    
-    // Commit and push to Git
-    try {
-      // Stage the file
-      execSync(`git add "${filePath}"`, { stdio: 'inherit' });
-      
-      // Commit
-      execSync(`git commit -m "Add fleeting note for ${dateStr}"`, { stdio: 'inherit' });
-      
-      // Pull recent changes (with rebase to avoid conflicts)
-      execSync(`git pull --rebase ${GIT_REMOTE} ${GIT_BRANCH}`, { stdio: 'inherit' });
-      
-      // Push
-      execSync(`git push ${GIT_REMOTE} ${GIT_BRANCH}`, { stdio: 'inherit' });
-      
-      console.log(`Committed and pushed ${dateStr}.md to GitHub`);
-    } catch (gitError) {
-      console.error('Git operation failed:', gitError.message);
-      // Continue to trigger Netlify build even if git operations fail
-    }
+    filesToCommit.push(filePath);
   } catch (err) {
     console.error(`ERROR creating ${dateStr}.md:`, err);
     process.exit(1);
   }
+} else {
+  console.log(`File ${dateStr}.md already exists, no need to create it`);
 }
 
-// Trigger Netlify build hook even if no new file was created
-// This ensures any existing content gets deployed
+const updatedPrev = updatePreviousDay(now);
+if (updatedPrev) {
+  console.log(`Updated ${path.basename(updatedPrev)} with 'No entries recorded.'`);
+  filesToCommit.push(updatedPrev);
+}
+
+if (filesToCommit.length > 0) {
+  try {
+    execSync(`git add ${filesToCommit.map(f => `"${f}"`).join(' ')}`, { stdio: 'inherit' });
+    let message = `Add fleeting note for ${dateStr}`;
+    if (filesToCommit.length > 1) {
+      message += ' and update previous day';
+    }
+    execSync(`git commit -m "${message}"`, { stdio: 'inherit' });
+    execSync(`git pull --rebase ${GIT_REMOTE} ${GIT_BRANCH}`, { stdio: 'inherit' });
+    execSync(`git push ${GIT_REMOTE} ${GIT_BRANCH}`, { stdio: 'inherit' });
+    console.log('Committed and pushed changes to GitHub');
+  } catch (gitError) {
+    console.error('Git operation failed:', gitError.message);
+  }
+}
 console.log('Triggering Netlify build...');
 triggerNetlifyBuild()
   .then(() => {
