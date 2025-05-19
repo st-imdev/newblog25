@@ -35,6 +35,15 @@ Checks and displays the status of all fleeting note files, showing:
 node scripts/check_fleeting_files.js
 ```
 
+### `daily_fleeting_automation.js`
+
+Creates the current day's fleeting note if it doesn't exist and marks the
+previous day's note as "No entries recorded" when no notes were added.
+
+```
+node scripts/daily_fleeting_automation.js
+```
+
 ## Jekyll Settings
 
 Fleeting notes for future dates are enabled by the `future: true` setting in `_config.yml`.
