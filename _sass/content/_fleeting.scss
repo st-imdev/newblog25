@@ -6,8 +6,11 @@
 
 .fleeting-entry::before {
   content: attr(data-time);
-  color: var(--color-tx-muted);
+  color: var(--color-tx-faint);
   font-family: var(--font-ui);
-  min-width: 4em;
-  margin-right: 0.5em;
+  font-size: 0.8em;
+  min-width: 3.5em;
+  margin-right: 0.7em;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
 }
