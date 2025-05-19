@@ -1,0 +1,13 @@
+.fleeting-entry {
+  display: flex;
+  align-items: baseline;
+  margin: 0.4em 0;
+}
+
+.fleeting-entry::before {
+  content: attr(data-time);
+  color: var(--color-tx-muted);
+  font-family: var(--font-ui);
+  min-width: 4em;
+  margin-right: 0.5em;
+}
