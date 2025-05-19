@@ -44,6 +44,15 @@ previous day's note as "No entries recorded" when no notes were added.
 node scripts/daily_fleeting_automation.js
 ```
 
+### `remove_placeholder_from_fleeting.js`
+
+Removes the "Placeholder for future notes." line from any fleeting note once
+actual content has been added.
+
+```
+node scripts/remove_placeholder_from_fleeting.js
+```
+
 ## Jekyll Settings
 
 Fleeting notes for future dates are enabled by the `future: true` setting in `_config.yml`.
