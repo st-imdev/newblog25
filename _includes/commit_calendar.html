@@ -1,0 +1,140 @@
+<div class="commit-calendar-container">
+  <div class="commit-calendar-header">
+    <h3 class="font-ui">Daily Progress</h3>
+    <p class="muted small">My coding and writing activity</p>
+  </div>
+  
+  <div class="commit-calendar">
+    <!-- Light theme calendar (default) -->
+    <img id="calendar-light" 
+         src="https://habit-calendar.onrender.com/calendar.png?theme=light" 
+         alt="Habit Calendar - Light Theme" 
+         loading="lazy"
+         style="width: 100%; height: auto; max-width: 600px;">
+    
+    <!-- Dark theme calendar (hidden by default) -->
+    <img id="calendar-dark" 
+         src="https://habit-calendar.onrender.com/calendar.png?theme=dark" 
+         alt="Habit Calendar - Dark Theme" 
+         loading="lazy"
+         style="width: 100%; height: auto; max-width: 600px; display: none;">
+  </div>
+</div>
+
+<style>
+  .commit-calendar-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: var(--color-bg-secondary, transparent);
+    border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+  }
+  
+  .commit-calendar-header {
+    margin-bottom: 1rem;
+  }
+  
+  .commit-calendar-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-tx-normal);
+  }
+  
+  .commit-calendar-header p {
+    margin: 0;
+    color: var(--color-tx-muted);
+    font-size: var(--font-small);
+  }
+  
+  .commit-calendar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+  }
+  
+  .commit-calendar img {
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Dark theme styles */
+  .theme-dark .commit-calendar-container {
+    border-color: var(--color-border, rgba(255,255,255,0.1));
+  }
+  
+  .theme-dark #calendar-light {
+    display: none !important;
+  }
+  
+  .theme-dark #calendar-dark {
+    display: block !important;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .commit-calendar-container {
+      margin: 1.5rem 0;
+      padding: 1rem;
+    }
+    
+    .commit-calendar-header h3 {
+      font-size: 1.1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .commit-calendar-container {
+      margin: 1rem 0;
+      padding: 0.75rem;
+    }
+    
+    .commit-calendar-header h3 {
+      font-size: 1rem;
+    }
+    
+    .commit-calendar {
+      min-height: 80px;
+    }
+  }
+</style>
+
+<script>
+  // Ensure calendar switches properly when theme changes
+  document.addEventListener('DOMContentLoaded', function() {
+    function updateCalendarTheme() {
+      const isDark = document.body.classList.contains('theme-dark');
+      const lightCalendar = document.getElementById('calendar-light');
+      const darkCalendar = document.getElementById('calendar-dark');
+      
+      if (lightCalendar && darkCalendar) {
+        if (isDark) {
+          lightCalendar.style.display = 'none';
+          darkCalendar.style.display = 'block';
+        } else {
+          lightCalendar.style.display = 'block';
+          darkCalendar.style.display = 'none';
+        }
+      }
+    }
+    
+    // Initial update
+    updateCalendarTheme();
+    
+    // Watch for theme changes
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          updateCalendarTheme();
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  });
+</script> 

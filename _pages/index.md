@@ -6,6 +6,8 @@ permalink: /
 ---
 
 <div class="wrap">
+  {% include commit_calendar.html %}
+  
   <p style="margin: 2rem 0 1.5rem 0;"><a href="/notes/latest" class="muted font-ui">Latest</a></p>
 
   {% assign latest_note = site.notes | sort: "date" | reverse | first %}
