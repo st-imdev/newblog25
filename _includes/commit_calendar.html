@@ -1,7 +1,6 @@
 <div class="commit-calendar-container">
   <div class="commit-calendar-header">
     <h3 class="font-ui">Daily Progress</h3>
-    <p class="muted small">My coding and writing activity</p>
   </div>
   
   <div class="commit-calendar">
@@ -10,14 +9,14 @@
          src="https://habit-calendar.onrender.com/calendar.png?theme=light" 
          alt="Habit Calendar - Light Theme" 
          loading="lazy"
-         style="width: 100%; height: auto; max-width: 600px;">
+         style="width: 100%; height: auto; max-width: 800px;">
     
     <!-- Dark theme calendar (hidden by default) -->
     <img id="calendar-dark" 
          src="https://habit-calendar.onrender.com/calendar.png?theme=dark" 
          alt="Habit Calendar - Dark Theme" 
          loading="lazy"
-         style="width: 100%; height: auto; max-width: 600px; display: none;">
+         style="width: 100%; height: auto; max-width: 800px; display: none;">
   </div>
 </div>
 
@@ -31,27 +30,22 @@
   }
   
   .commit-calendar-header {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
   }
   
   .commit-calendar-header h3 {
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-tx-normal);
-  }
-  
-  .commit-calendar-header p {
-    margin: 0;
-    color: var(--color-tx-muted);
-    font-size: var(--font-small);
   }
   
   .commit-calendar {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 120px;
+    min-height: 140px;
   }
   
   .commit-calendar img {
@@ -83,6 +77,10 @@
     .commit-calendar-header h3 {
       font-size: 1.1rem;
     }
+    
+    .commit-calendar img {
+      max-width: 100% !important;
+    }
   }
   
   @media (max-width: 480px) {
@@ -96,7 +94,7 @@
     }
     
     .commit-calendar {
-      min-height: 80px;
+      min-height: 100px;
     }
   }
 </style>
