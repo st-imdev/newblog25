@@ -7,18 +7,15 @@ permalink: /about
 <div class="wrap">
   <h1>About</h1>
   
-  <p>I'm Scott Taylor, an obsessive tinkerer working on simple solutions to complex problems. Over the past decade, I've built and sold a few startups, as well as written a couple of books.</p>
+  <p>I've been building things since I was 15 – starting with my first web company and following curiosity wherever it led. Along the way, I've been fortunate to help build companies that created value, advise others doing the same, and even write a couple of books. The accolades and numbers matter less than the journey itself.</p>
   
-  <h2>What I'm interested in</h2>
+  <p>What drives me is being a few steps ahead of the curve – whether that was early bets on Bitcoin, AI, or whatever comes next. I'm currently building a startup focused on shared memory for AI agents, having spent the last decade as Global Head of AI Product at a major asset manager.</p>
   
-  <p>My work spans several domains, but I'm particularly focused on:</p>
+  <p>But here's what I've learned: none of the external stuff really matters. A billionaire would trade their fortune for another day on this earth. We're a tiny flicker in an infinite cosmos – that famous pale blue dot photo puts everything in perspective. Our biggest battles are internal ones.</p>
   
-  <ul>
-    <li>Building better product development processes</li>
-    <li>Knowledge management and networked thought</li>
-    <li>Climate change solutions and sustainability</li>
-    <li>The impact of technology on human cognition</li>
-  </ul>
+  <p>I've failed more times than I can count, and that's taught me more than any success. I find wisdom in Stoicism, inspiration in creators like Rick Rubin and Steve Jobs, and respect for those bold enough to think differently.</p>
+  
+  <p>Life is short. Curiosity is everything. The rest is just noise.</p>
   
   <h2>This digital garden</h2>
   
