@@ -31,18 +31,72 @@
     opacity: 0;
     transition: opacity 0.2s ease;
     max-width: 200px;
+    font-family: var(--font-ui);
   }
 
   .theme-dark .graph-tooltip {
-    background: #1a1a1a;
-    border-color: #333;
-    color: #fff;
+    background: var(--color-bg-secondary);
+    border-color: var(--color-ui-normal);
+    color: var(--color-tx-normal);
+  }
+
+  /* Graph text labels */
+  .graph-text-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+  }
+
+  .graph-text-label {
+    position: absolute;
+    color: var(--color-tx-normal);
+    text-align: center;
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease-out;
+    font-weight: 400;
+    text-shadow: 
+      -1px -1px 0 var(--color-bg-primary), 
+      1px -1px 0 var(--color-bg-primary), 
+      -1px 1px 0 var(--color-bg-primary), 
+      1px 1px 0 var(--color-bg-primary);
+  }
+
+  .graph-text-label:hover {
+    color: var(--color-action);
+    text-decoration: none;
+    transform: scale(1.1);
+  }
+
+  .graph-text-label.active {
+    color: var(--color-action);
+    font-weight: 500;
+  }
+
+  .graph-text-label.inactive {
+    opacity: 0.3;
+  }
+
+  .theme-dark .graph-text-label {
+    text-shadow: 
+      -1px -1px 0 var(--color-bg-primary), 
+      1px -1px 0 var(--color-bg-primary), 
+      -1px 1px 0 var(--color-bg-primary), 
+      1px 1px 0 var(--color-bg-primary);
   }
 </style>
 
 <div class="wrap">
   <div id="graph-container">
     <div class="graph-tooltip" id="graph-tooltip"></div>
+    <div class="graph-text-labels" id="graph-text-labels"></div>
     <script>
       // Dynamically load Three.js and ensure it doesn't conflict with other libraries
       document.addEventListener("DOMContentLoaded", function() {
@@ -63,46 +117,42 @@
       function initializeGraph() {
         console.log("Initializing 3D graph...");
         
-        // Graph configuration
-        const MINIMAL_NODE_SIZE = 0.3;
+        // Graph configuration - slowed down physics
+        const MINIMAL_NODE_SIZE = 0.4;
         const MAX_NODE_SIZE = 0.8;
-        const ACTIVE_SCALE_FACTOR = 1.5;
-        const MAX_LABEL_LENGTH = 50;
-        const FORCE_STRENGTH = 0.01;
-        const DAMPING = 0.95;
-        const MOUSE_INFLUENCE_RADIUS = 8;
-        const LINK_DISTANCE = 4;
+        const ACTIVE_SCALE_FACTOR = 1.3;
+        const MAX_LABEL_LENGTH = 30;
+        const FORCE_STRENGTH = 0.003; // Reduced from 0.01
+        const DAMPING = 0.98; // Increased from 0.95 for slower movement
+        const MOUSE_INFLUENCE_RADIUS = 6; // Reduced from 8
+        const LINK_DISTANCE = 3;
         
         // Scene setup
         const container = document.getElementById('graph-container');
         const tooltip = document.getElementById('graph-tooltip');
+        const textLabelsContainer = document.getElementById('graph-text-labels');
         const scene = new THREE.Scene();
         
-        // Set background based on theme
-        const isDarkMode = document.body.classList.contains('theme-dark');
-        scene.background = new THREE.Color(isDarkMode ? 0x0f0f0f : 0xffffff);
+        // Set background to transparent for better integration
+        scene.background = null;
         
         // Camera setup
         const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 15);
+        camera.position.set(0, 0, 12);
         
         // Renderer setup
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setClearColor(0x000000, 0); // Transparent background
         container.appendChild(renderer.domElement);
         
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
         scene.add(ambientLight);
         
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(10, 10, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 1024;
-        directionalLight.shadow.mapSize.height = 1024;
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        directionalLight.position.set(5, 5, 5);
         scene.add(directionalLight);
         
         // Mouse tracking
@@ -117,6 +167,23 @@
         let nodeObjects = [];
         let edgeObjects = [];
         let nodeMap = new Map();
+        let textLabels = [];
+        
+        // Get theme colors
+        function getThemeColors() {
+          const isDarkMode = document.body.classList.contains('theme-dark');
+          const computedStyle = getComputedStyle(document.documentElement);
+          
+          return {
+            isDark: isDarkMode,
+            nodeDefault: isDarkMode ? '#838368' : '#838368', // palette-green
+            nodeActive: isDarkMode ? '#864A4F' : '#864A4F',   // palette-ruby  
+            nodeHover: isDarkMode ? '#DACABA' : '#DACABA',    // palette-beige
+            edgeDefault: isDarkMode ? '#403E3C' : '#CECDC3',  // muted colors
+            textDefault: computedStyle.getPropertyValue('--color-tx-normal').trim(),
+            textActive: computedStyle.getPropertyValue('--color-action').trim()
+          };
+        }
         
         // Fetch the graph data
         fetch('{{ site.baseurl }}/assets/notes_graph.json')
@@ -158,35 +225,34 @@
             });
             
             nodesData.forEach((node) => {
-              let weight = MINIMAL_NODE_SIZE + (nodeDegree[node.id] || 0) * 0.1;
+              let weight = MINIMAL_NODE_SIZE + (nodeDegree[node.id] || 0) * 0.08;
               if (weight > MAX_NODE_SIZE) weight = MAX_NODE_SIZE;
               nodeSize[node.id] = weight;
             });
             
-            // Create materials
-            const nodeMaterial = new THREE.MeshLambertMaterial({ 
-              color: isDarkMode ? 0x6366f1 : 0x8b88e6 
-            });
-            const activeMaterial = new THREE.MeshLambertMaterial({ 
-              color: isDarkMode ? 0xffffff : 0x000000 
-            });
-            const hoveredMaterial = new THREE.MeshLambertMaterial({ 
-              color: isDarkMode ? 0x10b981 : 0x059669 
-            });
+            const colors = getThemeColors();
             
-            // Create 3D nodes
-            const nodeGeometry = new THREE.SphereGeometry(1, 12, 8);
+            // Create 2D circular nodes (using ring geometry for flat circles)
+            const nodeGeometry = new THREE.RingGeometry(0.8, 1, 16);
+            const nodeMaterial = new THREE.MeshBasicMaterial({ 
+              color: colors.nodeDefault,
+              transparent: true,
+              opacity: 0.8
+            });
             
             nodesData.forEach((nodeData, index) => {
               // Create node mesh
               const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
               
-              // Random initial position in 3D space
+              // Random initial position in 3D space but keep z mostly flat
               nodeMesh.position.set(
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 8
+                (Math.random() - 0.5) * 16,
+                (Math.random() - 0.5) * 16,
+                (Math.random() - 0.5) * 2
               );
+              
+              // Make it face the camera (2D effect)
+              nodeMesh.lookAt(camera.position);
               
               // Scale based on connections
               const scale = nodeSize[nodeData.id];
@@ -207,22 +273,45 @@
               
               // Highlight active node
               if (nodeMesh.userData.isActive) {
-                nodeMesh.material = activeMaterial.clone();
+                nodeMesh.material.color.setHex(parseInt(colors.nodeActive.replace('#', '0x')));
                 nodeMesh.userData.targetScale = scale * ACTIVE_SCALE_FACTOR;
               }
-              
-              nodeMesh.castShadow = true;
-              nodeMesh.receiveShadow = true;
               
               scene.add(nodeMesh);
               nodeObjects.push(nodeMesh);
               nodeMap.set(nodeData.id, nodeMesh);
+              
+              // Create text label
+              if (nodeData.label) {
+                const textLabel = document.createElement('a');
+                textLabel.className = 'graph-text-label';
+                if (nodeMesh.userData.isActive) {
+                  textLabel.classList.add('active');
+                }
+                textLabel.href = nodeData.path;
+                textLabel.textContent = shorten(nodeData.label.replace(/_*/g, ""), MAX_LABEL_LENGTH);
+                textLabel.style.position = 'absolute';
+                textLabel.style.transform = 'translate(-50%, -50%)';
+                
+                // Prevent default link behavior and handle click
+                textLabel.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  window.location = nodeData.path;
+                });
+                
+                textLabelsContainer.appendChild(textLabel);
+                textLabels.push({
+                  element: textLabel,
+                  nodeId: nodeData.id,
+                  node: nodeMesh
+                });
+              }
             });
             
             // Create 3D edges
             const lineMaterial = new THREE.LineBasicMaterial({ 
-              color: isDarkMode ? 0x404040 : 0xcccccc, 
-              opacity: 0.6, 
+              color: colors.edgeDefault,
+              opacity: 0.4, 
               transparent: true 
             });
             
@@ -277,16 +366,20 @@
                 if (hoveredNode !== newHoveredNode) {
                   // Reset previous hovered node
                   if (hoveredNode && !hoveredNode.userData.isActive) {
-                    hoveredNode.material = nodeMaterial.clone();
+                    hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
                     hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
+                    resetHighlighting();
                   }
                   
                   // Set new hovered node
                   hoveredNode = newHoveredNode;
                   if (!hoveredNode.userData.isActive) {
-                    hoveredNode.material = hoveredMaterial.clone();
-                    hoveredNode.userData.targetScale = hoveredNode.userData.originalScale * 1.2;
+                    hoveredNode.material.color.setHex(parseInt(colors.nodeHover.replace('#', '0x')));
+                    hoveredNode.userData.targetScale = hoveredNode.userData.originalScale * 1.1;
                   }
+                  
+                  // Highlight connected nodes and edges
+                  highlightConnections(hoveredNode);
                   
                   // Show tooltip
                   showTooltip(event, hoveredNode.userData);
@@ -294,12 +387,67 @@
               } else {
                 // Reset hovered node
                 if (hoveredNode && !hoveredNode.userData.isActive) {
-                  hoveredNode.material = nodeMaterial.clone();
+                  hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
                   hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
                 }
                 hoveredNode = null;
+                resetHighlighting();
                 hideTooltip();
               }
+            }
+            
+            function highlightConnections(centerNode) {
+              const connectedNodeIds = new Set();
+              connectedNodeIds.add(centerNode.userData.id);
+              
+              // Add connected nodes
+              centerNode.userData.connections.forEach(node => {
+                connectedNodeIds.add(node.userData.id);
+              });
+              
+              // Highlight/dim nodes
+              nodeObjects.forEach(node => {
+                if (!connectedNodeIds.has(node.userData.id)) {
+                  node.material.opacity = 0.2;
+                }
+              });
+              
+              // Highlight/dim edges
+              edgeObjects.forEach(edge => {
+                const sourceId = edge.userData.source.userData.id;
+                const targetId = edge.userData.target.userData.id;
+                if (sourceId === centerNode.userData.id || targetId === centerNode.userData.id) {
+                  edge.material.opacity = 0.8;
+                } else {
+                  edge.material.opacity = 0.1;
+                }
+              });
+              
+              // Highlight/dim text labels
+              textLabels.forEach(label => {
+                if (connectedNodeIds.has(label.nodeId)) {
+                  label.element.classList.remove('inactive');
+                } else {
+                  label.element.classList.add('inactive');
+                }
+              });
+            }
+            
+            function resetHighlighting() {
+              // Reset node opacity
+              nodeObjects.forEach(node => {
+                node.material.opacity = 0.8;
+              });
+              
+              // Reset edge opacity
+              edgeObjects.forEach(edge => {
+                edge.material.opacity = 0.4;
+              });
+              
+              // Reset text labels
+              textLabels.forEach(label => {
+                label.element.classList.remove('inactive');
+              });
             }
             
             function onClick(event) {
@@ -320,7 +468,7 @@
                   ${nodeData.label ? `<strong>${nodeData.label}</strong>` : ''}
                   ${nodeData.excerpt ? `<div style="margin-top: 0.25rem; font-size: 0.75rem; opacity: 0.8;">${nodeData.excerpt.substring(0, 100)}...</div>` : ''}
                 `;
-                tooltip.style.left = event.clientX + 10 + 'px';
+                tooltip.style.left = Math.min(event.clientX + 10, window.innerWidth - 220) + 'px';
                 tooltip.style.top = event.clientY - 10 + 'px';
                 tooltip.style.opacity = '1';
               }
@@ -330,14 +478,32 @@
               tooltip.style.opacity = '0';
             }
             
+            // Update text label positions
+            function updateTextLabels() {
+              textLabels.forEach(label => {
+                const node = label.node;
+                const vector = node.position.clone();
+                vector.project(camera);
+                
+                const x = (vector.x * 0.5 + 0.5) * container.clientWidth;
+                const y = (vector.y * -0.5 + 0.5) * container.clientHeight;
+                
+                label.element.style.left = x + 'px';
+                label.element.style.top = (y + node.userData.targetScale * 25) + 'px';
+              });
+            }
+            
             container.addEventListener('mousemove', onMouseMove);
             container.addEventListener('click', onClick);
-            container.addEventListener('mouseleave', hideTooltip);
+            container.addEventListener('mouseleave', () => {
+              hideTooltip();
+              resetHighlighting();
+            });
             
-            // Camera controls
+            // Camera controls - slower and smoother
             let isMouseDown = false;
             let mouseDownPosition = { x: 0, y: 0 };
-            let cameraPosition = { theta: 0, phi: 0, radius: 15 };
+            let cameraPosition = { theta: 0, phi: 0, radius: 12 };
             
             container.addEventListener('mousedown', (event) => {
               if (event.button === 0) { // Left mouse button
@@ -357,9 +523,9 @@
                 const deltaX = event.clientX - mouseDownPosition.x;
                 const deltaY = event.clientY - mouseDownPosition.y;
                 
-                cameraPosition.theta -= deltaX * 0.005;
-                cameraPosition.phi += deltaY * 0.005;
-                cameraPosition.phi = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, cameraPosition.phi));
+                cameraPosition.theta -= deltaX * 0.003; // Reduced sensitivity
+                cameraPosition.phi += deltaY * 0.003;
+                cameraPosition.phi = Math.max(-Math.PI/4, Math.min(Math.PI/4, cameraPosition.phi)); // Limited rotation
                 
                 updateCameraPosition();
                 
@@ -368,11 +534,11 @@
               }
             });
             
-            // Zoom with mouse wheel
+            // Zoom with mouse wheel - slower
             container.addEventListener('wheel', (event) => {
               event.preventDefault();
-              cameraPosition.radius += event.deltaY * 0.01;
-              cameraPosition.radius = Math.max(5, Math.min(30, cameraPosition.radius));
+              cameraPosition.radius += event.deltaY * 0.005; // Reduced sensitivity
+              cameraPosition.radius = Math.max(8, Math.min(20, cameraPosition.radius));
               updateCameraPosition();
             });
             
@@ -383,7 +549,7 @@
               camera.lookAt(0, 0, 0);
             }
             
-            // Animation loop
+            // Animation loop - slower physics
             function animate() {
               requestAnimationFrame(animate);
               
@@ -391,11 +557,11 @@
               nodeObjects.forEach(node => {
                 const force = new THREE.Vector3();
                 
-                // Repulsion from other nodes
+                // Repulsion from other nodes (weaker)
                 nodeObjects.forEach(otherNode => {
                   if (node !== otherNode) {
                     const distance = node.position.distanceTo(otherNode.position);
-                    if (distance < LINK_DISTANCE * 2) {
+                    if (distance < LINK_DISTANCE * 2.5) {
                       const repulsion = node.position.clone().sub(otherNode.position).normalize();
                       const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
                       force.add(repulsion.multiplyScalar(strength));
@@ -403,25 +569,25 @@
                   }
                 });
                 
-                // Attraction to connected nodes
+                // Attraction to connected nodes (weaker)
                 node.userData.connections.forEach(connectedNode => {
                   const distance = node.position.distanceTo(connectedNode.position);
                   if (distance > LINK_DISTANCE) {
                     const attraction = connectedNode.position.clone().sub(node.position).normalize();
-                    const strength = (distance - LINK_DISTANCE) * 0.002;
+                    const strength = (distance - LINK_DISTANCE) * 0.001; // Reduced
                     force.add(attraction.multiplyScalar(strength));
                   }
                 });
                 
-                // Attraction to center (weak)
-                const centerAttraction = node.position.clone().multiplyScalar(-0.0005);
+                // Attraction to center (very weak)
+                const centerAttraction = node.position.clone().multiplyScalar(-0.0002);
                 force.add(centerAttraction);
                 
-                // Mouse influence
+                // Mouse influence (gentler)
                 const mouseDistance = node.position.distanceTo(mousePosition3D);
                 if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
                   const mouseRepulsion = node.position.clone().sub(mousePosition3D).normalize();
-                  const strength = 0.05 * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
+                  const strength = 0.02 * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS); // Reduced
                   force.add(mouseRepulsion.multiplyScalar(strength));
                 }
                 
@@ -432,11 +598,14 @@
                 // Apply velocity to position
                 node.position.add(node.userData.velocity);
                 
-                // Animate scale changes
+                // Keep nodes facing camera for 2D effect
+                node.lookAt(camera.position);
+                
+                // Animate scale changes (slower)
                 const currentScale = node.scale.x;
                 const targetScale = node.userData.targetScale;
                 if (Math.abs(currentScale - targetScale) > 0.01) {
-                  const newScale = currentScale + (targetScale - currentScale) * 0.1;
+                  const newScale = currentScale + (targetScale - currentScale) * 0.05; // Slower scaling
                   node.scale.setScalar(newScale);
                 }
               });
@@ -452,6 +621,9 @@
                 positions[5] = edge.userData.target.position.z;
                 edge.geometry.attributes.position.needsUpdate = true;
               });
+              
+              // Update text labels
+              updateTextLabels();
               
               // Render
               renderer.render(scene, camera);
@@ -472,19 +644,22 @@
             const observer = new MutationObserver(function(mutations) {
               mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
-                  const isDark = document.body.classList.contains('theme-dark');
-                  scene.background = new THREE.Color(isDark ? 0x0f0f0f : 0xffffff);
+                  const newColors = getThemeColors();
                   
                   // Update node colors
                   nodeObjects.forEach(node => {
-                    if (!node.userData.isActive && node !== hoveredNode) {
-                      node.material.color.setHex(isDark ? 0x6366f1 : 0x8b88e6);
+                    if (node.userData.isActive) {
+                      node.material.color.setHex(parseInt(newColors.nodeActive.replace('#', '0x')));
+                    } else if (node === hoveredNode) {
+                      node.material.color.setHex(parseInt(newColors.nodeHover.replace('#', '0x')));
+                    } else {
+                      node.material.color.setHex(parseInt(newColors.nodeDefault.replace('#', '0x')));
                     }
                   });
                   
                   // Update edge colors
                   edgeObjects.forEach(edge => {
-                    edge.material.color.setHex(isDark ? 0x404040 : 0xcccccc);
+                    edge.material.color.setHex(parseInt(newColors.edgeDefault.replace('#', '0x')));
                   });
                 }
               });
