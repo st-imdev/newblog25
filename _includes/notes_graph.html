@@ -1,336 +1,507 @@
 <style>
-  .links line {
-    stroke: #ccc;
-    opacity: 0.5;
-  }
-
-  .nodes circle {
-    cursor: pointer;
-    fill: #8b88e6;
-    transition: all 0.15s ease-out;
-  }
-
-  .text text {
-    cursor: pointer;
-    fill: #333;
-    text-shadow: -1px -1px 0 #fafafabb, 1px -1px 0 #fafafabb, -1px 1px 0 #fafafabb, 1px 1px 0 #fafafabb;
-  }
-
-  .nodes [active],
-  .text [active] {
-    cursor: pointer;
-    fill: black;
-  }
-
-  .inactive {
-    opacity: 0.1;
-    transition: all 0.15s ease-out;
-  }
-
-  #graph-wrapper {
-    background: var(--color-bg-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--color-ui-normal);
-    height: auto;
+  #graph-container {
+    height: 600px;
+    width: 100%;
     max-width: var(--wrap-normal);
     margin: 2rem auto;
+    position: relative;
+    cursor: grab;
+    overflow: hidden;
+  }
+
+  #graph-container:active {
+    cursor: grabbing;
   }
   
-  #graph-wrapper > svg {
-    max-width: 100%;
+  #graph-container canvas {
+    width: 100%;
+    height: 100%;
     display: block;
   }
 
-  .theme-dark #graph-wrapper {
+  .graph-tooltip {
+    position: absolute;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-ui-normal);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    max-width: 200px;
+  }
+
+  .theme-dark .graph-tooltip {
     background: #1a1a1a;
-  }
-  
-  .theme-dark .text text {
-    fill: #fff;
-    text-shadow: none;
-  }
-  
-  .theme-dark .text [active] {
-    fill: #fff;
+    border-color: #333;
+    color: #fff;
   }
 </style>
 
 <div class="wrap">
-  <div id="graph-wrapper">
+  <div id="graph-container">
+    <div class="graph-tooltip" id="graph-tooltip"></div>
     <script>
-      // Dynamically load D3.js and ensure it doesn't conflict with other libraries
+      // Dynamically load Three.js and ensure it doesn't conflict with other libraries
       document.addEventListener("DOMContentLoaded", function() {
-        // Check if D3 is already loaded
-        if (typeof d3 !== 'undefined') {
+        // Check if Three.js is already loaded
+        if (typeof THREE !== 'undefined') {
           initializeGraph();
           return;
         }
         
-        // Otherwise, load D3
+        // Otherwise, load Three.js
         var script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
         script.crossOrigin = 'anonymous';
-        script.integrity = "sha512-FHsFVKQ/T1KWJDGSbrUhTJyS1ph3eRrxI228ND0EGaEp6v4a/vGwPWd3Dtd/+9cI7ccofZvl/wulICEurHN1pg==";
         script.onload = initializeGraph;
         document.body.appendChild(script);
       });
 
       function initializeGraph() {
-        console.log("Initializing graph...");
-        const MINIMAL_NODE_SIZE = 8;
-        const MAX_NODE_SIZE = 12;
-        const ACTIVE_RADIUS_FACTOR = 1.5;
-        const STROKE = 1;
-        const FONT_SIZE = 16;
-        const TICKS = 200;
-        const FONT_BASELINE = 40;
+        console.log("Initializing 3D graph...");
+        
+        // Graph configuration
+        const MINIMAL_NODE_SIZE = 0.3;
+        const MAX_NODE_SIZE = 0.8;
+        const ACTIVE_SCALE_FACTOR = 1.5;
         const MAX_LABEL_LENGTH = 50;
-
-        // Fetch the graph data instead of including it directly
+        const FORCE_STRENGTH = 0.01;
+        const DAMPING = 0.95;
+        const MOUSE_INFLUENCE_RADIUS = 8;
+        const LINK_DISTANCE = 4;
+        
+        // Scene setup
+        const container = document.getElementById('graph-container');
+        const tooltip = document.getElementById('graph-tooltip');
+        const scene = new THREE.Scene();
+        
+        // Set background based on theme
+        const isDarkMode = document.body.classList.contains('theme-dark');
+        scene.background = new THREE.Color(isDarkMode ? 0x0f0f0f : 0xffffff);
+        
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 15);
+        
+        // Renderer setup
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        scene.add(directionalLight);
+        
+        // Mouse tracking
+        const mouse = new THREE.Vector2();
+        const raycaster = new THREE.Raycaster();
+        let mousePosition3D = new THREE.Vector3();
+        let hoveredNode = null;
+        
+        // Graph data containers
+        let nodes = [];
+        let edges = [];
+        let nodeObjects = [];
+        let edgeObjects = [];
+        let nodeMap = new Map();
+        
+        // Fetch the graph data
         fetch('{{ site.baseurl }}/assets/notes_graph.json')
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
-           })
+          })
           .then(graphData => {
-            console.log("--- D3 Initialization Started ---");
+            console.log("--- Three.js Initialization Started ---");
             console.log("Graph data fetched:", graphData);
-        
-        // Add empty arrays if missing to prevent errors
-        if (!graphData.nodes) graphData.nodes = [];
-        if (!graphData.edges) graphData.edges = [];
-        
-        let nodesData = graphData.nodes;
-        let linksData = graphData.edges;
-
-        // Check if there's data available
-        if (nodesData.length === 0) {
-          document.getElementById('graph-wrapper').innerHTML = '<p class="muted" style="text-align: center; padding: 20px;">No notes found to display in the graph.</p>';
-          return;
-        }
-
-        const nodeSize = {};
-
-        const updateNodeSize = () => {
-          nodesData.forEach((el) => {
-            let weight =
-              3 *
-              Math.sqrt(
-                linksData.filter((l) => l.source.id === el.id || l.target.id === el.id)
-                  .length + 1
-              );
-            if (weight < MINIMAL_NODE_SIZE) {
-              weight = MINIMAL_NODE_SIZE;
-            } else if (weight > MAX_NODE_SIZE) {
-              weight = MAX_NODE_SIZE;
+            
+            // Add empty arrays if missing to prevent errors
+            if (!graphData.nodes) graphData.nodes = [];
+            if (!graphData.edges) graphData.edges = [];
+            
+            let nodesData = graphData.nodes;
+            let linksData = graphData.edges;
+            
+            // Check if there's data available
+            if (nodesData.length === 0) {
+              container.innerHTML = '<p class="muted" style="text-align: center; padding: 20px;">No notes found to display in the graph.</p>';
+              return;
             }
-            nodeSize[el.id] = weight;
-          });
-        };
-
-        const onClick = (d) => {
-          window.location = d.path
-        };
-
-        const onMouseover = function (d) {
-          const relatedNodesSet = new Set();
-          linksData
-            .filter((n) => n.target.id == d.id || n.source.id == d.id)
-            .forEach((n) => {
-              relatedNodesSet.add(n.target.id);
-              relatedNodesSet.add(n.source.id);
+            
+            // Create node size mapping
+            const nodeSize = {};
+            const nodeDegree = {};
+            
+            // Calculate node degrees
+            nodesData.forEach(node => {
+              nodeDegree[node.id] = 0;
             });
-
-          node.attr("class", (node_d) => {
-            if (node_d.id !== d.id && !relatedNodesSet.has(node_d.id)) {
-              return "inactive";
+            
+            linksData.forEach(link => {
+              if (nodeDegree[link.source] !== undefined) nodeDegree[link.source]++;
+              if (nodeDegree[link.target] !== undefined) nodeDegree[link.target]++;
+            });
+            
+            nodesData.forEach((node) => {
+              let weight = MINIMAL_NODE_SIZE + (nodeDegree[node.id] || 0) * 0.1;
+              if (weight > MAX_NODE_SIZE) weight = MAX_NODE_SIZE;
+              nodeSize[node.id] = weight;
+            });
+            
+            // Create materials
+            const nodeMaterial = new THREE.MeshLambertMaterial({ 
+              color: isDarkMode ? 0x6366f1 : 0x8b88e6 
+            });
+            const activeMaterial = new THREE.MeshLambertMaterial({ 
+              color: isDarkMode ? 0xffffff : 0x000000 
+            });
+            const hoveredMaterial = new THREE.MeshLambertMaterial({ 
+              color: isDarkMode ? 0x10b981 : 0x059669 
+            });
+            
+            // Create 3D nodes
+            const nodeGeometry = new THREE.SphereGeometry(1, 12, 8);
+            
+            nodesData.forEach((nodeData, index) => {
+              // Create node mesh
+              const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
+              
+              // Random initial position in 3D space
+              nodeMesh.position.set(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 8
+              );
+              
+              // Scale based on connections
+              const scale = nodeSize[nodeData.id];
+              nodeMesh.scale.setScalar(scale);
+              
+              // Store node data
+              nodeMesh.userData = {
+                id: nodeData.id,
+                path: nodeData.path,
+                label: nodeData.label,
+                excerpt: nodeData.excerpt,
+                originalScale: scale,
+                targetScale: scale,
+                velocity: new THREE.Vector3(),
+                isActive: window.location.pathname.includes(nodeData.path),
+                connections: []
+              };
+              
+              // Highlight active node
+              if (nodeMesh.userData.isActive) {
+                nodeMesh.material = activeMaterial.clone();
+                nodeMesh.userData.targetScale = scale * ACTIVE_SCALE_FACTOR;
+              }
+              
+              nodeMesh.castShadow = true;
+              nodeMesh.receiveShadow = true;
+              
+              scene.add(nodeMesh);
+              nodeObjects.push(nodeMesh);
+              nodeMap.set(nodeData.id, nodeMesh);
+            });
+            
+            // Create 3D edges
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+              color: isDarkMode ? 0x404040 : 0xcccccc, 
+              opacity: 0.6, 
+              transparent: true 
+            });
+            
+            linksData.forEach((linkData) => {
+              const sourceNode = nodeMap.get(linkData.source);
+              const targetNode = nodeMap.get(linkData.target);
+              
+              if (sourceNode && targetNode) {
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                  sourceNode.position.clone(),
+                  targetNode.position.clone()
+                ]);
+                
+                const line = new THREE.Line(lineGeometry, lineMaterial.clone());
+                line.userData = {
+                  source: sourceNode,
+                  target: targetNode
+                };
+                
+                // Store connections in nodes
+                sourceNode.userData.connections.push(targetNode);
+                targetNode.userData.connections.push(sourceNode);
+                
+                scene.add(line);
+                edgeObjects.push(line);
+              }
+            });
+            
+            // Mouse interaction handlers
+            function updateMousePosition(event) {
+              const rect = container.getBoundingClientRect();
+              mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+              mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+              
+              // Update 3D mouse position for node influence
+              raycaster.setFromCamera(mouse, camera);
+              const intersectPoint = new THREE.Vector3();
+              raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), intersectPoint);
+              mousePosition3D.copy(intersectPoint);
             }
-            return "";
-          });
-
-          link.attr("class", (link_d) => {
-            if (link_d.source.id !== d.id && link_d.target.id !== d.id) {
-              return "inactive";
+            
+            function onMouseMove(event) {
+              updateMousePosition(event);
+              
+              // Check for node hover
+              raycaster.setFromCamera(mouse, camera);
+              const intersects = raycaster.intersectObjects(nodeObjects);
+              
+              if (intersects.length > 0) {
+                const newHoveredNode = intersects[0].object;
+                
+                if (hoveredNode !== newHoveredNode) {
+                  // Reset previous hovered node
+                  if (hoveredNode && !hoveredNode.userData.isActive) {
+                    hoveredNode.material = nodeMaterial.clone();
+                    hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
+                  }
+                  
+                  // Set new hovered node
+                  hoveredNode = newHoveredNode;
+                  if (!hoveredNode.userData.isActive) {
+                    hoveredNode.material = hoveredMaterial.clone();
+                    hoveredNode.userData.targetScale = hoveredNode.userData.originalScale * 1.2;
+                  }
+                  
+                  // Show tooltip
+                  showTooltip(event, hoveredNode.userData);
+                }
+              } else {
+                // Reset hovered node
+                if (hoveredNode && !hoveredNode.userData.isActive) {
+                  hoveredNode.material = nodeMaterial.clone();
+                  hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
+                }
+                hoveredNode = null;
+                hideTooltip();
+              }
             }
-            return "";
-          });
-
-          link.attr("stroke-width", (link_d) => {
-            if (link_d.source.id === d.id || link_d.target.id === d.id) {
-              return STROKE * 4;
+            
+            function onClick(event) {
+              raycaster.setFromCamera(mouse, camera);
+              const intersects = raycaster.intersectObjects(nodeObjects);
+              
+              if (intersects.length > 0) {
+                const clickedNode = intersects[0].object;
+                if (clickedNode.userData.path) {
+                  window.location = clickedNode.userData.path;
+                }
+              }
             }
-            return STROKE;
-          });
-          text.attr("class", (text_d) => {
-            if (text_d.id !== d.id && !relatedNodesSet.has(text_d.id)) {
-              return "inactive";
+            
+            function showTooltip(event, nodeData) {
+              if (nodeData.label || nodeData.excerpt) {
+                tooltip.innerHTML = `
+                  ${nodeData.label ? `<strong>${nodeData.label}</strong>` : ''}
+                  ${nodeData.excerpt ? `<div style="margin-top: 0.25rem; font-size: 0.75rem; opacity: 0.8;">${nodeData.excerpt.substring(0, 100)}...</div>` : ''}
+                `;
+                tooltip.style.left = event.clientX + 10 + 'px';
+                tooltip.style.top = event.clientY - 10 + 'px';
+                tooltip.style.opacity = '1';
+              }
             }
-            return "";
+            
+            function hideTooltip() {
+              tooltip.style.opacity = '0';
+            }
+            
+            container.addEventListener('mousemove', onMouseMove);
+            container.addEventListener('click', onClick);
+            container.addEventListener('mouseleave', hideTooltip);
+            
+            // Camera controls
+            let isMouseDown = false;
+            let mouseDownPosition = { x: 0, y: 0 };
+            let cameraPosition = { theta: 0, phi: 0, radius: 15 };
+            
+            container.addEventListener('mousedown', (event) => {
+              if (event.button === 0) { // Left mouse button
+                isMouseDown = true;
+                mouseDownPosition.x = event.clientX;
+                mouseDownPosition.y = event.clientY;
+                event.preventDefault();
+              }
+            });
+            
+            document.addEventListener('mouseup', () => {
+              isMouseDown = false;
+            });
+            
+            container.addEventListener('mousemove', (event) => {
+              if (isMouseDown) {
+                const deltaX = event.clientX - mouseDownPosition.x;
+                const deltaY = event.clientY - mouseDownPosition.y;
+                
+                cameraPosition.theta -= deltaX * 0.005;
+                cameraPosition.phi += deltaY * 0.005;
+                cameraPosition.phi = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, cameraPosition.phi));
+                
+                updateCameraPosition();
+                
+                mouseDownPosition.x = event.clientX;
+                mouseDownPosition.y = event.clientY;
+              }
+            });
+            
+            // Zoom with mouse wheel
+            container.addEventListener('wheel', (event) => {
+              event.preventDefault();
+              cameraPosition.radius += event.deltaY * 0.01;
+              cameraPosition.radius = Math.max(5, Math.min(30, cameraPosition.radius));
+              updateCameraPosition();
+            });
+            
+            function updateCameraPosition() {
+              camera.position.x = cameraPosition.radius * Math.cos(cameraPosition.phi) * Math.cos(cameraPosition.theta);
+              camera.position.y = cameraPosition.radius * Math.sin(cameraPosition.phi);
+              camera.position.z = cameraPosition.radius * Math.cos(cameraPosition.phi) * Math.sin(cameraPosition.theta);
+              camera.lookAt(0, 0, 0);
+            }
+            
+            // Animation loop
+            function animate() {
+              requestAnimationFrame(animate);
+              
+              // Physics simulation
+              nodeObjects.forEach(node => {
+                const force = new THREE.Vector3();
+                
+                // Repulsion from other nodes
+                nodeObjects.forEach(otherNode => {
+                  if (node !== otherNode) {
+                    const distance = node.position.distanceTo(otherNode.position);
+                    if (distance < LINK_DISTANCE * 2) {
+                      const repulsion = node.position.clone().sub(otherNode.position).normalize();
+                      const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
+                      force.add(repulsion.multiplyScalar(strength));
+                    }
+                  }
+                });
+                
+                // Attraction to connected nodes
+                node.userData.connections.forEach(connectedNode => {
+                  const distance = node.position.distanceTo(connectedNode.position);
+                  if (distance > LINK_DISTANCE) {
+                    const attraction = connectedNode.position.clone().sub(node.position).normalize();
+                    const strength = (distance - LINK_DISTANCE) * 0.002;
+                    force.add(attraction.multiplyScalar(strength));
+                  }
+                });
+                
+                // Attraction to center (weak)
+                const centerAttraction = node.position.clone().multiplyScalar(-0.0005);
+                force.add(centerAttraction);
+                
+                // Mouse influence
+                const mouseDistance = node.position.distanceTo(mousePosition3D);
+                if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
+                  const mouseRepulsion = node.position.clone().sub(mousePosition3D).normalize();
+                  const strength = 0.05 * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
+                  force.add(mouseRepulsion.multiplyScalar(strength));
+                }
+                
+                // Apply force to velocity
+                node.userData.velocity.add(force);
+                node.userData.velocity.multiplyScalar(DAMPING);
+                
+                // Apply velocity to position
+                node.position.add(node.userData.velocity);
+                
+                // Animate scale changes
+                const currentScale = node.scale.x;
+                const targetScale = node.userData.targetScale;
+                if (Math.abs(currentScale - targetScale) > 0.01) {
+                  const newScale = currentScale + (targetScale - currentScale) * 0.1;
+                  node.scale.setScalar(newScale);
+                }
+              });
+              
+              // Update edges
+              edgeObjects.forEach(edge => {
+                const positions = edge.geometry.attributes.position.array;
+                positions[0] = edge.userData.source.position.x;
+                positions[1] = edge.userData.source.position.y;
+                positions[2] = edge.userData.source.position.z;
+                positions[3] = edge.userData.target.position.x;
+                positions[4] = edge.userData.target.position.y;
+                positions[5] = edge.userData.target.position.z;
+                edge.geometry.attributes.position.needsUpdate = true;
+              });
+              
+              // Render
+              renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            function onWindowResize() {
+              camera.aspect = container.clientWidth / container.clientHeight;
+              camera.updateProjectionMatrix();
+              renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+            
+            window.addEventListener('resize', onWindowResize);
+            
+            // Theme change handling
+            const observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                  const isDark = document.body.classList.contains('theme-dark');
+                  scene.background = new THREE.Color(isDark ? 0x0f0f0f : 0xffffff);
+                  
+                  // Update node colors
+                  nodeObjects.forEach(node => {
+                    if (!node.userData.isActive && node !== hoveredNode) {
+                      node.material.color.setHex(isDark ? 0x6366f1 : 0x8b88e6);
+                    }
+                  });
+                  
+                  // Update edge colors
+                  edgeObjects.forEach(edge => {
+                    edge.material.color.setHex(isDark ? 0x404040 : 0xcccccc);
+                  });
+                }
+              });
+            });
+            
+            observer.observe(document.body, { attributes: true });
+            
+          })
+          .catch(error => {
+            console.error('Error loading or processing notes graph data:', error);
+            container.innerHTML = '<p class="muted" style="text-align: center; padding: 20px;">Error loading graph data.</p>';
           });
-        };
-
-        const onMouseout = function (d) {
-          node.attr("class", "");
-          link.attr("class", "");
-          text.attr("class", "");
-          link.attr("stroke-width", STROKE);
-        };
-
-            // Clear the wrapper ONLY when we are sure we have data and are about to draw
-        const wrapper = document.getElementById('graph-wrapper');
-        wrapper.innerHTML = '';
         
-        // Create SVG element
-        const element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        element.setAttribute("width", wrapper.getBoundingClientRect().width);
-        element.setAttribute("height", 500); // Fixed height for consistency
-        wrapper.appendChild(element);
-
-        const reportWindowSize = () => {
-          element.setAttribute("width", wrapper.getBoundingClientRect().width);
-        };
-
-        window.addEventListener('resize', reportWindowSize);
-
-        const svg = d3.select("#graph-wrapper svg");
-        const width = Number(svg.attr("width"));
-        const height = Number(svg.attr("height"));
-        let zoomLevel = 1;
-
-            console.log("--- Setting up D3 Simulation ---");
-        // Initialize simulation with nodes
-        const simulation = d3
-          .forceSimulation(nodesData)
-          .force("forceX", d3.forceX().x(width / 2))
-          .force("forceY", d3.forceY().y(height / 2))
-          .force("charge", d3.forceManyBody().strength(-200))
-          .force(
-            "link",
-            d3
-              .forceLink(linksData)
-              .id((d) => d.id)
-              .distance(70)
-          )
-          .force("center", d3.forceCenter(width / 2, height / 2))
-          .force("collision", d3.forceCollide().radius(80))
-          .stop();
-
-        const g = svg.append("g");
-        let link = g.append("g").attr("class", "links").selectAll(".link");
-        let node = g.append("g").attr("class", "nodes").selectAll(".node");
-        let text = g.append("g").attr("class", "text").selectAll(".text");
-
-        const resize = () => {
-          if (d3.event) {
-            const scale = d3.event.transform;
-            zoomLevel = scale.k;
-            g.attr("transform", scale);
-          }
-
-          const zoomOrKeep = (value) => (zoomLevel >= 1 ? value / zoomLevel : value);
-
-          const font = Math.max(Math.round(zoomOrKeep(FONT_SIZE)), 1);
-
-          text.attr("font-size", (d) => font);
-          text.attr("y", (d) => d.y - zoomOrKeep(FONT_BASELINE) + 8);
-          link.attr("stroke-width", zoomOrKeep(STROKE));
-          node.attr("r", (d) => {
-            return zoomOrKeep(nodeSize[d.id]);
-          });
-          svg
-            .selectAll("circle")
-            .filter((_d, i, nodes) => d3.select(nodes[i]).attr("active"))
-            .attr("r", (d) => zoomOrKeep(ACTIVE_RADIUS_FACTOR * nodeSize[d.id]));
-        };
-
-        const ticked = () => {
-          node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-          text
-            .attr("x", (d) => d.x)
-                .attr("y", (d) => d.y - (FONT_BASELINE - nodeSize[d.id]) / zoomLevel - 10);
-          link
-            .attr("x1", (d) => d.source.x)
-            .attr("y1", (d) => d.source.y)
-            .attr("x2", (d) => d.target.x)
-            .attr("y2", (d) => d.target.y);
-        };
-
-        const restart = () => {
-              console.log("--- Running restart() function ---");
-          updateNodeSize();
-          node = node.data(nodesData, (d) => d.id);
-          node.exit().remove();
-          node = node
-            .enter()
-            .append("circle")
-            .attr("r", (d) => {
-              return nodeSize[d.id];
-            })
-            .attr("cx", width / 2)
-            .attr("cy", height / 2)
-            .on("click", onClick)
-            .on("mouseover", onMouseover)
-            .on("mouseout", onMouseout)
-            .merge(node);
-
-          link = link.data(linksData, (d) => `${d.source.id}-${d.target.id}`);
-          link.exit().remove();
-          link = link.enter().append("line").attr("stroke-width", STROKE).merge(link);
-
-          text = text.data(nodesData, (d) => d.label);
-          text.exit().remove();
-          text = text
-            .enter()
-            .append("text")
-                .text((d) => shorten((d.label || '').replace(/_*/g, ""), MAX_LABEL_LENGTH))
-            .attr("font-size", `${FONT_SIZE}px`)
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "central")
-            .attr("x", width / 2)
-            .attr("y", height / 2)
-            .on("click", onClick)
-            .on("mouseover", onMouseover)
-            .on("mouseout", onMouseout)
-            .merge(text);
-
-          node.attr("active", (d) => isCurrentPath(d.path) ? true : null);
-          text.attr("active", (d) => isCurrentPath(d.path) ? true : null);
-
-          simulation.nodes(nodesData);
-          if (linksData.length > 0) {
-            simulation.force("link").links(linksData);
-          }
-          simulation.alpha(1).restart();
-          simulation.stop();
-
-          for (let i = 0; i < TICKS; i++) {
-            simulation.tick();
-          }
-
-          ticked();
-        };
-
-            console.log("--- Calling restart() ---");
-        const zoomHandler = d3.zoom().scaleExtent([0.2, 3]).on("zoom", resize);
-
-        zoomHandler(svg);
-        restart();
-
-        function isCurrentPath(notePath) {
-          return window.location.pathname.includes(notePath)
-        }
-
         function shorten(str, maxLen, separator = ' ') {
           if (str.length <= maxLen) return str;
           return str.substr(0, str.lastIndexOf(separator, maxLen)) + '...';
         }
-          })
-          .catch(error => {
-            console.error('Error loading or processing notes graph data:', error);
-            document.getElementById('graph-wrapper').innerHTML = '<p class="muted" style="text-align: center; padding: 20px;">Error loading graph data.</p>';
-          });
       }
     </script>
   </div>
