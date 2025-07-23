@@ -115,17 +115,19 @@
       });
 
       function initializeGraph() {
-        console.log("Initializing 3D graph...");
+        console.log("Initializing 2D graph...");
         
-        // Graph configuration - slowed down physics
+        // Graph configuration - true 2D behavior
         const MINIMAL_NODE_SIZE = 0.4;
         const MAX_NODE_SIZE = 0.8;
         const ACTIVE_SCALE_FACTOR = 1.3;
         const MAX_LABEL_LENGTH = 30;
-        const FORCE_STRENGTH = 0.003; // Reduced from 0.01
-        const DAMPING = 0.98; // Increased from 0.95 for slower movement
-        const MOUSE_INFLUENCE_RADIUS = 6; // Reduced from 8
-        const LINK_DISTANCE = 3;
+        const FORCE_STRENGTH = 0.001; // Very minimal background forces
+        const DAMPING = 0.99; // High damping for quick settling
+        const MOUSE_INFLUENCE_RADIUS = 4;
+        const MOUSE_INFLUENCE_STRENGTH = 0.02;
+        const LINK_DISTANCE = 2.5;
+        const CENTERING_FORCE = 0.0001; // Very weak centering
         
         // Scene setup
         const container = document.getElementById('graph-container');
@@ -136,9 +138,16 @@
         // Set background to transparent for better integration
         scene.background = null;
         
-        // Camera setup
-        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 12);
+        // Camera setup - orthographic for true 2D view
+        const aspect = container.clientWidth / container.clientHeight;
+        const frustumSize = 20;
+        const camera = new THREE.OrthographicCamera(
+          frustumSize * aspect / -2, frustumSize * aspect / 2,
+          frustumSize / 2, frustumSize / -2,
+          1, 1000
+        );
+        camera.position.set(0, 0, 10);
+        camera.lookAt(0, 0, 0);
         
         // Renderer setup
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -147,19 +156,16 @@
         renderer.setClearColor(0x000000, 0); // Transparent background
         container.appendChild(renderer.domElement);
         
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+        // Simple lighting for 2D
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
         scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-        directionalLight.position.set(5, 5, 5);
-        scene.add(directionalLight);
         
         // Mouse tracking
         const mouse = new THREE.Vector2();
         const raycaster = new THREE.Raycaster();
-        let mousePosition3D = new THREE.Vector3();
+        let mousePosition2D = new THREE.Vector2();
         let hoveredNode = null;
+        let isMouseInContainer = false;
         
         // Graph data containers
         let nodes = [];
@@ -194,7 +200,7 @@
             return response.json();
           })
           .then(graphData => {
-            console.log("--- Three.js Initialization Started ---");
+            console.log("--- Three.js 2D Initialization Started ---");
             console.log("Graph data fetched:", graphData);
             
             // Add empty arrays if missing to prevent errors
@@ -232,8 +238,8 @@
             
             const colors = getThemeColors();
             
-            // Create 2D circular nodes (using ring geometry for flat circles)
-            const nodeGeometry = new THREE.RingGeometry(0.8, 1, 16);
+            // Create 2D circular nodes (using circle geometry for flat circles)
+            const nodeGeometry = new THREE.CircleGeometry(1, 16);
             const nodeMaterial = new THREE.MeshBasicMaterial({ 
               color: colors.nodeDefault,
               transparent: true,
@@ -244,15 +250,14 @@
               // Create node mesh
               const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
               
-              // Random initial position in 3D space but keep z mostly flat
+              // Initial position in 2D space only (Z=0)
+              const angle = (index / nodesData.length) * Math.PI * 2;
+              const radius = Math.min(8, 3 + Math.sqrt(nodesData.length) * 0.8);
               nodeMesh.position.set(
-                (Math.random() - 0.5) * 16,
-                (Math.random() - 0.5) * 16,
-                (Math.random() - 0.5) * 2
+                Math.cos(angle) * radius + (Math.random() - 0.5) * 2,
+                Math.sin(angle) * radius + (Math.random() - 0.5) * 2,
+                0 // Always keep Z at 0 for true 2D
               );
-              
-              // Make it face the camera (2D effect)
-              nodeMesh.lookAt(camera.position);
               
               // Scale based on connections
               const scale = nodeSize[nodeData.id];
@@ -266,9 +271,10 @@
                 excerpt: nodeData.excerpt,
                 originalScale: scale,
                 targetScale: scale,
-                velocity: new THREE.Vector3(),
+                velocity: new THREE.Vector2(), // 2D velocity only
                 isActive: window.location.pathname.includes(nodeData.path),
-                connections: []
+                connections: [],
+                restPosition: new THREE.Vector2(nodeMesh.position.x, nodeMesh.position.y)
               };
               
               // Highlight active node
@@ -308,7 +314,7 @@
               }
             });
             
-            // Create 3D edges
+            // Create 2D edges
             const lineMaterial = new THREE.LineBasicMaterial({ 
               color: colors.edgeDefault,
               opacity: 0.4, 
@@ -346,11 +352,25 @@
               mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
               mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
               
-              // Update 3D mouse position for node influence
-              raycaster.setFromCamera(mouse, camera);
-              const intersectPoint = new THREE.Vector3();
-              raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), intersectPoint);
-              mousePosition3D.copy(intersectPoint);
+              // Convert to world coordinates for 2D mouse position
+              const vector = new THREE.Vector3(mouse.x, mouse.y, 0);
+              vector.unproject(camera);
+              mousePosition2D.set(vector.x, vector.y);
+            }
+            
+            function onMouseEnter() {
+              isMouseInContainer = true;
+            }
+            
+            function onMouseLeave() {
+              isMouseInContainer = false;
+              if (hoveredNode && !hoveredNode.userData.isActive) {
+                hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
+                hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
+              }
+              hoveredNode = null;
+              resetHighlighting();
+              hideTooltip();
             }
             
             function onMouseMove(event) {
@@ -493,132 +513,85 @@
               });
             }
             
+            container.addEventListener('mouseenter', onMouseEnter);
+            container.addEventListener('mouseleave', onMouseLeave);
             container.addEventListener('mousemove', onMouseMove);
             container.addEventListener('click', onClick);
-            container.addEventListener('mouseleave', () => {
-              hideTooltip();
-              resetHighlighting();
-            });
             
-            // Camera controls - slower and smoother
-            let isMouseDown = false;
-            let mouseDownPosition = { x: 0, y: 0 };
-            let cameraPosition = { theta: 0, phi: 0, radius: 12 };
-            
-            container.addEventListener('mousedown', (event) => {
-              if (event.button === 0) { // Left mouse button
-                isMouseDown = true;
-                mouseDownPosition.x = event.clientX;
-                mouseDownPosition.y = event.clientY;
-                event.preventDefault();
-              }
-            });
-            
-            document.addEventListener('mouseup', () => {
-              isMouseDown = false;
-            });
-            
-            container.addEventListener('mousemove', (event) => {
-              if (isMouseDown) {
-                const deltaX = event.clientX - mouseDownPosition.x;
-                const deltaY = event.clientY - mouseDownPosition.y;
-                
-                cameraPosition.theta -= deltaX * 0.003; // Reduced sensitivity
-                cameraPosition.phi += deltaY * 0.003;
-                cameraPosition.phi = Math.max(-Math.PI/4, Math.min(Math.PI/4, cameraPosition.phi)); // Limited rotation
-                
-                updateCameraPosition();
-                
-                mouseDownPosition.x = event.clientX;
-                mouseDownPosition.y = event.clientY;
-              }
-            });
-            
-            // Zoom with mouse wheel - slower
+            // Zoom with mouse wheel (2D zoom only)
             container.addEventListener('wheel', (event) => {
               event.preventDefault();
-              cameraPosition.radius += event.deltaY * 0.005; // Reduced sensitivity
-              cameraPosition.radius = Math.max(8, Math.min(20, cameraPosition.radius));
-              updateCameraPosition();
+              const zoomSpeed = 0.1;
+              const zoom = event.deltaY > 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
+              
+              camera.zoom = Math.max(0.5, Math.min(3, camera.zoom * zoom));
+              camera.updateProjectionMatrix();
             });
             
-            function updateCameraPosition() {
-              camera.position.x = cameraPosition.radius * Math.cos(cameraPosition.phi) * Math.cos(cameraPosition.theta);
-              camera.position.y = cameraPosition.radius * Math.sin(cameraPosition.phi);
-              camera.position.z = cameraPosition.radius * Math.cos(cameraPosition.phi) * Math.sin(cameraPosition.theta);
-              camera.lookAt(0, 0, 0);
-            }
-            
-            // Animation loop - slower physics
+            // Animation loop - minimal 2D physics
             function animate() {
               requestAnimationFrame(animate);
               
-              // Physics simulation
-              nodeObjects.forEach(node => {
-                const force = new THREE.Vector3();
-                
-                // Repulsion from other nodes (weaker)
-                nodeObjects.forEach(otherNode => {
-                  if (node !== otherNode) {
-                    const distance = node.position.distanceTo(otherNode.position);
-                    if (distance < LINK_DISTANCE * 2.5) {
-                      const repulsion = node.position.clone().sub(otherNode.position).normalize();
-                      const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
-                      force.add(repulsion.multiplyScalar(strength));
+              // Only apply physics when mouse is in container
+              if (isMouseInContainer) {
+                nodeObjects.forEach(node => {
+                  const force = new THREE.Vector2();
+                  
+                  // Mouse influence (primary interaction)
+                  const nodePos2D = new THREE.Vector2(node.position.x, node.position.y);
+                  const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
+                  
+                  if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
+                    const mouseRepulsion = nodePos2D.clone().sub(mousePosition2D).normalize();
+                    const strength = MOUSE_INFLUENCE_STRENGTH * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
+                    force.add(mouseRepulsion.multiplyScalar(strength));
+                  }
+                  
+                  // Very weak repulsion from other nodes (only when very close)
+                  nodeObjects.forEach(otherNode => {
+                    if (node !== otherNode) {
+                      const otherPos2D = new THREE.Vector2(otherNode.position.x, otherNode.position.y);
+                      const distance = nodePos2D.distanceTo(otherPos2D);
+                      if (distance < 1.5) {
+                        const repulsion = nodePos2D.clone().sub(otherPos2D).normalize();
+                        const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
+                        force.add(repulsion.multiplyScalar(strength));
+                      }
                     }
+                  });
+                  
+                  // Very weak spring back to rest position
+                  const restForce = node.userData.restPosition.clone().sub(nodePos2D).multiplyScalar(CENTERING_FORCE);
+                  force.add(restForce);
+                  
+                  // Apply force to velocity (2D only)
+                  node.userData.velocity.add(force);
+                  node.userData.velocity.multiplyScalar(DAMPING);
+                  
+                  // Apply velocity to position (2D only, keep Z=0)
+                  node.position.x += node.userData.velocity.x;
+                  node.position.y += node.userData.velocity.y;
+                  node.position.z = 0; // Always keep flat
+                  
+                  // Animate scale changes
+                  const currentScale = node.scale.x;
+                  const targetScale = node.userData.targetScale;
+                  if (Math.abs(currentScale - targetScale) > 0.01) {
+                    const newScale = currentScale + (targetScale - currentScale) * 0.1;
+                    node.scale.setScalar(newScale);
                   }
                 });
-                
-                // Attraction to connected nodes (weaker)
-                node.userData.connections.forEach(connectedNode => {
-                  const distance = node.position.distanceTo(connectedNode.position);
-                  if (distance > LINK_DISTANCE) {
-                    const attraction = connectedNode.position.clone().sub(node.position).normalize();
-                    const strength = (distance - LINK_DISTANCE) * 0.001; // Reduced
-                    force.add(attraction.multiplyScalar(strength));
-                  }
-                });
-                
-                // Attraction to center (very weak)
-                const centerAttraction = node.position.clone().multiplyScalar(-0.0002);
-                force.add(centerAttraction);
-                
-                // Mouse influence (gentler)
-                const mouseDistance = node.position.distanceTo(mousePosition3D);
-                if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
-                  const mouseRepulsion = node.position.clone().sub(mousePosition3D).normalize();
-                  const strength = 0.02 * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS); // Reduced
-                  force.add(mouseRepulsion.multiplyScalar(strength));
-                }
-                
-                // Apply force to velocity
-                node.userData.velocity.add(force);
-                node.userData.velocity.multiplyScalar(DAMPING);
-                
-                // Apply velocity to position
-                node.position.add(node.userData.velocity);
-                
-                // Keep nodes facing camera for 2D effect
-                node.lookAt(camera.position);
-                
-                // Animate scale changes (slower)
-                const currentScale = node.scale.x;
-                const targetScale = node.userData.targetScale;
-                if (Math.abs(currentScale - targetScale) > 0.01) {
-                  const newScale = currentScale + (targetScale - currentScale) * 0.05; // Slower scaling
-                  node.scale.setScalar(newScale);
-                }
-              });
+              }
               
               // Update edges
               edgeObjects.forEach(edge => {
                 const positions = edge.geometry.attributes.position.array;
                 positions[0] = edge.userData.source.position.x;
                 positions[1] = edge.userData.source.position.y;
-                positions[2] = edge.userData.source.position.z;
+                positions[2] = 0; // Keep edges flat
                 positions[3] = edge.userData.target.position.x;
                 positions[4] = edge.userData.target.position.y;
-                positions[5] = edge.userData.target.position.z;
+                positions[5] = 0; // Keep edges flat
                 edge.geometry.attributes.position.needsUpdate = true;
               });
               
@@ -633,7 +606,11 @@
             
             // Handle window resize
             function onWindowResize() {
-              camera.aspect = container.clientWidth / container.clientHeight;
+              const aspect = container.clientWidth / container.clientHeight;
+              camera.left = frustumSize * aspect / -2;
+              camera.right = frustumSize * aspect / 2;
+              camera.top = frustumSize / 2;
+              camera.bottom = frustumSize / -2;
               camera.updateProjectionMatrix();
               renderer.setSize(container.clientWidth, container.clientHeight);
             }
