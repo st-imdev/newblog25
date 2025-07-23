@@ -122,11 +122,12 @@
         const MAX_NODE_SIZE = 0.8;
         const ACTIVE_SCALE_FACTOR = 1.3;
         const MAX_LABEL_LENGTH = 30;
-        const FORCE_STRENGTH = 0.0005; // Very minimal background forces
-        const DAMPING = 0.995; // Very high damping for quick settling
-        const MOUSE_INFLUENCE_RADIUS = 3;
-        const MOUSE_ATTRACTION_STRENGTH = 0.008; // Gentle attraction instead of repulsion
-        const CENTERING_FORCE = 0.0002; // Very weak centering
+        const FORCE_STRENGTH = 0.0001; // Reduced from 0.0005 - much weaker forces
+        const DAMPING = 0.998; // Increased from 0.995 - stronger damping
+        const MOUSE_INFLUENCE_RADIUS = 2; // Reduced from 3 - smaller influence area
+        const MOUSE_ATTRACTION_STRENGTH = 0.002; // Reduced from 0.008 - much gentler
+        const CENTERING_FORCE = 0.00005; // Reduced from 0.0002 - very weak centering
+        const MOVEMENT_THRESHOLD = 0.001; // Stop moving when velocity is very small
         
         // Scene setup
         const container = document.getElementById('graph-container');
@@ -628,30 +629,32 @@
               camera.updateProjectionMatrix();
             });
             
-            // Animation loop - very minimal physics, mostly just visual effects
+            // Animation loop - extremely minimal physics for maximum stability
             function animate() {
               requestAnimationFrame(animate);
               
-              // Very minimal physics - mostly just settling and visual effects
+              // Only apply physics when mouse is in container and very gently
               if (isMouseInContainer) {
                 nodeObjects.forEach(node => {
                   const force = new THREE.Vector2();
                   const nodePos2D = new THREE.Vector2(node.position.x, node.position.y);
                   
-                  // Very subtle attraction to mouse (much gentler than repulsion)
-                  const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
-                  if (mouseDistance < MOUSE_INFLUENCE_RADIUS && mouseDistance > 0.5) {
-                    const mouseAttraction = mousePosition2D.clone().sub(nodePos2D).normalize();
-                    const strength = MOUSE_ATTRACTION_STRENGTH * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
-                    force.add(mouseAttraction.multiplyScalar(strength));
+                  // Only apply mouse attraction if velocity is already very small
+                  if (node.userData.velocity.length() < MOVEMENT_THRESHOLD * 2) {
+                    const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
+                    if (mouseDistance < MOUSE_INFLUENCE_RADIUS && mouseDistance > 0.8) {
+                      const mouseAttraction = mousePosition2D.clone().sub(nodePos2D).normalize();
+                      const strength = MOUSE_ATTRACTION_STRENGTH * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
+                      force.add(mouseAttraction.multiplyScalar(strength));
+                    }
                   }
                   
-                  // Very weak repulsion from other nodes (only when very close)
+                  // Extremely weak repulsion only when nodes are overlapping
                   nodeObjects.forEach(otherNode => {
                     if (node !== otherNode) {
                       const otherPos2D = new THREE.Vector2(otherNode.position.x, otherNode.position.y);
                       const distance = nodePos2D.distanceTo(otherPos2D);
-                      if (distance < 1.2) {
+                      if (distance < 0.8) { // Only when very close
                         const repulsion = nodePos2D.clone().sub(otherPos2D).normalize();
                         const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
                         force.add(repulsion.multiplyScalar(strength));
@@ -659,17 +662,24 @@
                     }
                   });
                   
-                  // Very weak spring back to rest position
+                  // Very gentle spring back to rest position
                   const restForce = node.userData.restPosition.clone().sub(nodePos2D).multiplyScalar(CENTERING_FORCE);
                   force.add(restForce);
                   
-                  // Apply force to velocity (2D only)
+                  // Apply force to velocity with stronger damping
                   node.userData.velocity.add(force);
                   node.userData.velocity.multiplyScalar(DAMPING);
                   
-                  // Apply velocity to position (2D only, keep Z=0)
-                  node.position.x += node.userData.velocity.x;
-                  node.position.y += node.userData.velocity.y;
+                  // Stop movement if velocity is below threshold
+                  if (node.userData.velocity.length() < MOVEMENT_THRESHOLD) {
+                    node.userData.velocity.set(0, 0);
+                  }
+                  
+                  // Apply velocity to position only if above threshold (2D only, keep Z=0)
+                  if (node.userData.velocity.length() > MOVEMENT_THRESHOLD) {
+                    node.position.x += node.userData.velocity.x;
+                    node.position.y += node.userData.velocity.y;
+                  }
                   node.position.z = 0; // Always keep flat
                   
                   // Animate scale changes
@@ -678,6 +688,14 @@
                   if (Math.abs(currentScale - targetScale) > 0.01) {
                     const newScale = currentScale + (targetScale - currentScale) * 0.1;
                     node.scale.setScalar(newScale);
+                  }
+                });
+              } else {
+                // When mouse is not in container, gradually stop all movement
+                nodeObjects.forEach(node => {
+                  node.userData.velocity.multiplyScalar(0.95); // Quick settling when mouse leaves
+                  if (node.userData.velocity.length() < MOVEMENT_THRESHOLD) {
+                    node.userData.velocity.set(0, 0);
                   }
                 });
               }
