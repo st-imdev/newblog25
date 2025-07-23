@@ -166,6 +166,8 @@
         let mousePosition2D = new THREE.Vector2();
         let hoveredNode = null;
         let isMouseInContainer = false;
+        let hoverTimeout = null;
+        let isDelayedHoverActive = false;
         
         // Graph data containers
         let nodes = [];
@@ -433,6 +435,13 @@
             
             function onMouseLeave() {
               isMouseInContainer = false;
+              
+              // Clear hover timeout
+              if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+                hoverTimeout = null;
+              }
+              
               if (hoveredNode && !hoveredNode.userData.isActive) {
                 hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
                 hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
@@ -462,6 +471,12 @@
                 const newHoveredNode = intersects[0].object;
                 
                 if (hoveredNode !== newHoveredNode) {
+                  // Clear any existing hover timeout
+                  if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                    hoverTimeout = null;
+                  }
+                  
                   // Reset previous hovered node
                   if (hoveredNode && !hoveredNode.userData.isActive) {
                     hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
@@ -476,13 +491,27 @@
                     hoveredNode.userData.targetScale = hoveredNode.userData.originalScale * 1.1;
                   }
                   
-                  // Highlight connected nodes and edges
-                  highlightConnections(hoveredNode);
+                  // Immediate highlight (subtle)
+                  highlightConnections(hoveredNode, false);
+                  
+                  // Set timeout for enhanced highlighting after 1.5 seconds
+                  hoverTimeout = setTimeout(() => {
+                    if (hoveredNode === newHoveredNode) { // Still hovering same node
+                      isDelayedHoverActive = true;
+                      highlightConnections(hoveredNode, true);
+                    }
+                  }, 1500);
                   
                   // Show tooltip
                   showTooltip(event, hoveredNode.userData);
                 }
               } else {
+                // Clear hover timeout when not hovering any node
+                if (hoverTimeout) {
+                  clearTimeout(hoverTimeout);
+                  hoverTimeout = null;
+                }
+                
                 // Reset hovered node
                 if (hoveredNode && !hoveredNode.userData.isActive) {
                   hoveredNode.material.color.setHex(parseInt(colors.nodeDefault.replace('#', '0x')));
@@ -513,7 +542,7 @@
               });
             }
             
-            function highlightConnections(centerNode) {
+            function highlightConnections(centerNode, isDelayedHover = false) {
               const connectedNodeIds = new Set();
               connectedNodeIds.add(centerNode.userData.id);
               
@@ -522,41 +551,63 @@
                 connectedNodeIds.add(node.userData.id);
               });
               
-              // Highlight/dim nodes
+              // Highlight/dim nodes with stronger effect for delayed hover
+              const dimOpacity = isDelayedHover ? 0.15 : 0.2;
+              const brightOpacity = isDelayedHover ? 1.0 : 0.8;
+              
               nodeObjects.forEach(node => {
                 if (!connectedNodeIds.has(node.userData.id)) {
-                  node.material.opacity = 0.2;
+                  node.material.opacity = dimOpacity;
+                } else if (isDelayedHover) {
+                  // Make connected nodes more prominent on delayed hover
+                  node.material.opacity = brightOpacity;
+                  node.userData.targetScale = node.userData.originalScale * (node === centerNode ? 1.3 : 1.1);
                 }
               });
               
-              // Highlight/dim edges with higher opacity for better visibility
+              // Highlight/dim edges with stronger effect for delayed hover
+              const dimEdgeOpacity = isDelayedHover ? 0.05 : 0.1;
+              const brightEdgeOpacity = isDelayedHover ? 1.0 : 1.0;
+              
               edgeObjects.forEach(edge => {
                 const sourceId = edge.userData.source.userData.id;
                 const targetId = edge.userData.target.userData.id;
                 if (sourceId === centerNode.userData.id || targetId === centerNode.userData.id) {
-                  edge.material.opacity = 1.0; // Increased from 0.8
+                  edge.material.opacity = brightEdgeOpacity;
                 } else {
-                  edge.material.opacity = 0.1;
+                  edge.material.opacity = dimEdgeOpacity;
                 }
               });
               
-              // Highlight/dim text labels
+              // Highlight/dim text labels with stronger effect for delayed hover
               textLabels.forEach(label => {
                 if (connectedNodeIds.has(label.nodeId)) {
                   label.element.classList.remove('inactive');
+                  if (isDelayedHover) {
+                    label.element.style.fontWeight = label.nodeId === centerNode.userData.id ? '600' : '500';
+                  }
                 } else {
                   label.element.classList.add('inactive');
+                  if (isDelayedHover) {
+                    label.element.style.opacity = '0.2';
+                  }
                 }
               });
             }
             
             function resetHighlighting() {
-              // Reset node opacity
+              isDelayedHoverActive = false;
+              
+              // Reset node opacity and scale
               nodeObjects.forEach(node => {
                 if (node.userData.isNearMouse) {
                   node.material.opacity = 1.0;
                 } else {
                   node.material.opacity = 0.8;
+                }
+                // Reset scale to original unless it's active or currently hovered
+                if (!node.userData.isActive && node !== hoveredNode) {
+                  node.userData.targetScale = node.userData.originalScale;
                 }
               });
               
@@ -568,6 +619,8 @@
               // Reset text labels
               textLabels.forEach(label => {
                 label.element.classList.remove('inactive');
+                label.element.style.fontWeight = '';
+                label.element.style.opacity = '';
               });
             }
             
