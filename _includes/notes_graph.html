@@ -117,17 +117,16 @@
       function initializeGraph() {
         console.log("Initializing 2D graph...");
         
-        // Graph configuration - true 2D behavior
+        // Graph configuration - minimal movement, subtle interactions
         const MINIMAL_NODE_SIZE = 0.4;
         const MAX_NODE_SIZE = 0.8;
         const ACTIVE_SCALE_FACTOR = 1.3;
         const MAX_LABEL_LENGTH = 30;
-        const FORCE_STRENGTH = 0.001; // Very minimal background forces
-        const DAMPING = 0.99; // High damping for quick settling
-        const MOUSE_INFLUENCE_RADIUS = 4;
-        const MOUSE_INFLUENCE_STRENGTH = 0.02;
-        const LINK_DISTANCE = 2.5;
-        const CENTERING_FORCE = 0.0001; // Very weak centering
+        const FORCE_STRENGTH = 0.0005; // Very minimal background forces
+        const DAMPING = 0.995; // Very high damping for quick settling
+        const MOUSE_INFLUENCE_RADIUS = 3;
+        const MOUSE_ATTRACTION_STRENGTH = 0.008; // Gentle attraction instead of repulsion
+        const CENTERING_FORCE = 0.0002; // Very weak centering
         
         // Scene setup
         const container = document.getElementById('graph-container');
@@ -238,8 +237,8 @@
             
             const colors = getThemeColors();
             
-            // Create 2D circular nodes (using circle geometry for flat circles)
-            const nodeGeometry = new THREE.CircleGeometry(1, 16);
+            // Create 2D circle outline nodes (using ring geometry for outlines)
+            const nodeGeometry = new THREE.RingGeometry(0.9, 1, 24); // Thin ring for outline
             const nodeMaterial = new THREE.MeshBasicMaterial({ 
               color: colors.nodeDefault,
               transparent: true,
@@ -274,7 +273,8 @@
                 velocity: new THREE.Vector2(), // 2D velocity only
                 isActive: window.location.pathname.includes(nodeData.path),
                 connections: [],
-                restPosition: new THREE.Vector2(nodeMesh.position.x, nodeMesh.position.y)
+                restPosition: new THREE.Vector2(nodeMesh.position.x, nodeMesh.position.y),
+                isNearMouse: false
               };
               
               // Highlight active node
@@ -369,6 +369,15 @@
                 hoveredNode.userData.targetScale = hoveredNode.userData.originalScale;
               }
               hoveredNode = null;
+              
+              // Reset all mouse proximity effects
+              nodeObjects.forEach(node => {
+                node.userData.isNearMouse = false;
+                if (!node.userData.isActive) {
+                  node.material.opacity = 0.8;
+                }
+              });
+              
               resetHighlighting();
               hideTooltip();
             }
@@ -414,6 +423,25 @@
                 resetHighlighting();
                 hideTooltip();
               }
+              
+              // Update mouse proximity effects for all nodes
+              nodeObjects.forEach(node => {
+                const nodePos2D = new THREE.Vector2(node.position.x, node.position.y);
+                const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
+                
+                if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
+                  node.userData.isNearMouse = true;
+                  // Subtle opacity increase when mouse is near
+                  if (!node.userData.isActive && node !== hoveredNode) {
+                    node.material.opacity = 1.0;
+                  }
+                } else {
+                  node.userData.isNearMouse = false;
+                  if (!node.userData.isActive && node !== hoveredNode) {
+                    node.material.opacity = 0.8;
+                  }
+                }
+              });
             }
             
             function highlightConnections(centerNode) {
@@ -456,7 +484,11 @@
             function resetHighlighting() {
               // Reset node opacity
               nodeObjects.forEach(node => {
-                node.material.opacity = 0.8;
+                if (node.userData.isNearMouse) {
+                  node.material.opacity = 1.0;
+                } else {
+                  node.material.opacity = 0.8;
+                }
               });
               
               // Reset edge opacity
@@ -528,23 +560,22 @@
               camera.updateProjectionMatrix();
             });
             
-            // Animation loop - minimal 2D physics
+            // Animation loop - very minimal physics, mostly just visual effects
             function animate() {
               requestAnimationFrame(animate);
               
-              // Only apply physics when mouse is in container
+              // Very minimal physics - mostly just settling and visual effects
               if (isMouseInContainer) {
                 nodeObjects.forEach(node => {
                   const force = new THREE.Vector2();
-                  
-                  // Mouse influence (primary interaction)
                   const nodePos2D = new THREE.Vector2(node.position.x, node.position.y);
-                  const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
                   
-                  if (mouseDistance < MOUSE_INFLUENCE_RADIUS) {
-                    const mouseRepulsion = nodePos2D.clone().sub(mousePosition2D).normalize();
-                    const strength = MOUSE_INFLUENCE_STRENGTH * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
-                    force.add(mouseRepulsion.multiplyScalar(strength));
+                  // Very subtle attraction to mouse (much gentler than repulsion)
+                  const mouseDistance = nodePos2D.distanceTo(mousePosition2D);
+                  if (mouseDistance < MOUSE_INFLUENCE_RADIUS && mouseDistance > 0.5) {
+                    const mouseAttraction = mousePosition2D.clone().sub(nodePos2D).normalize();
+                    const strength = MOUSE_ATTRACTION_STRENGTH * (1 - mouseDistance / MOUSE_INFLUENCE_RADIUS);
+                    force.add(mouseAttraction.multiplyScalar(strength));
                   }
                   
                   // Very weak repulsion from other nodes (only when very close)
@@ -552,7 +583,7 @@
                     if (node !== otherNode) {
                       const otherPos2D = new THREE.Vector2(otherNode.position.x, otherNode.position.y);
                       const distance = nodePos2D.distanceTo(otherPos2D);
-                      if (distance < 1.5) {
+                      if (distance < 1.2) {
                         const repulsion = nodePos2D.clone().sub(otherPos2D).normalize();
                         const strength = FORCE_STRENGTH / Math.max(distance * distance, 0.1);
                         force.add(repulsion.multiplyScalar(strength));
