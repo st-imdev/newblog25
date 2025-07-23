@@ -184,10 +184,74 @@
             nodeDefault: isDarkMode ? '#838368' : '#838368', // palette-green
             nodeActive: isDarkMode ? '#864A4F' : '#864A4F',   // palette-ruby  
             nodeHover: isDarkMode ? '#DACABA' : '#DACABA',    // palette-beige
-            edgeDefault: isDarkMode ? '#403E3C' : '#CECDC3',  // muted colors
+            edgeDefault: isDarkMode ? '#575653' : '#6F6E69',  // Darker colors for better visibility
             textDefault: computedStyle.getPropertyValue('--color-tx-normal').trim(),
             textActive: computedStyle.getPropertyValue('--color-action').trim()
           };
+        }
+        
+        // Deduplication function
+        function deduplicateNodes(nodes) {
+          const seen = new Map();
+          const deduplicated = [];
+          
+          nodes.forEach(node => {
+            if (!node.label) return; // Skip nodes without labels
+            
+            const key = node.label.toLowerCase().trim();
+            
+            if (!seen.has(key)) {
+              seen.set(key, node);
+              deduplicated.push(node);
+            } else {
+              // If we find a duplicate, prefer the shorter path (usually the main note)
+              const existing = seen.get(key);
+              if (node.path.length < existing.path.length) {
+                // Replace the existing one with the shorter path
+                const index = deduplicated.findIndex(n => n.id === existing.id);
+                if (index !== -1) {
+                  deduplicated[index] = node;
+                  seen.set(key, node);
+                }
+              }
+            }
+          });
+          
+          console.log(`Deduplication: ${nodes.length} nodes -> ${deduplicated.length} nodes`);
+          return deduplicated;
+        }
+        
+        // Update edges to reference deduplicated nodes
+        function updateEdgesForDeduplication(edges, oldNodes, newNodes) {
+          const oldToNewIdMap = new Map();
+          
+          // Create mapping from old node titles to new node IDs
+          newNodes.forEach(newNode => {
+            const title = newNode.label ? newNode.label.toLowerCase().trim() : '';
+            if (title) {
+              // Find all old nodes with same title
+              oldNodes.forEach(oldNode => {
+                const oldTitle = oldNode.label ? oldNode.label.toLowerCase().trim() : '';
+                if (oldTitle === title) {
+                  oldToNewIdMap.set(oldNode.id, newNode.id);
+                }
+              });
+            }
+          });
+          
+          // Update edges to use new node IDs
+          const updatedEdges = edges.map(edge => ({
+            source: oldToNewIdMap.get(edge.source) || edge.source,
+            target: oldToNewIdMap.get(edge.target) || edge.target
+          })).filter(edge => {
+            // Only keep edges where both source and target exist in new nodes
+            const sourceExists = newNodes.some(n => n.id === edge.source);
+            const targetExists = newNodes.some(n => n.id === edge.target);
+            return sourceExists && targetExists && edge.source !== edge.target;
+          });
+          
+          console.log(`Edge update: ${edges.length} edges -> ${updatedEdges.length} edges`);
+          return updatedEdges;
         }
         
         // Fetch the graph data
@@ -206,8 +270,12 @@
             if (!graphData.nodes) graphData.nodes = [];
             if (!graphData.edges) graphData.edges = [];
             
-            let nodesData = graphData.nodes;
-            let linksData = graphData.edges;
+            let originalNodes = graphData.nodes;
+            let originalEdges = graphData.edges;
+            
+            // Deduplicate nodes
+            let nodesData = deduplicateNodes(originalNodes);
+            let linksData = updateEdgesForDeduplication(originalEdges, originalNodes, nodesData);
             
             // Check if there's data available
             if (nodesData.length === 0) {
@@ -314,10 +382,10 @@
               }
             });
             
-            // Create 2D edges
+            // Create 2D edges with darker colors
             const lineMaterial = new THREE.LineBasicMaterial({ 
               color: colors.edgeDefault,
-              opacity: 0.4, 
+              opacity: 0.7, // Increased from 0.4 for better visibility
               transparent: true 
             });
             
@@ -460,12 +528,12 @@
                 }
               });
               
-              // Highlight/dim edges
+              // Highlight/dim edges with higher opacity for better visibility
               edgeObjects.forEach(edge => {
                 const sourceId = edge.userData.source.userData.id;
                 const targetId = edge.userData.target.userData.id;
                 if (sourceId === centerNode.userData.id || targetId === centerNode.userData.id) {
-                  edge.material.opacity = 0.8;
+                  edge.material.opacity = 1.0; // Increased from 0.8
                 } else {
                   edge.material.opacity = 0.1;
                 }
@@ -491,9 +559,9 @@
                 }
               });
               
-              // Reset edge opacity
+              // Reset edge opacity to new default
               edgeObjects.forEach(edge => {
-                edge.material.opacity = 0.4;
+                edge.material.opacity = 0.7; // Updated to match new default
               });
               
               // Reset text labels
