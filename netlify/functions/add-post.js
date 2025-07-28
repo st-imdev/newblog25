@@ -22,6 +22,42 @@ export async function handler(event) {
     return { statusCode: 400, body: "Title and content are required" };
   }
 
+  // Simple HTML to Markdown conversion function
+  function htmlToMarkdown(html) {
+    return html
+      // Convert headers
+      .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+      .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+      .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+      // Convert paragraphs
+      .replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n')
+      // Convert bold and italic
+      .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+      .replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**')
+      .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+      .replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*')
+      // Convert links
+      .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+      // Convert lists
+      .replace(/<ul[^>]*>/gi, '')
+      .replace(/<\/ul>/gi, '\n')
+      .replace(/<ol[^>]*>/gi, '')
+      .replace(/<\/ol>/gi, '\n')
+      .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+      // Convert blockquotes
+      .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
+      // Convert code blocks
+      .replace(/<pre[^>]*><code[^>]*>(.*?)<\/code><\/pre>/gi, '```\n$1\n```\n\n')
+      .replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`')
+      // Convert line breaks
+      .replace(/<br[^>]*>/gi, '\n')
+      // Remove remaining HTML tags
+      .replace(/<[^>]*>/g, '')
+      // Clean up extra whitespace
+      .replace(/\n\s*\n\s*\n/g, '\n\n')
+      .trim();
+  }
+
   // Create a slug from the title
   function createSlug(title) {
     return title
@@ -40,6 +76,9 @@ export async function handler(event) {
   const filename = `${slug}.md`;
   const mdPath = `_notes/${filename}`;
 
+  // Convert HTML content to Markdown
+  const markdownContent = htmlToMarkdown(content);
+
   // Build the markdown content with frontmatter
   let mdContent = `---\ntitle: ${title}\ndate: ${dateStr}`;
   
@@ -54,7 +93,7 @@ export async function handler(event) {
     }
   }
   
-  mdContent += `\n---\n\n${content}\n`;
+  mdContent += `\n---\n\n${markdownContent}\n`;
 
   // GitHub details from env vars
   const { GH_OWNER, GH_REPO, GH_TOKEN } = process.env;
