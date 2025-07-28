@@ -1,265 +1,238 @@
 ---
-layout: page
-title: New Post
-permalink: /new-post
+layout: null  # No site layout to avoid inheritance
 ---
 
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    background: white;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    color: #2c3e50;
-    height: 100vh;
-    overflow: hidden;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Post</title>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      background: white;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      color: #333;
+      overflow: hidden;
+    }
 
-  .editor-container {
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-  }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+    }
 
-  .header {
-    padding: 1rem;
-    background: white;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  }
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: normal;
+      margin: 0;
+      text-align: center;
+      color: #222;
+    }
 
-  .header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 400;
-    color: #2c3e50;
-  }
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
 
-  .form-group {
-    margin: 0;
-  }
+    input {
+      padding: 0.75rem;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: white;
+      flex: 1;
+      max-width: 300px;
+    }
 
-  .form-group input {
-    padding: 0.5rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 1rem;
-    min-width: 200px;
-  }
+    input:focus {
+      outline: none;
+      border-color: #ddd;
+    }
 
-  .form-group input:focus {
-    outline: none;
-    border-color: #3498db;
-  }
+    .editor-wrapper {
+      flex: 1;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      overflow: hidden;
+    }
 
-  .publish-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+    #editor {
+      height: 100%;
+    }
 
-  .publish-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
+    .ql-container {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 18px;
+      line-height: 1.6;
+    }
 
-  .publish-btn:hover {
-    background: #2980b9;
-  }
+    .ql-editor {
+      padding: 2rem;
+      min-height: 400px;
+    }
 
-  .publish-btn:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-  }
+    .ql-toolbar {
+      border-bottom: 1px solid #eee;
+      background: white;
+    }
 
-  #secret {
-    padding: 0.5rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    min-width: 150px;
-  }
+    .publish-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
 
-  .status-message {
-    position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: none;
-  }
+    .publish-btn {
+      background: white;
+      color: #333;
+      border: 1px solid #ddd;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-  .status-success {
-    background: #d5f5d5;
-    color: #2d5a2d;
-    border: 1px solid #b3e6b3;
-  }
+    .publish-btn:hover {
+      background: #f8f8f8;
+    }
 
-  .status-error {
-    background: #f5d5d5;
-    color: #5a2d2d;
-    border: 1px solid #e6b3b3;
-  }
+    .publish-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-  .status-loading {
-    background: #d5e8f5;
-    color: #2d455a;
-    border: 1px solid #b3d4e6;
-  }
+    .status {
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 4px;
+      display: none;
+    }
 
-  /* EasyMDE overrides for minimalist look */
-  .EasyMDEContainer {
-    flex: 1;
-    border: none;
-  }
+    .status-success {
+      background: #f0fff0;
+      color: #228b22;
+    }
 
-  .EasyMDEContainer .CodeMirror {
-    border: none;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 18px;
-    line-height: 1.6;
-    padding: 2rem;
-    background: white;
-    color: #2c3e50;
-    height: 100%;
-    box-shadow: none;
-  }
+    .status-error {
+      background: #fff0f0;
+      color: #8b2222;
+    }
 
-  .EasyMDEContainer .CodeMirror pre {
-    font-family: 'Monaco', monospace;
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 4px;
-  }
-
-  .EasyMDEContainer .CodeMirror code {
-    background: #f8f9fa;
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-  }
-
-  .editor-toolbar {
-    display: none; /* Hide toolbar for minimalism */
-  }
-
-  .CodeMirror-cursor {
-    border-left: 2px solid #3498db;
-  }
-</style>
-
-<div class="editor-container">
-  <div class="header">
-    <div class="header-left">
+    .status-loading {
+      background: #f0f8ff;
+      color: #22228b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
       <h1>New Post</h1>
-      <div class="form-group">
+      <div class="input-group">
         <input type="text" id="title" placeholder="Title">
-      </div>
-      <div class="form-group">
         <input type="text" id="tags" placeholder="Tags (comma-separated)">
       </div>
+    </div>
+    <div class="editor-wrapper">
+      <div id="editor"></div>
     </div>
     <div class="publish-group">
       <input type="password" id="secret" placeholder="Secret">
       <button class="publish-btn" id="publish-btn">Publish</button>
     </div>
+    <div id="status" class="status"></div>
   </div>
-  <textarea id="editor"></textarea>
-</div>
 
-<div id="status" class="status-message"></div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
-<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-<script>
-(function() {
-  const easyMDE = new EasyMDE({
-    element: document.getElementById('editor'),
-    autofocus: true,
-    indentWithTabs: false,
-    lineNumbers: false,
-    placeholder: 'Start writing... Use Markdown for formatting.\n\n## Subheading\n**Bold** *italic* [link](url)\n\n> Blockquote',
-    spellChecker: false,
-    status: false,
-    toolbar: false, // Hide toolbar for minimalism
-    renderingConfig: {
-      singleLineBreaks: false,
-      codeSyntaxHighlighting: true
-    }
-  });
-
-  const titleEl = document.getElementById('title');
-  const tagsEl = document.getElementById('tags');
-  const secretEl = document.getElementById('secret');
-  const publishBtn = document.getElementById('publish-btn');
-  const statusEl = document.getElementById('status');
-
-  publishBtn.addEventListener('click', async () => {
-    const title = titleEl.value.trim();
-    const tags = tagsEl.value.trim();
-    const content = easyMDE.value().trim();
-    const secret = secretEl.value.trim();
-
-    if (!title || !content || !secret) {
-      showStatus('Please fill in title, content, and secret', 'error');
-      return;
-    }
-
-    publishBtn.disabled = true;
-    showStatus('Publishing...', 'loading');
-
-    try {
-      const response = await fetch('/.netlify/functions/add-post', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-secret': secret
-        },
-        body: JSON.stringify({ title, tags, content })
-      });
-
-      const result = await response.text();
-
-      if (response.ok) {
-        showStatus('Published successfully!', 'success');
-        // Clear fields
-        titleEl.value = '';
-        tagsEl.value = '';
-        secretEl.value = '';
-        easyMDE.value('');
-      } else {
-        showStatus(`Error: ${result}`, 'error');
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+  <script>
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      placeholder: 'Start writing...',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          ['link', 'blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ header: [1, 2, 3, false] }]
+        ]
       }
-    } catch (error) {
-      showStatus(`Error: ${error.message}`, 'error');
-    } finally {
-      publishBtn.disabled = false;
-    }
-  });
+    });
 
-  function showStatus(message, type) {
-    statusEl.textContent = message;
-    statusEl.className = `status-message status-${type}`;
-    statusEl.style.display = 'block';
-    setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
-  }
-})();
-</script> 
+    const titleEl = document.getElementById('title');
+    const tagsEl = document.getElementById('tags');
+    const secretEl = document.getElementById('secret');
+    const publishBtn = document.getElementById('publish-btn');
+    const statusEl = document.getElementById('status');
+
+    publishBtn.addEventListener('click', async () => {
+      const title = titleEl.value.trim();
+      const tags = tagsEl.value.trim();
+      const content = quill.root.innerHTML.trim();
+      const secret = secretEl.value.trim();
+
+      if (!title || !content || !secret) {
+        showStatus('Please fill in title, content, and secret', 'error');
+        return;
+      }
+
+      publishBtn.disabled = true;
+      showStatus('Publishing...', 'loading');
+
+      try {
+        const response = await fetch('/.netlify/functions/add-post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-secret': secret
+          },
+          body: JSON.stringify({ title, tags, content })
+        });
+
+        const result = await response.text();
+
+        if (response.ok) {
+          showStatus('Published successfully!', 'success');
+          titleEl.value = '';
+          tagsEl.value = '';
+          secretEl.value = '';
+          quill.setContents([]);
+        } else {
+          showStatus(`Error: ${result}`, 'error');
+        }
+      } catch (error) {
+        showStatus(`Error: ${error.message}`, 'error');
+      } finally {
+        publishBtn.disabled = false;
+      }
+    });
+
+    function showStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = `status status-${type}`;
+      statusEl.style.display = 'block';
+      setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+    }
+  </script>
+</body>
+</html> 
