@@ -1,0 +1,387 @@
+---
+layout: page
+title: New Post
+permalink: /new-post
+---
+
+<style>
+  .post-editor {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: white;
+    min-height: 100vh;
+  }
+  
+  .post-editor h1 {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    text-align: center;
+  }
+  
+  .post-editor .subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1rem;
+    margin-bottom: 3rem;
+    font-style: italic;
+  }
+  
+  .form-group {
+    margin-bottom: 2rem;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #34495e;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+  }
+  
+  .editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .editor-panel {
+    min-height: 500px;
+  }
+  
+  .editor-panel h3 {
+    font-size: 1.2rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  #content-editor {
+    width: 100%;
+    height: 500px;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  
+  #content-editor:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+  }
+  
+  .preview-panel {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1rem;
+    background: #fafafa;
+    overflow-y: auto;
+    height: 500px;
+  }
+  
+  .preview-content {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.7;
+    color: #2c3e50;
+  }
+  
+  .preview-content h1, .preview-content h2, .preview-content h3,
+  .preview-content h4, .preview-content h5, .preview-content h6 {
+    color: #2c3e50;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .preview-content p {
+    margin-bottom: 1rem;
+  }
+  
+  .preview-content blockquote {
+    border-left: 4px solid #3498db;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #555;
+  }
+  
+  .preview-content code {
+    background: #f1f2f6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+  }
+  
+  .preview-content pre {
+    background: #f1f2f6;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  
+  .preview-content pre code {
+    background: none;
+    padding: 0;
+  }
+  
+  .publish-section {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .secret-input {
+    max-width: 300px;
+    margin: 0 auto 1rem;
+  }
+  
+  .publish-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-family: inherit;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .publish-btn:hover {
+    background: #2980b9;
+  }
+  
+  .publish-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+  }
+  
+  .status-message {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+  }
+  
+  .status-success {
+    background: #d5f5d5;
+    color: #2d5a2d;
+    border: 1px solid #b3e6b3;
+  }
+  
+  .status-error {
+    background: #f5d5d5;
+    color: #5a2d2d;
+    border: 1px solid #e6b3b3;
+  }
+  
+  .status-loading {
+    background: #d5e8f5;
+    color: #2d455a;
+    border: 1px solid #b3d4e6;
+  }
+  
+  @media (max-width: 768px) {
+    .editor-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .post-editor h1 {
+      font-size: 2rem;
+    }
+    
+    .post-editor {
+      padding: 1rem 0.5rem;
+    }
+  }
+</style>
+
+<div class="post-editor">
+  <h1>New Post</h1>
+  <p class="subtitle">Create a beautiful article for your blog</p>
+  
+  <form id="post-form">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" placeholder="Enter your post title..." required>
+    </div>
+    
+    <div class="form-group">
+      <label for="tags">Tags</label>
+      <input type="text" id="tags" placeholder="technology, productivity, life (comma-separated)">
+    </div>
+    
+    <div class="editor-container">
+      <div class="editor-panel">
+        <h3>Write</h3>
+        <textarea id="content-editor" placeholder="Start writing your post in Markdown...
+
+# Your heading here
+
+Write your content here. You can use **bold**, *italic*, and other Markdown formatting.
+
+## Subheading
+
+- Lists work too
+- As do [links](https://example.com)
+
+> Blockquotes for emphasis
+
+`Inline code` and code blocks are supported."></textarea>
+      </div>
+      
+      <div class="editor-panel">
+        <h3>Preview</h3>
+        <div class="preview-panel">
+          <div id="preview-content" class="preview-content">
+            <p><em>Your preview will appear here as you type...</em></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="publish-section">
+      <div class="form-group secret-input">
+        <input type="password" id="secret" placeholder="Enter your secret to publish" required>
+      </div>
+      
+      <button type="submit" class="publish-btn" id="publish-btn">
+        Publish Post
+      </button>
+      
+      <div id="status" class="status-message" style="display: none;"></div>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+(function() {
+  const titleEl = document.getElementById('title');
+  const tagsEl = document.getElementById('tags');
+  const contentEl = document.getElementById('content-editor');
+  const previewEl = document.getElementById('preview-content');
+  const secretEl = document.getElementById('secret');
+  const publishBtn = document.getElementById('publish-btn');
+  const statusEl = document.getElementById('status');
+  const form = document.getElementById('post-form');
+  
+  // Configure marked for better rendering
+  marked.setOptions({
+    breaks: true,
+    gfm: true
+  });
+  
+  // Live preview update
+  function updatePreview() {
+    const content = contentEl.value.trim();
+    if (!content) {
+      previewEl.innerHTML = '<p><em>Your preview will appear here as you type...</em></p>';
+      return;
+    }
+    
+    try {
+      const html = marked.parse(content);
+      previewEl.innerHTML = html;
+    } catch (error) {
+      previewEl.innerHTML = '<p><em>Error rendering preview...</em></p>';
+    }
+  }
+  
+  // Update preview as user types
+  contentEl.addEventListener('input', updatePreview);
+  
+  // Handle form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const title = titleEl.value.trim();
+    const tags = tagsEl.value.trim();
+    const content = contentEl.value.trim();
+    const secret = secretEl.value.trim();
+    
+    if (!title || !content || !secret) {
+      showStatus('Please fill in title, content, and secret', 'error');
+      return;
+    }
+    
+    publishBtn.disabled = true;
+    showStatus('Publishing your post...', 'loading');
+    
+    try {
+      const response = await fetch('/.netlify/functions/add-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-secret': secret
+        },
+        body: JSON.stringify({
+          title,
+          tags,
+          content
+        })
+      });
+      
+      const result = await response.text();
+      
+      if (response.ok) {
+        showStatus('Post published successfully! Site is rebuilding...', 'success');
+        // Clear form after successful publish
+        titleEl.value = '';
+        tagsEl.value = '';
+        contentEl.value = '';
+        secretEl.value = '';
+        updatePreview();
+      } else {
+        showStatus(`Error: ${result}`, 'error');
+      }
+    } catch (error) {
+      showStatus(`Error: ${error.message}`, 'error');
+    } finally {
+      publishBtn.disabled = false;
+    }
+  });
+  
+  function showStatus(message, type) {
+    statusEl.textContent = message;
+    statusEl.className = `status-message status-${type}`;
+    statusEl.style.display = 'block';
+    
+    if (type === 'success') {
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 5000);
+    }
+  }
+  
+  // Initialize preview
+  updatePreview();
+})();
+</script> 
