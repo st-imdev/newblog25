@@ -130,6 +130,14 @@ permalink: /new-post
       min-height: 350px;
     }
 
+    .ql-editor.ql-blank::before {
+      font-style: italic;
+      color: #999;
+      left: 2rem;
+      right: 2rem;
+      pointer-events: none;
+    }
+
     .ql-toolbar {
       border: none;
       border-bottom: 2px solid #f5f5f5;
@@ -296,6 +304,13 @@ permalink: /new-post
     const secretEl = document.getElementById('secret');
     const publishBtn = document.getElementById('publish-btn');
     const statusEl = document.getElementById('status');
+
+    // Fix placeholder cursor issue by ensuring proper initialization
+    setTimeout(() => {
+      if (quill.getLength() === 1) { // Only default content
+        quill.setSelection(0, 0);
+      }
+    }, 100);
 
     publishBtn.addEventListener('click', async () => {
       const title = titleEl.value.trim();
