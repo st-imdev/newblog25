@@ -110,10 +110,6 @@ permalink: /
       </a>
     </li>
   </ul>
-
-  <hr class="mn2 ms2">
-
-  {% include commit_calendar.html %}
 </div>
 
 <style>
