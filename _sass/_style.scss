@@ -30,13 +30,16 @@ body {
   background-size: 22px 22px;
   background-repeat: repeat;
   font-family: var(--font-content);
-  margin: 2vw auto 0 auto;
+  margin: 0;
   line-height: var(--line-height);
-  padding: 2rem 0 24rem;
+  padding: 0;
   overflow-x: hidden;
   font-size: 1.8rem;
   font-size: calc(1.5rem + 0.25vw);
   color: var(--color-tx-normal);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 small, .small {
@@ -269,7 +272,7 @@ article hr {
 }
 
 nav {
-  margin: 0 auto 3em;
+  margin: 2vw auto 3em;
   width: var(--wrap-normal);
   max-width: var(--wrap-wide);
 }
@@ -324,17 +327,19 @@ body.menu-open {
   overflow: hidden;
 }
 
-/* Reset body */
-body {
-  min-height: 100vh;
-  position: relative;
-}
+/* Body is already styled above, remove duplicate */
 
 /* Page wrapper to ensure proper layout */
 .page-wrapper {
-  min-height: 100vh;
-  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
   background-color: var(--color-bg);
+}
+
+/* Make main content grow */
+main {
+  flex: 1 0 auto;
 }
 
 /* Astronaut footer with fade effect */
@@ -343,6 +348,7 @@ body {
   width: 100%;
   margin-top: 4rem;
   overflow: hidden;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .astronaut-image {
