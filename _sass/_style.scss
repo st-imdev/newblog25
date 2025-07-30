@@ -344,23 +344,6 @@ main {
   flex: 1 0 auto;
 }
 
-/* Content fade effect */
-.content-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: linear-gradient(to bottom, 
-    transparent 0%,
-    rgba(var(--color-bg-primary-rgb), 0.4) 30%,
-    rgba(var(--color-bg-primary-rgb), 0.7) 60%,
-    var(--color-bg-primary) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
 /* Astronaut footer */
 .astronaut-footer {
   position: fixed;
@@ -368,7 +351,7 @@ main {
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 0;
+  z-index: -1;
 }
 
 .astronaut-image {
@@ -408,9 +391,7 @@ main {
   .page-wrapper {
     padding-bottom: 250px;
   }
-  .content-fade {
-    height: 150px;
-  }
+
 }
 
 /* Mobile screens */
@@ -421,7 +402,5 @@ main {
   .page-wrapper {
     padding-bottom: 200px;
   }
-  .content-fade {
-    height: 100px;
-  }
+
 }
