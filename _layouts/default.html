@@ -16,8 +16,10 @@
 
     <footer>{% include footer.html %}</footer>
     
-    <!-- Fixed bottom astronaut image -->
-    <div class="bottom-astronaut"></div>
+    <!-- Bottom astronaut image -->
+    <div class="astronaut-footer">
+      <div class="astronaut-image"></div>
+    </div>
 
     {% include link-previews.html wrapperQuerySelector="content" %}
     <!-- Restore Mermaid include -->
@@ -51,19 +53,6 @@
           heading.appendChild(anchor);
         });
       });
-      
-      // Show astronaut after scrolling
-      const astronaut = document.querySelector('.bottom-astronaut');
-      if (astronaut) {
-        window.addEventListener('scroll', function() {
-          // Show after scrolling 200px
-          if (window.scrollY > 200) {
-            astronaut.classList.add('visible');
-          } else {
-            astronaut.classList.remove('visible');
-          }
-        });
-      }
     </script>
   </body>
 </html>
