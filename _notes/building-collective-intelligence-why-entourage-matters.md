@@ -3,6 +3,7 @@ title: "Building Collective Intelligence: Why Entourage Matters"
 date: 2025-07-31
 tags: thoughts ai agents collective-intelligence entourage
 animation: entourage-network
+published: false
 ---
 
 I've always admired systems that get smarter through collaboration. Think of open-source projects where one coder's fix helps thousands. Now apply that to AI agents. Most agents today work in silos. They tackle problems, but their lessons vanish after the task. No shared history means repeating errors, rebuilding workflows, and stalling on dynamic challenges. As CEO of Entourage, I see this as the big gap in AI's promise.
