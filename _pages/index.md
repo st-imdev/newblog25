@@ -215,25 +215,33 @@ document.addEventListener('DOMContentLoaded', function() {
   // BIT text
   svg.append("text")
     .attr("x", logoX)
-    .attr("y", logoY + 5)
+    .attr("y", logoY + 4)
     .attr("text-anchor", "middle")
     .attr("font-family", "monospace")
-    .attr("font-size", "18px")
+    .attr("font-size", "14px")
     .attr("font-weight", "bold")
     .attr("fill", "#ffffff")
     .text("BIT");
   
-  // Create nodes for the mesh network in a circle around the logo
-  const nodeCount = 12;
+  // Create nodes for the mesh network in a grid pattern
   const nodes = [];
-  const radius = Math.min(width * 0.45, height * 0.4);
+  const cols = 7;
+  const rows = 3;
+  const margin = 10;
+  const nodeSpacingX = (width - 2 * margin) / (cols - 1);
+  const nodeSpacingY = (height - 2 * margin) / (rows - 1);
   
-  // Place nodes in a circle around the center
-  for (let i = 0; i < nodeCount; i++) {
-    const angle = (i / nodeCount) * 2 * Math.PI;
-    const x = logoX + radius * Math.cos(angle);
-    const y = logoY + radius * Math.sin(angle);
-    nodes.push({ id: i, x, y });
+  // Place nodes in a grid, slightly randomized
+  let nodeId = 0;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      // Skip center position where logo is
+      if (row === 1 && (col === 3 || col === 2 || col === 4)) continue;
+      
+      const x = margin + col * nodeSpacingX + (Math.random() - 0.5) * 10;
+      const y = margin + row * nodeSpacingY + (Math.random() - 0.5) * 10;
+      nodes.push({ id: nodeId++, x, y });
+    }
   }
   
   // Create links between nearby nodes (mesh topology)
@@ -242,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
     nodes.forEach((target, j) => {
       if (i < j) {
         const distance = Math.sqrt(Math.pow(source.x - target.x, 2) + Math.pow(source.y - target.y, 2));
-        if (distance < width / 3) {
+        if (distance < nodeSpacingX * 1.8) {
           links.push({ source, target, distance });
         }
       }
