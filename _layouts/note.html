@@ -9,27 +9,26 @@ layout: default
   
   <h1>{{ page.title }}</h1>
   
-  <div class="metadata muted small pb font-ui">
-    <time datetime="{{ page.date | default: page.last_modified_at | date_to_xmlschema }}">{{ page.date | default: page.last_modified_at | date: "%B %e, %Y" }}</time> 
-    · <span class="reading-time" title="Estimated read time">
-      {% assign words = content | number_of_words %}
-      {% if words < 360 %}1 minute{% else %}{{ words | divided_by:180 }} minutes{% endif %} read
-    </span>
-    {% if page.tags.size > 0 %}
-    · 
-    <span class="tags">
-      {% for tag in page.tags %}
-      <a href="{{ site.baseurl }}/topics/{{ tag | slugify }}" class="internal-link">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
-      {% endfor %}
-    </span>
-    {% endif %}
+  <div class="metadata muted small pb font-ui" style="display: flex; justify-content: space-between; align-items: baseline;">
+    <div>
+      <time datetime="{{ page.date | default: page.last_modified_at | date_to_xmlschema }}">{{ page.date | default: page.last_modified_at | date: "%B %e, %Y" }}</time> 
+      · <span class="reading-time" title="Estimated read time">
+        {% assign words = content | number_of_words %}
+        {% if words < 360 %}1 minute{% else %}{{ words | divided_by:180 }} minutes{% endif %} read
+      </span>
+      {% if page.tags.size > 0 %}
+      · 
+      <span class="tags">
+        {% for tag in page.tags %}
+        <a href="{{ site.baseurl }}/topics/{{ tag | slugify }}" class="internal-link">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      </span>
+      {% endif %}
+    </div>
+    {% unless page.human_written == false %}
+    <span class="human-written" style="font-size: 0.85em;">Human Written</span>
+    {% endunless %}
   </div>
-
-  {% unless page.human_written == false %}
-  <div class="human-written-tag">
-    <span class="badge">✍️ Human Written</span>
-  </div>
-  {% endunless %}
 
   <div class="content">
     {{ content }}
