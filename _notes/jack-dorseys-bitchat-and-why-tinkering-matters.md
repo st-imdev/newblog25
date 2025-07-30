@@ -2,6 +2,7 @@
 title: Jack Dorsey's bitchat and why tinkering matters
 date: 2025-07-30
 tags: thoughts bitchat jack dorsey
+animation: bitchat-mesh
 ---
 
 I admire people who build things from scratch. Jack Dorsey is one of them. He co-founded Twitter, and although I never agreed with all his decisions there (some moderation choices felt too heavy-handed, too centralised), I like that he keeps experimenting. His latest project, Bitchat, shows why that matters.

@@ -3,6 +3,10 @@ layout: default
 ---
 
 <article class="wrap">
+  {% if page.animation %}
+    {% include animations/{{ page.animation }}.html %}
+  {% endif %}
+  
   <h1>{{ page.title }}</h1>
   
   <div class="metadata muted small pb font-ui">
