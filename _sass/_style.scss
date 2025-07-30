@@ -336,8 +336,23 @@ body.menu-open {
   background-size: contain;
   background-position: center bottom;
   background-repeat: no-repeat;
-  z-index: -1;
+  background-color: var(--color-bg);
+  z-index: 1;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Show astronaut after scrolling */
+.bottom-astronaut.visible {
+  opacity: 1;
+}
+
+/* Ensure main content stays above astronaut */
+main, nav, footer {
+  position: relative;
+  z-index: 10;
+  background-color: var(--color-bg);
 }
 
 /* Add padding to body to prevent content overlap */
