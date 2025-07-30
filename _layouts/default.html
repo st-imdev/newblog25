@@ -16,6 +16,9 @@
       </main>
 
       <footer>{% include footer.html %}</footer>
+      
+      <!-- Fade overlay for content -->
+      <div class="content-fade"></div>
     </div>
 
     {% include link-previews.html wrapperQuerySelector="content" %}
@@ -24,9 +27,8 @@
     <!-- Restore the notes graph include -->
     {% include notes_graph.html %}
     
-    <!-- Astronaut footer with fade effect -->
+    <!-- Astronaut footer -->
     <div class="astronaut-footer">
-      <div class="fade-overlay"></div>
       <img src="/assets/footer.png" alt="Footer illustration" class="astronaut-image" />
     </div>
     

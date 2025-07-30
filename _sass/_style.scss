@@ -335,6 +335,8 @@ body.menu-open {
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg);
+  position: relative;
+  padding-bottom: 300px; /* Space for astronaut */
 }
 
 /* Make main content grow */
@@ -342,13 +344,31 @@ main {
   flex: 1 0 auto;
 }
 
-/* Astronaut footer with fade effect */
+/* Content fade effect */
+.content-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, 
+    transparent 0%,
+    rgba(var(--color-bg-primary-rgb), 0.4) 30%,
+    rgba(var(--color-bg-primary-rgb), 0.7) 60%,
+    var(--color-bg-primary) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Astronaut footer */
 .astronaut-footer {
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  margin-top: 4rem;
-  overflow: hidden;
-  flex-shrink: 0; /* Prevent shrinking */
+  z-index: 0;
 }
 
 .astronaut-image {
@@ -360,34 +380,13 @@ main {
   object-position: center bottom;
 }
 
-/* Fade overlay - gradient from page background to transparent */
-.fade-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 150px;
-  background: linear-gradient(to bottom, 
-    var(--color-bg-primary) 0%, 
-    var(--color-bg-primary) 20%,
-    rgba(var(--color-bg-primary-rgb), 0.8) 50%,
-    rgba(var(--color-bg-primary-rgb), 0.3) 80%,
-    transparent 100%
-  );
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Ensure image is behind the fade */
-.astronaut-image {
-  position: relative;
-  z-index: 0;
-}
-
 /* Adjust astronaut for larger screens */
 @media (min-width: 1200px) {
   .astronaut-image {
     max-height: 400px;
+  }
+  .page-wrapper {
+    padding-bottom: 400px;
   }
 }
 
@@ -396,6 +395,9 @@ main {
   .astronaut-image {
     max-height: 500px;
   }
+  .page-wrapper {
+    padding-bottom: 500px;
+  }
 }
 
 /* Adjust for tablets */
@@ -403,8 +405,11 @@ main {
   .astronaut-image {
     max-height: 250px;
   }
-  .astronaut-footer {
-    margin-top: 2rem;
+  .page-wrapper {
+    padding-bottom: 250px;
+  }
+  .content-fade {
+    height: 150px;
   }
 }
 
@@ -413,7 +418,10 @@ main {
   .astronaut-image {
     max-height: 200px;
   }
-  .fade-overlay {
+  .page-wrapper {
+    padding-bottom: 200px;
+  }
+  .content-fade {
     height: 100px;
   }
 }
