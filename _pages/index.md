@@ -6,7 +6,10 @@ permalink: /
 ---
 
 <div class="wrap">
-  <p style="margin: 2rem 0 1.5rem 0;"><a href="/notes/latest" class="muted font-ui">Latest</a></p>
+  <!-- Bitchat Mesh Network Animation -->
+  <div id="bitchat-animation" style="margin: 2rem 0 1rem 0; height: 120px; position: relative;"></div>
+  
+  <p style="margin: 1rem 0 1.5rem 0;"><a href="/notes/latest" class="muted font-ui">Latest</a></p>
 
   {% assign latest_note = site.notes | sort: "date" | reverse | first %}
   {% if latest_note %}
@@ -179,3 +182,123 @@ permalink: /
     align-items: center;
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Bitchat mesh network animation
+  const container = d3.select("#bitchat-animation");
+  if (!container.node()) return;
+  
+  const width = container.node().getBoundingClientRect().width;
+  const height = 120;
+  
+  const svg = container.append("svg")
+    .attr("width", width)
+    .attr("height", height);
+  
+  // Create nodes for the mesh network
+  const nodeCount = 7;
+  const nodes = d3.range(nodeCount).map(i => ({
+    id: i,
+    x: (i + 0.5) * (width / nodeCount),
+    y: height / 2 + (Math.random() - 0.5) * 40
+  }));
+  
+  // Create links between nearby nodes (mesh topology)
+  const links = [];
+  nodes.forEach((source, i) => {
+    nodes.forEach((target, j) => {
+      if (i < j) {
+        const distance = Math.sqrt(Math.pow(source.x - target.x, 2) + Math.pow(source.y - target.y, 2));
+        if (distance < width / 3) {
+          links.push({ source, target, distance });
+        }
+      }
+    });
+  });
+  
+  // Draw links
+  const linkElements = svg.selectAll("line")
+    .data(links)
+    .enter().append("line")
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y)
+    .attr("stroke", "var(--color-tx-muted)")
+    .attr("stroke-width", 1)
+    .attr("opacity", 0.2);
+  
+  // Draw nodes
+  const nodeElements = svg.selectAll("circle.node")
+    .data(nodes)
+    .enter().append("circle")
+    .attr("class", "node")
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("r", 4)
+    .attr("fill", "var(--color-tx-muted)")
+    .attr("opacity", 0.6);
+  
+  // Create messages that travel between nodes
+  function createMessage() {
+    // Pick a random link
+    const link = links[Math.floor(Math.random() * links.length)];
+    const duration = 2000 + Math.random() * 1000;
+    
+    // Randomly choose direction
+    const [start, end] = Math.random() > 0.5 ? [link.source, link.target] : [link.target, link.source];
+    
+    // Create message dot
+    const message = svg.append("circle")
+      .attr("cx", start.x)
+      .attr("cy", start.y)
+      .attr("r", 2)
+      .attr("fill", "var(--color-primary)")
+      .attr("opacity", 0.8);
+    
+    // Animate message
+    message.transition()
+      .duration(duration)
+      .ease(d3.easeLinear)
+      .attr("cx", end.x)
+      .attr("cy", end.y)
+      .on("end", function() {
+        d3.select(this).remove();
+      });
+  }
+  
+  // Start message animation
+  createMessage();
+  const messageInterval = setInterval(createMessage, 800);
+  
+  // Add subtle pulse to nodes
+  function pulseNode() {
+    const node = nodes[Math.floor(Math.random() * nodes.length)];
+    
+    svg.append("circle")
+      .attr("cx", node.x)
+      .attr("cy", node.y)
+      .attr("r", 4)
+      .attr("fill", "none")
+      .attr("stroke", "var(--color-primary)")
+      .attr("stroke-width", 1)
+      .attr("opacity", 0.6)
+      .transition()
+      .duration(1500)
+      .attr("r", 15)
+      .attr("opacity", 0)
+      .on("end", function() {
+        d3.select(this).remove();
+      });
+  }
+  
+  const pulseInterval = setInterval(pulseNode, 3000);
+  
+  // Clean up on page navigation
+  window.addEventListener('beforeunload', () => {
+    clearInterval(messageInterval);
+    clearInterval(pulseInterval);
+  });
+});
+</script>
