@@ -1,5 +1,5 @@
 <!-- Entourage Collective Intelligence Animation -->
-<div id="entourage-animation" style="margin: 2rem 0 1rem 0; height: 160px; position: relative;"></div>
+<div id="entourage-animation" style="margin: 2rem 0 1rem 0; height: 240px; position: relative;"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!container.node()) return;
   
   const width = container.node().getBoundingClientRect().width;
-  const height = 160;
+  const height = 240;
   
   const svg = container.append("svg")
     .attr("width", width)
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Create agents around the memory
   const agentCount = 8;
-  const agentRadius = Math.min(width * 0.35, 100);
+  const agentRadius = Math.min(width * 0.3, height * 0.35);
   const agents = [];
   
   for (let i = 0; i < agentCount; i++) {
