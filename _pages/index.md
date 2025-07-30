@@ -220,13 +220,13 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr("font-family", "monospace")
     .attr("font-size", "18px")
     .attr("font-weight", "bold")
-    .attr("fill", "var(--color-bg)")
+    .attr("fill", "#ffffff")
     .text("BIT");
   
   // Create nodes for the mesh network in a circle around the logo
-  const nodeCount = 8;
+  const nodeCount = 12;
   const nodes = [];
-  const radius = Math.min(width * 0.3, height * 0.4);
+  const radius = Math.min(width * 0.45, height * 0.4);
   
   // Place nodes in a circle around the center
   for (let i = 0; i < nodeCount; i++) {
