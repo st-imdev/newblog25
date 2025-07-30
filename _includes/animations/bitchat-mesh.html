@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr("font-family", "monospace")
     .attr("font-size", "14px")
     .attr("font-weight", "bold")
-    .attr("fill", "#ffffff")
+    .attr("fill", "var(--color-bg-primary)")
     .text("BIT");
   
   // Create nodes for the mesh network in a grid pattern
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .attr("cx", start.x)
       .attr("cy", start.y)
       .attr("r", 2)
-      .attr("fill", "var(--color-primary)")
+      .attr("fill", "var(--color-action)")
       .attr("opacity", 0.8);
     
     // Animate message
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .attr("cy", node.y)
       .attr("r", 4)
       .attr("fill", "none")
-      .attr("stroke", "var(--color-primary)")
+      .attr("stroke", "var(--color-action)")
       .attr("stroke-width", 1)
       .attr("opacity", 0.6)
       .transition()
