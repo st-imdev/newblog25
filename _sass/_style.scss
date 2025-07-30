@@ -37,9 +37,6 @@ body {
   font-size: 1.8rem;
   font-size: calc(1.5rem + 0.25vw);
   color: var(--color-tx-normal);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 small, .small {
@@ -331,16 +328,13 @@ body.menu-open {
 
 /* Page wrapper to ensure proper layout */
 .page-wrapper {
-  flex: 1 0 auto;
-  display: flex;
-  flex-direction: column;
   background-color: var(--color-bg);
   position: relative;
 }
 
-/* Make main content grow */
+/* Main content */
 main {
-  flex: 1 0 auto;
+  /* Remove flex grow */
 }
 
 /* Astronaut footer - easter egg at page bottom */
@@ -348,6 +342,7 @@ main {
   position: relative;
   width: 100%;
   margin-top: 4rem;
+  margin-bottom: 0;
 }
 
 .astronaut-image {
@@ -357,6 +352,8 @@ main {
   max-height: 300px;
   object-fit: contain;
   object-position: center bottom;
+  margin: 0;
+  padding: 0;
 }
 
 /* Adjust astronaut for larger screens */
