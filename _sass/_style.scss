@@ -337,45 +337,77 @@ body {
   background-color: var(--color-bg);
 }
 
-/* Astronaut at the very bottom */
-.page-wrapper::after {
-  content: '';
+/* Astronaut footer with fade effect */
+.astronaut-footer {
+  position: relative;
+  width: 100%;
+  margin-top: 4rem;
+  overflow: hidden;
+}
+
+.astronaut-image {
   display: block;
   width: 100%;
-  height: 300px;
-  background-image: url('/assets/footer.png');
-  background-size: contain;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  margin-top: 4rem;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* Fade overlay - gradient from page background to transparent */
+.fade-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  background: linear-gradient(to bottom, 
+    var(--color-bg-primary) 0%, 
+    var(--color-bg-primary) 20%,
+    rgba(var(--color-bg-primary-rgb), 0.8) 50%,
+    rgba(var(--color-bg-primary-rgb), 0.3) 80%,
+    transparent 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ensure image is behind the fade */
+.astronaut-image {
+  position: relative;
+  z-index: 0;
 }
 
 /* Adjust astronaut for larger screens */
 @media (min-width: 1200px) {
-  .page-wrapper::after {
-    height: 400px;
+  .astronaut-image {
+    max-height: 400px;
   }
 }
 
 /* Ultra-wide screens */
 @media (min-width: 1800px) {
-  .page-wrapper::after {
-    height: 500px;
-    background-size: auto 100%;
+  .astronaut-image {
+    max-height: 500px;
   }
 }
 
 /* Adjust for tablets */
 @media (max-width: 768px) {
-  .page-wrapper::after {
-    height: 250px;
+  .astronaut-image {
+    max-height: 250px;
+  }
+  .astronaut-footer {
+    margin-top: 2rem;
   }
 }
 
 /* Mobile screens */
 @media (max-width: 480px) {
-  .page-wrapper::after {
-    height: 200px;
-    margin-top: 2rem;
+  .astronaut-image {
+    max-height: 200px;
+  }
+  .fade-overlay {
+    height: 100px;
   }
 }
