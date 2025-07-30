@@ -223,19 +223,16 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr("fill", "var(--color-bg)")
     .text("BIT");
   
-  // Create nodes for the mesh network, avoiding the center logo
+  // Create nodes for the mesh network in a circle around the logo
   const nodeCount = 8;
   const nodes = [];
-  const centerExclusionRadius = logoSize + 20;
+  const radius = Math.min(width * 0.3, height * 0.4);
   
-  // Place nodes around the logo
+  // Place nodes in a circle around the center
   for (let i = 0; i < nodeCount; i++) {
-    let x, y;
-    do {
-      x = (i + 0.5) * (width / nodeCount);
-      y = height / 2 + (Math.random() - 0.5) * 50;
-    } while (Math.abs(x - logoX) < centerExclusionRadius && Math.abs(y - logoY) < centerExclusionRadius/2);
-    
+    const angle = (i / nodeCount) * 2 * Math.PI;
+    const x = logoX + radius * Math.cos(angle);
+    const y = logoY + radius * Math.sin(angle);
     nodes.push({ id: i, x, y });
   }
   
