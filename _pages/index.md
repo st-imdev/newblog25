@@ -196,13 +196,48 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr("width", width)
     .attr("height", height);
   
-  // Create nodes for the mesh network
-  const nodeCount = 7;
-  const nodes = d3.range(nodeCount).map(i => ({
-    id: i,
-    x: (i + 0.5) * (width / nodeCount),
-    y: height / 2 + (Math.random() - 0.5) * 40
-  }));
+  // Add BIT logo in the center
+  const logoSize = 40;
+  const logoX = width / 2;
+  const logoY = height / 2;
+  
+  // Logo background (rounded square)
+  svg.append("rect")
+    .attr("x", logoX - logoSize/2)
+    .attr("y", logoY - logoSize/2)
+    .attr("width", logoSize)
+    .attr("height", logoSize)
+    .attr("rx", 8)
+    .attr("ry", 8)
+    .attr("fill", "var(--color-tx-normal)")
+    .attr("opacity", 0.9);
+  
+  // BIT text
+  svg.append("text")
+    .attr("x", logoX)
+    .attr("y", logoY + 5)
+    .attr("text-anchor", "middle")
+    .attr("font-family", "monospace")
+    .attr("font-size", "18px")
+    .attr("font-weight", "bold")
+    .attr("fill", "var(--color-bg)")
+    .text("BIT");
+  
+  // Create nodes for the mesh network, avoiding the center logo
+  const nodeCount = 8;
+  const nodes = [];
+  const centerExclusionRadius = logoSize + 20;
+  
+  // Place nodes around the logo
+  for (let i = 0; i < nodeCount; i++) {
+    let x, y;
+    do {
+      x = (i + 0.5) * (width / nodeCount);
+      y = height / 2 + (Math.random() - 0.5) * 50;
+    } while (Math.abs(x - logoX) < centerExclusionRadius && Math.abs(y - logoY) < centerExclusionRadius/2);
+    
+    nodes.push({ id: i, x, y });
+  }
   
   // Create links between nearby nodes (mesh topology)
   const links = [];
