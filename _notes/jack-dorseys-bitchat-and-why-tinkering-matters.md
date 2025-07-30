@@ -4,7 +4,7 @@ date: 2025-07-30
 tags: thoughts bitchat jack dorsey
 ---
 
-I admire people who build things from scratch. Jack Dorsey is one of them. He co-founded Twitter, but I never agreed with all his decisions there—some moderation choices felt too heavy-handed, too centralised. Yet he keeps experimenting. His latest project, Bitchat, shows why that matters.
+I admire people who build things from scratch. Jack Dorsey is one of them. He co-founded Twitter, and although I never agreed with all his decisions there (some moderation choices felt too heavy-handed, too centralised), I like that he keeps experimenting. His latest project, Bitchat, shows why that matters.
 
 Last year, I watched Britain's Online Safety Act pass. It aimed to curb online harm, but it gave the government tools to scan messages and demand backdoors from platforms. I thought, this erodes privacy. We need alternatives. Then Dorsey announced Bitchat on X. He built it over a weekend to explore Bluetooth mesh networks. No internet needed. Messages relay between nearby devices, encrypted, without phone numbers or central servers.
 
