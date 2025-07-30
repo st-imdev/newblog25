@@ -336,7 +336,6 @@ body.menu-open {
   flex-direction: column;
   background-color: var(--color-bg);
   position: relative;
-  padding-bottom: 300px; /* Space for astronaut */
 }
 
 /* Make main content grow */
@@ -344,14 +343,11 @@ main {
   flex: 1 0 auto;
 }
 
-/* Astronaut footer */
+/* Astronaut footer - easter egg at page bottom */
 .astronaut-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   width: 100%;
-  z-index: -1;
+  margin-top: 4rem;
 }
 
 .astronaut-image {
@@ -368,9 +364,7 @@ main {
   .astronaut-image {
     max-height: 400px;
   }
-  .page-wrapper {
-    padding-bottom: 400px;
-  }
+
 }
 
 /* Ultra-wide screens */
@@ -378,9 +372,7 @@ main {
   .astronaut-image {
     max-height: 500px;
   }
-  .page-wrapper {
-    padding-bottom: 500px;
-  }
+
 }
 
 /* Adjust for tablets */
@@ -388,9 +380,7 @@ main {
   .astronaut-image {
     max-height: 250px;
   }
-  .page-wrapper {
-    padding-bottom: 250px;
-  }
+
 
 }
 
@@ -399,8 +389,6 @@ main {
   .astronaut-image {
     max-height: 200px;
   }
-  .page-wrapper {
-    padding-bottom: 200px;
-  }
+
 
 }
