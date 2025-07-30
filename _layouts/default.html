@@ -8,17 +8,14 @@
       }
     </script>
 
-    <nav>{% include nav.html %}</nav>
-    
-    <main>
-      {{ content }}
-    </main>
+    <div class="page-wrapper">
+      <nav>{% include nav.html %}</nav>
+      
+      <main>
+        {{ content }}
+      </main>
 
-    <footer>{% include footer.html %}</footer>
-    
-    <!-- Bottom astronaut image -->
-    <div class="astronaut-footer">
-      <div class="astronaut-image"></div>
+      <footer>{% include footer.html %}</footer>
     </div>
 
     {% include link-previews.html wrapperQuerySelector="content" %}

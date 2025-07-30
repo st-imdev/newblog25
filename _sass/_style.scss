@@ -324,50 +324,57 @@ body.menu-open {
   overflow: hidden;
 }
 
-/* Bottom astronaut footer */
-.astronaut-footer {
-  width: 100%;
-  margin-top: 4rem;
-  background-color: var(--color-bg);
-}
-
-.astronaut-image {
-  width: 100%;
-  height: 300px;
+/* Body with astronaut background */
+body {
+  min-height: 100vh;
   background-image: url('/assets/footer.png');
   background-size: contain;
   background-position: center bottom;
   background-repeat: no-repeat;
+  background-attachment: scroll;
+  position: relative;
 }
 
-/* Adjust for larger screens - increase height */
+/* Page wrapper to ensure content is readable */
+.page-wrapper {
+  background-color: var(--color-bg);
+  min-height: calc(100vh - 300px);
+  position: relative;
+  z-index: 1;
+  padding-bottom: 300px; /* Space for the astronaut image */
+}
+
+/* Adjust padding for larger screens */
 @media (min-width: 1200px) {
-  .astronaut-image {
-    height: 400px;
+  .page-wrapper {
+    min-height: calc(100vh - 400px);
+    padding-bottom: 400px;
   }
 }
 
 /* Ultra-wide screens */
 @media (min-width: 1800px) {
-  .astronaut-image {
-    height: 500px;
-    background-size: auto 100%;
+  body {
+    background-size: auto 500px;
+  }
+  .page-wrapper {
+    min-height: calc(100vh - 500px);
+    padding-bottom: 500px;
   }
 }
 
 /* Adjust for tablets */
 @media (max-width: 768px) {
-  .astronaut-image {
-    height: 250px;
+  .page-wrapper {
+    min-height: calc(100vh - 250px);
+    padding-bottom: 250px;
   }
 }
 
 /* Mobile screens */
 @media (max-width: 480px) {
-  .astronaut-image {
-    height: 200px;
-  }
-  .astronaut-footer {
-    margin-top: 2rem;
+  .page-wrapper {
+    min-height: calc(100vh - 200px);
+    padding-bottom: 200px;
   }
 }
