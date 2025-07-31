@@ -1,202 +1,252 @@
 <!-- Entourage Collective Intelligence Animation -->
-<div id="entourage-animation" style="margin: 2rem 0 1rem 0; height: 240px; position: relative;"></div>
+<div id="entourage-animation" style="margin: 2rem 0 1rem 0; position: relative; width: 100%; padding-bottom: 50%; overflow: hidden;">
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Entourage collective intelligence animation
-  const container = d3.select("#entourage-animation");
+  // Entourage collective intelligence animation - redesigned
+  const container = d3.select("#entourage-animation > div");
   if (!container.node()) return;
   
-  const width = container.node().getBoundingClientRect().width;
-  const height = 240;
+  const rect = container.node().getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
   
   const svg = container.append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
   
-  // Central shared memory
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const memoryRadius = 25;
+  // Create a more dynamic network visualization
+  const nodes = [];
+  const links = [];
+  const nodeCount = 20;
+  const clusterCount = 3;
   
-  // Create gradient for shared memory
-  const gradient = svg.append("defs")
-    .append("radialGradient")
-    .attr("id", "memoryGradient");
-  
-  gradient.append("stop")
-    .attr("offset", "0%")
-    .attr("stop-color", "var(--color-primary)")
-    .attr("stop-opacity", 0.3);
-  
-  gradient.append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", "var(--color-primary)")
-    .attr("stop-opacity", 0.1);
-  
-  // Draw central shared memory
-  const memoryGroup = svg.append("g");
-  
-  memoryGroup.append("circle")
-    .attr("cx", centerX)
-    .attr("cy", centerY)
-    .attr("r", memoryRadius)
-    .attr("fill", "url(#memoryGradient)")
-    .attr("stroke", "var(--color-primary)")
-    .attr("stroke-width", 1)
-    .attr("opacity", 0.8);
-  
-  // Memory text
-  memoryGroup.append("text")
-    .attr("x", centerX)
-    .attr("y", centerY + 4)
-    .attr("text-anchor", "middle")
-    .attr("font-family", "monospace")
-    .attr("font-size", "11px")
-    .attr("fill", "var(--color-tx-normal)")
-    .attr("opacity", 0.9)
-    .text("MEMORY");
-  
-  // Create agents around the memory
-  const agentCount = 8;
-  const agentRadius = Math.min(width * 0.3, height * 0.35);
-  const agents = [];
-  
-  for (let i = 0; i < agentCount; i++) {
-    const angle = (i / agentCount) * 2 * Math.PI - Math.PI / 2;
-    const x = centerX + agentRadius * Math.cos(angle);
-    const y = centerY + agentRadius * Math.sin(angle);
+  // Create clusters of agents
+  for (let cluster = 0; cluster < clusterCount; cluster++) {
+    const clusterX = (cluster + 1) * width / (clusterCount + 1);
+    const clusterY = height / 2 + (Math.random() - 0.5) * height * 0.3;
     
-    agents.push({
-      id: i,
-      x: x,
-      y: y,
-      angle: angle,
-      knowledge: Math.random() * 0.3 + 0.2, // Initial knowledge level
-      active: false
-    });
+    for (let i = 0; i < nodeCount / clusterCount; i++) {
+      const angle = (i / (nodeCount / clusterCount)) * 2 * Math.PI;
+      const radius = 40 + Math.random() * 30;
+      
+      nodes.push({
+        id: nodes.length,
+        x: clusterX + radius * Math.cos(angle),
+        y: clusterY + radius * Math.sin(angle),
+        vx: 0,
+        vy: 0,
+        cluster: cluster,
+        knowledge: Math.random() * 0.5 + 0.3,
+        discoveries: 0
+      });
+    }
   }
   
-  // Draw agents
-  const agentGroups = svg.selectAll("g.agent")
-    .data(agents)
-    .enter().append("g")
-    .attr("class", "agent");
+  // Create initial connections within clusters
+  nodes.forEach((node, i) => {
+    nodes.forEach((other, j) => {
+      if (i < j && node.cluster === other.cluster) {
+        const distance = Math.sqrt(Math.pow(node.x - other.x, 2) + Math.pow(node.y - other.y, 2));
+        if (distance < 80 && Math.random() > 0.5) {
+          links.push({
+            source: node,
+            target: other,
+            strength: Math.random() * 0.5 + 0.5
+          });
+        }
+      }
+    });
+  });
   
-  agentGroups.append("circle")
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y)
-    .attr("r", 8)
-    .attr("fill", "var(--color-tx-muted)")
+  // Draw links
+  const linkElements = svg.append("g")
+    .selectAll("line")
+    .data(links)
+    .enter().append("line")
+    .attr("stroke", "var(--color-tx-muted)")
+    .attr("stroke-width", d => d.strength)
+    .attr("opacity", 0.2);
+  
+  // Draw nodes
+  const nodeElements = svg.append("g")
+    .selectAll("circle")
+    .data(nodes)
+    .enter().append("circle")
+    .attr("r", 5)
+    .attr("fill", "var(--color-action)")
     .attr("opacity", d => d.knowledge);
   
-  // Create knowledge transfer animation
-  function transferKnowledge() {
-    // Pick random agent to learn
-    const learner = agents[Math.floor(Math.random() * agents.length)];
-    // Pick random agent to share (not the same)
-    let teacher;
-    do {
-      teacher = agents[Math.floor(Math.random() * agents.length)];
-    } while (teacher.id === learner.id);
+  // Knowledge particles group
+  const particlesGroup = svg.append("g");
+  
+  // Update positions
+  function updatePositions() {
+    linkElements
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
     
-    // Create path from teacher to memory to learner
-    const path = svg.append("path")
-      .attr("d", `M${teacher.x},${teacher.y} Q${centerX},${centerY} ${learner.x},${learner.y}`)
-      .attr("fill", "none")
-      .attr("stroke", "none");
+    nodeElements
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y);
+  }
+  
+  // Create knowledge flow
+  function createKnowledgeFlow() {
+    // Pick a random link
+    if (links.length === 0) return;
+    const link = links[Math.floor(Math.random() * links.length)];
     
-    // Create knowledge particle
-    const particle = svg.append("circle")
-      .attr("r", 3)
-      .attr("fill", "var(--color-primary)")
+    // Create particle
+    const particle = particlesGroup.append("circle")
+      .attr("r", 2)
+      .attr("fill", "var(--color-action)")
+      .attr("cx", link.source.x)
+      .attr("cy", link.source.y)
       .attr("opacity", 0.8);
     
-    // Animate along path
+    // Animate to target
     particle.transition()
-      .duration(2000)
-      .attrTween("transform", function() {
-        const length = path.node().getTotalLength();
-        return function(t) {
-          const point = path.node().getPointAtLength(t * length);
-          return `translate(${point.x},${point.y})`;
-        };
-      })
+      .duration(1500)
+      .attr("cx", link.target.x)
+      .attr("cy", link.target.y)
       .on("end", function() {
-        // Update learner's knowledge
-        learner.knowledge = Math.min(learner.knowledge + 0.1, 1);
+        // Transfer knowledge
+        link.target.knowledge = Math.min(link.target.knowledge + 0.05, 1);
+        link.strength = Math.min(link.strength + 0.1, 2);
         
-        // Update agent visual
-        agentGroups.selectAll("circle")
-          .filter(d => d.id === learner.id)
+        // Update visuals
+        nodeElements
+          .filter(d => d.id === link.target.id)
           .transition()
-          .duration(500)
+          .duration(300)
           .attr("opacity", d => d.knowledge)
-          .attr("r", 10)
+          .attr("r", 7)
           .transition()
-          .duration(500)
-          .attr("r", 8);
+          .duration(300)
+          .attr("r", 5);
         
-        // Clean up
+        linkElements
+          .filter(d => d === link)
+          .transition()
+          .duration(300)
+          .attr("stroke-width", d => d.strength);
+        
         particle.remove();
-        path.remove();
       });
   }
   
-  // Create discovery animation
-  function makeDiscovery() {
-    const agent = agents[Math.floor(Math.random() * agents.length)];
+  // Create discovery burst
+  function createDiscovery() {
+    const node = nodes[Math.floor(Math.random() * nodes.length)];
+    node.discoveries++;
     
-    // Flash the agent
-    const flash = svg.append("circle")
-      .attr("cx", agent.x)
-      .attr("cy", agent.y)
-      .attr("r", 8)
-      .attr("fill", "none")
-      .attr("stroke", "var(--color-primary)")
-      .attr("stroke-width", 2)
-      .attr("opacity", 1);
+    // Create burst effect
+    const burst = svg.append("g");
     
-    flash.transition()
-      .duration(500)
-      .attr("r", 20)
-      .attr("opacity", 0)
-      .on("end", function() {
-        flash.remove();
-        // Share discovery
-        setTimeout(transferKnowledge, 200);
-      });
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * 2 * Math.PI;
+      const line = burst.append("line")
+        .attr("x1", node.x)
+        .attr("y1", node.y)
+        .attr("x2", node.x)
+        .attr("y2", node.y)
+        .attr("stroke", "var(--color-action)")
+        .attr("stroke-width", 1)
+        .attr("opacity", 0.6);
+      
+      line.transition()
+        .duration(1000)
+        .attr("x2", node.x + 30 * Math.cos(angle))
+        .attr("y2", node.y + 30 * Math.sin(angle))
+        .attr("opacity", 0)
+        .on("end", function() {
+          line.remove();
+        });
+    }
+    
+    // Create new cross-cluster connections
+    if (node.discoveries > 2 && Math.random() > 0.5) {
+      const otherCluster = nodes.filter(n => n.cluster !== node.cluster);
+      if (otherCluster.length > 0) {
+        const target = otherCluster[Math.floor(Math.random() * otherCluster.length)];
+        const newLink = {
+          source: node,
+          target: target,
+          strength: 0.3
+        };
+        links.push(newLink);
+        
+        // Add new link element
+        svg.select("g").insert("line", ":first-child")
+          .datum(newLink)
+          .attr("stroke", "var(--color-action)")
+          .attr("stroke-width", 2)
+          .attr("opacity", 0)
+          .attr("x1", node.x)
+          .attr("y1", node.y)
+          .attr("x2", target.x)
+          .attr("y2", target.y)
+          .transition()
+          .duration(1000)
+          .attr("opacity", 0.3)
+          .attr("stroke", "var(--color-tx-muted)")
+          .attr("stroke-width", newLink.strength);
+      }
+    }
   }
   
-  // Pulse the memory periodically
-  function pulseMemory() {
-    const pulse = svg.append("circle")
-      .attr("cx", centerX)
-      .attr("cy", centerY)
-      .attr("r", memoryRadius)
-      .attr("fill", "none")
-      .attr("stroke", "var(--color-primary)")
-      .attr("stroke-width", 1)
-      .attr("opacity", 0.6);
+  // Gentle drift animation
+  function drift() {
+    nodes.forEach(node => {
+      node.vx += (Math.random() - 0.5) * 0.2;
+      node.vy += (Math.random() - 0.5) * 0.2;
+      node.vx *= 0.98; // Damping
+      node.vy *= 0.98;
+      
+      node.x += node.vx;
+      node.y += node.vy;
+      
+      // Keep within bounds
+      node.x = Math.max(20, Math.min(width - 20, node.x));
+      node.y = Math.max(20, Math.min(height - 20, node.y));
+    });
     
-    pulse.transition()
-      .duration(2000)
-      .attr("r", memoryRadius + 20)
-      .attr("opacity", 0)
-      .on("end", function() {
-        pulse.remove();
-      });
+    updatePositions();
   }
+  
+  // Initialize positions
+  updatePositions();
   
   // Start animations
-  const discoveryInterval = setInterval(makeDiscovery, 2500);
-  const pulseInterval = setInterval(pulseMemory, 4000);
-  transferKnowledge(); // Start with one transfer
+  const flowInterval = setInterval(createKnowledgeFlow, 800);
+  const discoveryInterval = setInterval(createDiscovery, 3000);
+  const driftInterval = setInterval(drift, 50);
+  
+  // Initial burst of activity
+  for (let i = 0; i < 3; i++) {
+    setTimeout(createKnowledgeFlow, i * 300);
+  }
   
   // Clean up
   window.addEventListener('beforeunload', () => {
+    clearInterval(flowInterval);
     clearInterval(discoveryInterval);
-    clearInterval(pulseInterval);
+    clearInterval(driftInterval);
+  });
+  
+  // Handle resize
+  window.addEventListener('resize', () => {
+    const newRect = container.node().getBoundingClientRect();
+    svg.attr("width", newRect.width)
+       .attr("height", newRect.height)
+       .attr("viewBox", `0 0 ${newRect.width} ${newRect.height}`);
   });
 });
 </script>
