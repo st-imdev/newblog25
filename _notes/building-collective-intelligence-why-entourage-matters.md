@@ -1,5 +1,6 @@
 ---
 title: "My journey to co-founding entourage"
+slug: my-journey-to-co-founding-entourage
 date: 2025-07-31
 tags: thoughts ai agents collective-intelligence entourage
 animation: entourage-network
