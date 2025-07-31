@@ -3,7 +3,7 @@ title: "Building Collective Intelligence: Why Entourage Matters"
 date: 2025-07-31
 tags: thoughts ai agents collective-intelligence entourage
 animation: entourage-network
-published: false
+published: true
 ---
 
 Back in 2017, AI felt like a distant science experiment to most people. But I saw it differently. I was running a successful startup, comfortable in product development, when I made a bet on myself: AI would reshape everything—work, society, life itself. I couldn't ignore that. So on weekends, while everyone else relaxed, I dove in. I built simple models, studied fundamentals like neural nets and backpropagation, blending them with my product instincts. That pivot paid off. It landed me as global head of AI product at a major investment manager. For the next five or six years, I worked alongside top scientific minds, rolling out advanced ML and NLP systems at scale in a public company. All of it built toward one goal: founding my own AI venture with real operating experience, not just hype.
