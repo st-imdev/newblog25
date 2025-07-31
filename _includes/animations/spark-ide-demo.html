@@ -1,0 +1,191 @@
+<!-- Spark IDE Demo Animation -->
+<div id="spark-ide-animation" style="margin: 2rem 0; position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto;">
+  <div class="ide-container" style="background: #1e1e1e; color: #d4d4d4; font-family: 'Monaco', 'Consolas', monospace; font-size: 14px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <!-- IDE Header -->
+    <div class="ide-header" style="background: #2d2d2d; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #3e3e3e;">
+      <div style="display: flex; gap: 6px;">
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+      </div>
+      <div style="flex: 1; text-align: center; color: #999;">main.py - MyProject</div>
+    </div>
+    
+    <!-- IDE Content -->
+    <div class="ide-content" style="padding: 20px; min-height: 400px; position: relative;">
+      <!-- Code Editor -->
+      <div class="code-editor">
+        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #c586c0;">import</span> <span style="color: #4ec9b0;">requests</span>
+<span style="color: #c586c0;">from</span> <span style="color: #4ec9b0;">api_client</span> <span style="color: #c586c0;">import</span> <span style="color: #dcdcaa;">APIClient</span>
+
+<span style="color: #608b4e;"># Having issues with new API endpoint</span>
+<span style="color: #569cd6;">def</span> <span style="color: #dcdcaa;">fetch_user_data</span>(<span style="color: #9cdcfe;">user_id</span>):
+    <span style="color: #9cdcfe;">client</span> = <span style="color: #dcdcaa;">APIClient</span>()
+    <span id="error-line" style="background: rgba(255,0,0,0.1); display: inline-block; width: 100%;">    <span style="color: #9cdcfe;">response</span> = <span style="color: #9cdcfe;">client</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #ce9178;">f"/v2/users/{user_id}"</span>)  <span style="color: #f44747;">❌ 404 Error</span></span>
+    <span style="color: #c586c0;">return</span> <span style="color: #9cdcfe;">response</span>.<span style="color: #dcdcaa;">json</span>()</code></pre>
+      </div>
+      
+      <!-- Spark Assistant Panel -->
+      <div id="spark-panel" style="position: absolute; right: 20px; top: 100px; width: 300px; background: #252526; border: 1px solid #3e3e3e; border-radius: 6px; padding: 12px; display: none; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+          <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #4A90E2, #7B68EE); border-radius: 4px;"></div>
+          <div style="font-weight: bold; color: #4A90E2;">Spark AI Assistant</div>
+        </div>
+        
+        <div id="spark-searching" style="display: none;">
+          <div style="color: #999; font-size: 12px; margin-bottom: 8px;">Searching shared memory...</div>
+          <div class="loading-dots" style="display: flex; gap: 4px;">
+            <div style="width: 6px; height: 6px; background: #4A90E2; border-radius: 50%; animation: pulse 1.4s infinite;"></div>
+            <div style="width: 6px; height: 6px; background: #4A90E2; border-radius: 50%; animation: pulse 1.4s infinite 0.2s;"></div>
+            <div style="width: 6px; height: 6px; background: #4A90E2; border-radius: 50%; animation: pulse 1.4s infinite 0.4s;"></div>
+          </div>
+        </div>
+        
+        <div id="spark-results" style="display: none;">
+          <div style="color: #27c93f; font-size: 12px; margin-bottom: 8px;">✓ Found 3 similar issues</div>
+          
+          <div style="background: #1e1e1e; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px;">
+            <div style="color: #999; margin-bottom: 4px;">From: @dev_sarah (2 days ago)</div>
+            <div style="color: #d7ba7d;">API v2 moved users endpoint to /api/v2/users</div>
+          </div>
+          
+          <div style="background: #1e1e1e; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px;">
+            <div style="color: #999; margin-bottom: 4px;">From: @team_lead (1 week ago)</div>
+            <div style="color: #d7ba7d;">Add 'X-API-Version: 2' header for v2 endpoints</div>
+          </div>
+          
+          <button id="apply-fix" style="background: #4A90E2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px;">Apply Suggested Fix</button>
+        </div>
+        
+        <div id="spark-applied" style="display: none;">
+          <div style="color: #27c93f; font-size: 12px;">✓ Fix applied successfully!</div>
+          <div style="color: #999; font-size: 11px; margin-top: 8px;">Your solution has been added to shared memory to help others.</div>
+        </div>
+      </div>
+      
+      <!-- Fixed Code (hidden initially) -->
+      <div id="fixed-code" style="display: none;">
+        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #c586c0;">import</span> <span style="color: #4ec9b0;">requests</span>
+<span style="color: #c586c0;">from</span> <span style="color: #4ec9b0;">api_client</span> <span style="color: #c586c0;">import</span> <span style="color: #dcdcaa;">APIClient</span>
+
+<span style="color: #608b4e;"># Fixed with Spark's help!</span>
+<span style="color: #569cd6;">def</span> <span style="color: #dcdcaa;">fetch_user_data</span>(<span style="color: #9cdcfe;">user_id</span>):
+    <span style="color: #9cdcfe;">client</span> = <span style="color: #dcdcaa;">APIClient</span>()
+    <span style="color: #9cdcfe;">headers</span> = {<span style="color: #ce9178;">'X-API-Version'</span>: <span style="color: #ce9178;">'2'</span>}
+    <span style="background: rgba(0,255,0,0.1); display: inline-block; width: 100%;">    <span style="color: #9cdcfe;">response</span> = <span style="color: #9cdcfe;">client</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #ce9178;">f"/api/v2/users/{user_id}"</span>, <span style="color: #9cdcfe;">headers</span>=<span style="color: #9cdcfe;">headers</span>)  <span style="color: #27c93f;">✓ 200 OK</span></span>
+    <span style="color: #c586c0;">return</span> <span style="color: #9cdcfe;">response</span>.<span style="color: #dcdcaa;">json</span>()</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#spark-panel {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.code-editor {
+  transition: opacity 0.3s ease;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: light) {
+  #spark-ide-animation .ide-container {
+    background: #f5f5f5;
+    color: #333;
+  }
+  
+  #spark-ide-animation .ide-header {
+    background: #e0e0e0;
+    border-bottom-color: #ccc;
+  }
+  
+  #spark-ide-animation #spark-panel {
+    background: #fff;
+    border-color: #ddd;
+  }
+  
+  #spark-ide-animation pre code {
+    color: #333;
+  }
+  
+  #spark-ide-animation #spark-results > div {
+    background: #f5f5f5;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const errorLine = document.getElementById('error-line');
+  const sparkPanel = document.getElementById('spark-panel');
+  const sparkSearching = document.getElementById('spark-searching');
+  const sparkResults = document.getElementById('spark-results');
+  const sparkApplied = document.getElementById('spark-applied');
+  const applyButton = document.getElementById('apply-fix');
+  const codeEditor = document.querySelector('.code-editor');
+  const fixedCode = document.getElementById('fixed-code');
+  
+  if (!errorLine || !sparkPanel) return;
+  
+  // Animation sequence
+  setTimeout(() => {
+    // Show Spark panel when error is detected
+    sparkPanel.style.display = 'block';
+    sparkSearching.style.display = 'block';
+    
+    setTimeout(() => {
+      // Show search results
+      sparkSearching.style.display = 'none';
+      sparkResults.style.display = 'block';
+      
+      // Apply fix when button is clicked
+      applyButton.addEventListener('click', function() {
+        sparkResults.style.display = 'none';
+        sparkApplied.style.display = 'block';
+        
+        // Fade out old code and show fixed code
+        codeEditor.style.opacity = '0';
+        setTimeout(() => {
+          codeEditor.style.display = 'none';
+          fixedCode.style.display = 'block';
+          fixedCode.style.opacity = '0';
+          setTimeout(() => {
+            fixedCode.style.opacity = '1';
+          }, 50);
+        }, 300);
+        
+        // Hide panel after success
+        setTimeout(() => {
+          sparkPanel.style.opacity = '0';
+          setTimeout(() => {
+            sparkPanel.style.display = 'none';
+          }, 300);
+        }, 2000);
+      });
+    }, 2000);
+  }, 1500);
+});
+</script>
