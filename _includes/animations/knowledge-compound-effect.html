@@ -1,0 +1,249 @@
+<!-- Knowledge Compound Effect Animation -->
+<div id="compound-animation" style="margin: 2rem 0; position: relative; width: 100%; padding-bottom: 50%; overflow: hidden;">
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const container = d3.select("#compound-animation > div");
+  if (!container.node()) return;
+  
+  const rect = container.node().getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
+  
+  const svg = container.append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+  
+  // Create gradient for growth effect
+  const gradient = svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "growthGradient")
+    .attr("x1", "0%")
+    .attr("y1", "100%")
+    .attr("x2", "0%")
+    .attr("y2", "0%");
+  
+  gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "var(--color-action)")
+    .attr("stop-opacity", 0.1);
+  
+  gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "var(--color-action)")
+    .attr("stop-opacity", 0.6);
+  
+  // Base line
+  const margin = { top: 40, right: 60, bottom: 40, left: 60 };
+  const chartWidth = width - margin.left - margin.right;
+  const chartHeight = height - margin.top - margin.bottom;
+  
+  const chartGroup = svg.append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+  
+  // Scales
+  const xScale = d3.scaleLinear()
+    .domain([0, 10])
+    .range([0, chartWidth]);
+  
+  const yScale = d3.scaleLinear()
+    .domain([0, 100])
+    .range([chartHeight, 0]);
+  
+  // Axes
+  chartGroup.append("line")
+    .attr("x1", 0)
+    .attr("y1", chartHeight)
+    .attr("x2", chartWidth)
+    .attr("y2", chartHeight)
+    .attr("stroke", "var(--color-tx-muted)")
+    .attr("stroke-width", 1);
+  
+  chartGroup.append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", 0)
+    .attr("y2", chartHeight)
+    .attr("stroke", "var(--color-tx-muted)")
+    .attr("stroke-width", 1);
+  
+  // Labels
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height - 10)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("fill", "var(--color-tx-muted)")
+    .text("TIME →");
+  
+  svg.append("text")
+    .attr("x", 20)
+    .attr("y", height / 2)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("fill", "var(--color-tx-muted)")
+    .attr("transform", `rotate(-90, 20, ${height / 2})`)
+    .text("COLLECTIVE KNOWLEDGE →");
+  
+  // Data points representing knowledge growth
+  const data = [];
+  let currentValue = 5;
+  
+  // Initialize with some data
+  for (let i = 0; i <= 3; i++) {
+    data.push({ x: i, y: currentValue });
+    currentValue += Math.random() * 3;
+  }
+  
+  // Line generator
+  const line = d3.line()
+    .x(d => xScale(d.x))
+    .y(d => yScale(d.y))
+    .curve(d3.curveMonotoneX);
+  
+  // Area generator for fill
+  const area = d3.area()
+    .x(d => xScale(d.x))
+    .y0(chartHeight)
+    .y1(d => yScale(d.y))
+    .curve(d3.curveMonotoneX);
+  
+  // Draw initial area
+  const areaPath = chartGroup.append("path")
+    .datum(data)
+    .attr("fill", "url(#growthGradient)")
+    .attr("d", area);
+  
+  // Draw initial line
+  const linePath = chartGroup.append("path")
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "var(--color-action)")
+    .attr("stroke-width", 2)
+    .attr("d", line);
+  
+  // Agent nodes
+  const agents = [];
+  const agentGroup = svg.append("g");
+  
+  // Create initial agents
+  for (let i = 0; i < 3; i++) {
+    const agent = {
+      id: i,
+      x: Math.random() * width,
+      y: Math.random() * height * 0.3 + 20,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2
+    };
+    agents.push(agent);
+    
+    agentGroup.append("circle")
+      .datum(agent)
+      .attr("cx", agent.x)
+      .attr("cy", agent.y)
+      .attr("r", 4)
+      .attr("fill", "var(--color-action)")
+      .attr("opacity", 0.6);
+  }
+  
+  // Animation function
+  function animate() {
+    // Move agents
+    agents.forEach(agent => {
+      agent.x += agent.vx;
+      agent.y += agent.vy;
+      
+      // Bounce off walls
+      if (agent.x < 0 || agent.x > width) agent.vx *= -1;
+      if (agent.y < 0 || agent.y > height * 0.4) agent.vy *= -1;
+      
+      agent.x = Math.max(0, Math.min(width, agent.x));
+      agent.y = Math.max(0, Math.min(height * 0.4, agent.y));
+    });
+    
+    // Update agent positions
+    agentGroup.selectAll("circle")
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y);
+    
+    // Occasionally add new knowledge point
+    if (Math.random() < 0.02 && data.length < 10) {
+      const lastPoint = data[data.length - 1];
+      const growth = Math.random() * 8 + 2; // Exponential-ish growth
+      const newPoint = {
+        x: lastPoint.x + 1,
+        y: Math.min(95, lastPoint.y + growth)
+      };
+      data.push(newPoint);
+      
+      // Update paths with transition
+      linePath.datum(data)
+        .transition()
+        .duration(1000)
+        .attr("d", line);
+      
+      areaPath.datum(data)
+        .transition()
+        .duration(1000)
+        .attr("d", area);
+      
+      // Show discovery effect
+      const randomAgent = agents[Math.floor(Math.random() * agents.length)];
+      const discovery = svg.append("circle")
+        .attr("cx", randomAgent.x)
+        .attr("cy", randomAgent.y)
+        .attr("r", 4)
+        .attr("fill", "none")
+        .attr("stroke", "var(--color-action)")
+        .attr("stroke-width", 2)
+        .attr("opacity", 1);
+      
+      discovery.transition()
+        .duration(1000)
+        .attr("r", 30)
+        .attr("opacity", 0)
+        .remove();
+      
+      // Add a new agent occasionally
+      if (agents.length < 8 && Math.random() < 0.3) {
+        const newAgent = {
+          id: agents.length,
+          x: Math.random() * width,
+          y: Math.random() * height * 0.3 + 20,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2
+        };
+        agents.push(newAgent);
+        
+        agentGroup.append("circle")
+          .datum(newAgent)
+          .attr("cx", newAgent.x)
+          .attr("cy", newAgent.y)
+          .attr("r", 0)
+          .attr("fill", "var(--color-action)")
+          .attr("opacity", 0.6)
+          .transition()
+          .duration(500)
+          .attr("r", 4);
+      }
+    }
+    
+    requestAnimationFrame(animate);
+  }
+  
+  // Start animation
+  animate();
+  
+  // Handle resize
+  window.addEventListener('resize', () => {
+    const newRect = container.node().getBoundingClientRect();
+    svg.attr("width", newRect.width)
+       .attr("height", newRect.height)
+       .attr("viewBox", `0 0 ${newRect.width} ${newRect.height}`);
+  });
+});
+</script>
