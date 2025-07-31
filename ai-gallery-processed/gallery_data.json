@@ -1,0 +1,13 @@
+{
+  "images": [
+    {
+      "id": 1,
+      "prompt": "hand-drawn aesthetic, futuristic explorer wandering through the remains of a massive crashed archive ship, holographic data swirling around, loose sketch lines and raw texture, fragments of history and knowledge hovering, concept art tone, top 10% stone cream (#EDE8DD) background for clean blog integration",
+      "image_file": "image-1.jpg",
+      "thumb_file": "thumb-1.jpg",
+      "processed_date": "2025-07-31T13:36:28.182014",
+      "original_file": "test1.png"
+    }
+  ],
+  "next_id": 2
+}
