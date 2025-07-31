@@ -65,6 +65,10 @@ permalink: /
 
   <hr class="mn2 ms2">
 
+  {% include ai_gallery.html %}
+
+  <hr class="mn2 ms2">
+
   <p style="margin: 2rem 0 1.5rem 0;"><a href="/fleeting" class="muted font-ui">Fleeting&nbsp;Notes</a></p>
 
   {% include fleeting_calendar.html %}

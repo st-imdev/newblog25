@@ -1,0 +1,103 @@
+<!-- AI Gallery Grid -->
+<div class="ai-gallery-section">
+  <p style="margin: 2rem 0 1.5rem 0;"><span class="muted font-ui">AI Generations</span></p>
+  
+  <div class="ai-gallery-grid">
+    <!-- Gallery items - replace these with your actual images -->
+    <!-- Example structure for each image:
+    <div class="ai-gallery-item" 
+         data-prompt="Your Midjourney prompt here" 
+         data-image="/assets/ai-gallery/image-1.jpg">
+      <img src="/assets/ai-gallery/thumb-1.jpg" alt="AI Generation 1" loading="lazy">
+    </div>
+    -->
+    
+    <!-- Example images - replace with your actual Midjourney generations -->
+    <div class="ai-gallery-item" 
+         data-prompt="abstract neural network visualization, interconnected nodes, ethereal glow, dark background --ar 1:1 --v 6" 
+         data-image="https://picsum.photos/800/800?random=1">
+      <img src="https://picsum.photos/300/300?random=1" alt="Neural Network Visualization" loading="lazy">
+    </div>
+    
+    <div class="ai-gallery-item" 
+         data-prompt="minimalist code architecture, flowing data streams, pastel colors, geometric shapes --ar 1:1 --v 6" 
+         data-image="https://picsum.photos/800/800?random=2">
+      <img src="https://picsum.photos/300/300?random=2" alt="Code Architecture" loading="lazy">
+    </div>
+    
+    <div class="ai-gallery-item" 
+         data-prompt="digital consciousness emerging from binary, abstract portrait, glitch art style --ar 1:1 --v 6" 
+         data-image="https://picsum.photos/800/800?random=3">
+      <img src="https://picsum.photos/300/300?random=3" alt="Digital Consciousness" loading="lazy">
+    </div>
+    
+    <div class="ai-gallery-item" 
+         data-prompt="organic technology fusion, biomechanical patterns, soft lighting, macro photography style --ar 1:1 --v 6" 
+         data-image="https://picsum.photos/800/800?random=4">
+      <img src="https://picsum.photos/300/300?random=4" alt="Organic Technology" loading="lazy">
+    </div>
+    
+    <div class="ai-gallery-item" 
+         data-prompt="quantum computing visualization, superposition states, neon accents, dark sci-fi aesthetic --ar 1:1 --v 6" 
+         data-image="https://picsum.photos/800/800?random=5">
+      <img src="https://picsum.photos/300/300?random=5" alt="Quantum Computing" loading="lazy">
+    </div>
+    
+    <!-- Add more images here as needed -->
+  </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div class="ai-lightbox" id="ai-lightbox">
+  <div class="ai-lightbox-overlay"></div>
+  <div class="ai-lightbox-content">
+    <button class="ai-lightbox-close" aria-label="Close">&times;</button>
+    <img class="ai-lightbox-image" src="" alt="">
+    <div class="ai-lightbox-prompt"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const galleryItems = document.querySelectorAll('.ai-gallery-item');
+  const lightbox = document.getElementById('ai-lightbox');
+  const lightboxImage = lightbox.querySelector('.ai-lightbox-image');
+  const lightboxPrompt = lightbox.querySelector('.ai-lightbox-prompt');
+  const lightboxClose = lightbox.querySelector('.ai-lightbox-close');
+  const lightboxOverlay = lightbox.querySelector('.ai-lightbox-overlay');
+  
+  // Open lightbox
+  galleryItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const image = this.dataset.image;
+      const prompt = this.dataset.prompt;
+      
+      lightboxImage.src = image;
+      lightboxPrompt.textContent = prompt;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Match prompt width to image width after image loads
+      lightboxImage.onload = function() {
+        lightboxPrompt.style.width = this.offsetWidth + 'px';
+      };
+    });
+  });
+  
+  // Close lightbox
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxOverlay.addEventListener('click', closeLightbox);
+  
+  // Close on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      closeLightbox();
+    }
+  });
+});
+</script>
