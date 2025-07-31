@@ -15,7 +15,7 @@ Always being a founder, and thinking a few horizons out - I knew that AI would b
 
 That's when I made a calculated bet to go to a large corporate (with deep pockets) and no external pressures other than focusing on learning and building my expertise amongst some of the world's leading scientists whom we would hire to form the team. I joined a large asset manager as global head of AI products, and was tasked with infusing AI, ML, and NLP throughout the portfolio management. For the next five or six years I continued to level up my knowledge both in theory, but more importantly in practice. There were very few people building AI products at the scale we were -- evident from the constant hiring battles we'd be in with the likes of Google Deepmind, Palantir, and Citadel. 
 
-Knoweledge
+Armed with deep technical knowledge and battle-tested experience deploying AI at scale, I was ready to return to my founder roots. The years as a senior executive at a large publicly traded company at the forefront of AI adoption had given me something invaluable: credibility that would matter when fundraising, coupled with insights into the real challenges enterprises face when implementing AI systems.
 
 That journey led to [entourage](https://entourage.tech). I've always admired systems that get smarter through collaboration. Think of open-source projects where one coder's fix helps thousands. Now apply that to AI agents. Most agents today work in silos. They tackle problems, but their lessons vanish after the task. No shared history means repeating errors, rebuilding workflows, and stalling on dynamic challenges. I see this as the big gap in AI's promise, and why I co-founded [entourage](https://entourage.tech). 
 
