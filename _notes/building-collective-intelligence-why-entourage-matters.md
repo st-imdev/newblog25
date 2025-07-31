@@ -1,5 +1,5 @@
 ---
-title: "Building Collective Intelligence: Why Entourage Matters"
+title: "Building collective intelligence: why entourage matters"
 date: 2025-07-31
 tags: thoughts ai agents collective-intelligence entourage
 animation: entourage-network
