@@ -1,8 +1,8 @@
 <!-- Spark IDE Demo Animation -->
-<div id="spark-ide-animation" style="margin: 2rem 0; position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto;">
-  <div class="ide-container" style="background: #1e1e1e; color: #d4d4d4; font-family: 'Monaco', 'Consolas', monospace; font-size: 14px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+<div id="spark-ide-animation" style="margin: 2rem auto; position: relative; width: 90%; max-width: 650px;">
+  <div class="ide-container" style="background: #000000; color: #d4d4d4; font-family: 'Monaco', 'Consolas', monospace; font-size: 14px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); overflow: hidden;">
     <!-- IDE Header -->
-    <div class="ide-header" style="background: #2d2d2d; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #3e3e3e;">
+    <div class="ide-header" style="background: #1a1a1a; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333;">
       <div style="display: flex; gap: 6px;">
         <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
         <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
@@ -15,18 +15,18 @@
     <div class="ide-content" style="padding: 20px; min-height: 400px; position: relative;">
       <!-- Code Editor -->
       <div class="code-editor">
-        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #c586c0;">import</span> <span style="color: #4ec9b0;">requests</span>
-<span style="color: #c586c0;">from</span> <span style="color: #4ec9b0;">api_client</span> <span style="color: #c586c0;">import</span> <span style="color: #dcdcaa;">APIClient</span>
+        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #ff79c6;">import</span> <span style="color: #50fa7b;">requests</span>
+<span style="color: #ff79c6;">from</span> <span style="color: #50fa7b;">api_client</span> <span style="color: #ff79c6;">import</span> <span style="color: #f8f8f2;">APIClient</span>
 
-<span style="color: #608b4e;"># Having issues with new API endpoint</span>
-<span style="color: #569cd6;">def</span> <span style="color: #dcdcaa;">fetch_user_data</span>(<span style="color: #9cdcfe;">user_id</span>):
-    <span style="color: #9cdcfe;">client</span> = <span style="color: #dcdcaa;">APIClient</span>()
-    <span id="error-line" style="background: rgba(255,0,0,0.1); display: inline-block; width: 100%;">    <span style="color: #9cdcfe;">response</span> = <span style="color: #9cdcfe;">client</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #ce9178;">f"/v2/users/{user_id}"</span>)  <span style="color: #f44747;">❌ 404 Error</span></span>
-    <span style="color: #c586c0;">return</span> <span style="color: #9cdcfe;">response</span>.<span style="color: #dcdcaa;">json</span>()</code></pre>
+<span style="color: #6272a4;"># Having issues with new API endpoint</span>
+<span style="color: #8be9fd;">def</span> <span style="color: #f8f8f2;">fetch_user_data</span>(<span style="color: #ffb86c;">user_id</span>):
+    <span style="color: #ffb86c;">client</span> = <span style="color: #f8f8f2;">APIClient</span>()
+    <span id="error-line" style="background: rgba(255,0,0,0.1); display: inline-block; width: 100%;">    <span style="color: #ffb86c;">response</span> = <span style="color: #ffb86c;">client</span>.<span style="color: #f8f8f2;">get</span>(<span style="color: #f1fa8c;">f"/v2/users/{user_id}"</span>)  <span style="color: #ff5555;">❌ 404 Error</span></span>
+    <span style="color: #ff79c6;">return</span> <span style="color: #ffb86c;">response</span>.<span style="color: #f8f8f2;">json</span>()</code></pre>
       </div>
       
       <!-- Spark Assistant Panel -->
-      <div id="spark-panel" style="position: absolute; right: 20px; top: 100px; width: 300px; background: #252526; border: 1px solid #3e3e3e; border-radius: 6px; padding: 12px; display: none; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+      <div id="spark-panel" style="position: absolute; right: 20px; top: 100px; width: 280px; background: #1a1a1a; border: 1px solid #444; border-radius: 6px; padding: 12px; display: none; box-shadow: 0 2px 12px rgba(0,0,0,0.5);">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
           <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #4A90E2, #7B68EE); border-radius: 4px;"></div>
           <div style="font-weight: bold; color: #4A90E2;">Spark AI Assistant</div>
@@ -44,14 +44,14 @@
         <div id="spark-results" style="display: none;">
           <div style="color: #27c93f; font-size: 12px; margin-bottom: 8px;">✓ Found 3 similar issues</div>
           
-          <div style="background: #1e1e1e; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px;">
-            <div style="color: #999; margin-bottom: 4px;">From: @dev_sarah (2 days ago)</div>
-            <div style="color: #d7ba7d;">API v2 moved users endpoint to /api/v2/users</div>
+          <div style="background: #0a0a0a; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px; border: 1px solid #333;">
+            <div style="color: #888; margin-bottom: 4px;">From: @dev_sarah (2 days ago)</div>
+            <div style="color: #ffa500;">API v2 moved users endpoint to /api/v2/users</div>
           </div>
           
-          <div style="background: #1e1e1e; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px;">
-            <div style="color: #999; margin-bottom: 4px;">From: @team_lead (1 week ago)</div>
-            <div style="color: #d7ba7d;">Add 'X-API-Version: 2' header for v2 endpoints</div>
+          <div style="background: #0a0a0a; border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 12px; border: 1px solid #333;">
+            <div style="color: #888; margin-bottom: 4px;">From: @team_lead (1 week ago)</div>
+            <div style="color: #ffa500;">Add 'X-API-Version: 2' header for v2 endpoints</div>
           </div>
           
           <button id="apply-fix" style="background: #4A90E2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px;">Apply Suggested Fix</button>
@@ -65,15 +65,15 @@
       
       <!-- Fixed Code (hidden initially) -->
       <div id="fixed-code" style="display: none;">
-        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #c586c0;">import</span> <span style="color: #4ec9b0;">requests</span>
-<span style="color: #c586c0;">from</span> <span style="color: #4ec9b0;">api_client</span> <span style="color: #c586c0;">import</span> <span style="color: #dcdcaa;">APIClient</span>
+        <pre style="margin: 0; line-height: 1.5;"><code><span style="color: #ff79c6;">import</span> <span style="color: #50fa7b;">requests</span>
+<span style="color: #ff79c6;">from</span> <span style="color: #50fa7b;">api_client</span> <span style="color: #ff79c6;">import</span> <span style="color: #f8f8f2;">APIClient</span>
 
-<span style="color: #608b4e;"># Fixed with Spark's help!</span>
-<span style="color: #569cd6;">def</span> <span style="color: #dcdcaa;">fetch_user_data</span>(<span style="color: #9cdcfe;">user_id</span>):
-    <span style="color: #9cdcfe;">client</span> = <span style="color: #dcdcaa;">APIClient</span>()
-    <span style="color: #9cdcfe;">headers</span> = {<span style="color: #ce9178;">'X-API-Version'</span>: <span style="color: #ce9178;">'2'</span>}
-    <span style="background: rgba(0,255,0,0.1); display: inline-block; width: 100%;">    <span style="color: #9cdcfe;">response</span> = <span style="color: #9cdcfe;">client</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #ce9178;">f"/api/v2/users/{user_id}"</span>, <span style="color: #9cdcfe;">headers</span>=<span style="color: #9cdcfe;">headers</span>)  <span style="color: #27c93f;">✓ 200 OK</span></span>
-    <span style="color: #c586c0;">return</span> <span style="color: #9cdcfe;">response</span>.<span style="color: #dcdcaa;">json</span>()</code></pre>
+<span style="color: #6272a4;"># Fixed with Spark's help!</span>
+<span style="color: #8be9fd;">def</span> <span style="color: #f8f8f2;">fetch_user_data</span>(<span style="color: #ffb86c;">user_id</span>):
+    <span style="color: #ffb86c;">client</span> = <span style="color: #f8f8f2;">APIClient</span>()
+    <span style="color: #ffb86c;">headers</span> = {<span style="color: #f1fa8c;">'X-API-Version'</span>: <span style="color: #f1fa8c;">'2'</span>}
+    <span style="background: rgba(0,255,0,0.1); display: inline-block; width: 100%;">    <span style="color: #ffb86c;">response</span> = <span style="color: #ffb86c;">client</span>.<span style="color: #f8f8f2;">get</span>(<span style="color: #f1fa8c;">f"/api/v2/users/{user_id}"</span>, <span style="color: #ffb86c;">headers</span>=<span style="color: #ffb86c;">headers</span>)  <span style="color: #50fa7b;">✓ 200 OK</span></span>
+    <span style="color: #ff79c6;">return</span> <span style="color: #ffb86c;">response</span>.<span style="color: #f8f8f2;">json</span>()</code></pre>
       </div>
     </div>
   </div>
@@ -110,29 +110,26 @@
   transition: opacity 0.3s ease;
 }
 
-/* Dark mode adjustments */
+/* Light mode adjustments */
 @media (prefers-color-scheme: light) {
   #spark-ide-animation .ide-container {
-    background: #f5f5f5;
-    color: #333;
+    background: #000;
+    color: #d4d4d4;
   }
   
   #spark-ide-animation .ide-header {
-    background: #e0e0e0;
-    border-bottom-color: #ccc;
+    background: #1a1a1a;
+    border-bottom-color: #333;
   }
   
   #spark-ide-animation #spark-panel {
-    background: #fff;
-    border-color: #ddd;
-  }
-  
-  #spark-ide-animation pre code {
-    color: #333;
+    background: #1a1a1a;
+    border-color: #444;
   }
   
   #spark-ide-animation #spark-results > div {
-    background: #f5f5f5;
+    background: #0a0a0a;
+    border-color: #333;
   }
 }
 </style>
