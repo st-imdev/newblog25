@@ -1,6 +1,6 @@
 <!-- Spark IDE Demo Animation -->
-<div id="spark-ide-animation" style="margin: 3.5rem auto; position: relative; width: 85%; max-width: 750px;">
-  <div class="ide-container" style="background: #0d0d0d !important; color: #e0e0e0 !important; font-family: 'Menlo', 'Monaco', 'Consolas', monospace; font-size: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); overflow: hidden; border: 1px solid #222; position: relative;">
+<div id="spark-ide-animation" style="margin: 3.5rem auto; position: relative; width: 90%; max-width: 750px;">
+  <div class="ide-container" style="background: #0d0d0d !important; color: #e0e0e0 !important; font-family: var(--font-mono); font-size: 12px; border-radius: var(--border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.2); overflow: hidden; border: 1px solid #222; position: relative;">
     <!-- IDE Header -->
     <div class="ide-header" style="background: #1a1a1a !important; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333;">
       <div style="display: flex; gap: 5px;">
@@ -12,7 +12,7 @@
     </div>
     
     <!-- IDE Content -->
-    <div class="ide-content" style="background: #0d0d0d !important; padding: 16px; min-height: 350px; position: relative; transition: padding-right 0.3s ease;">
+    <div class="ide-content" style="background: #0d0d0d !important; padding: 16px; min-height: 300px; position: relative; transition: padding-right 0.3s ease;">
       <!-- Code Editor -->
       <div class="code-editor">
         <pre style="margin: 0; line-height: 1.6; background: transparent !important;"><code style="background: transparent !important;"><span style="color: #ff006a;">import</span> <span style="color: #00ff9f;">requests</span>
@@ -134,6 +134,34 @@
 
 #spark-ide-animation .ide-content {
   transition: padding-right 0.3s ease !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  #spark-ide-animation {
+    width: 95% !important;
+    margin: 2rem auto !important;
+  }
+  
+  .ide-content {
+    min-height: 250px !important;
+    padding: 12px !important;
+    font-size: 11px !important;
+  }
+  
+  #spark-panel {
+    width: 100% !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 1000 !important;
+  }
+  
+  .ide-content.sidebar-open {
+    padding-right: 12px !important;
+  }
 }
 
 /* Ensure hover effects work */

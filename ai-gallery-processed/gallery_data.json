@@ -7,7 +7,15 @@
       "thumb_file": "thumb-1.jpg",
       "processed_date": "2025-07-31T13:36:28.182014",
       "original_file": "test1.png"
+    },
+    {
+      "id": 2,
+      "prompt": "dream like state of peacefulness house with no neighbors, serene isolation, minimalist architecture, soft natural lighting, tranquil atmosphere --ar 1:1 --v 6",
+      "image_file": "image-2.jpg",
+      "thumb_file": "thumb-2.jpg",
+      "processed_date": "2025-08-01T07:43:22.578480",
+      "original_file": "u7244577388_dream_like_state_of_peacefulness_house_with_no_ne_08a74c0d-57aa-46c7-97fa-1d9671edd886_1.png"
     }
   ],
-  "next_id": 2
+  "next_id": 3
 }
