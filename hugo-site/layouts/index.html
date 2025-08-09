@@ -1,11 +1,11 @@
 {{ define "main" }}
 <section class="container py-16 animate-fade-in">
-  <header class="mb-10 flex items-center justify-between">
-    <div>
+  <header class="mb-10" style="position:relative;">
+    <div class="max-w-prose mx-auto">
       <h1 class="h1">Scott Taylor</h1>
       <p class="small" style="position:absolute;left:-9999px;">Personal site of Scott Taylor</p>
     </div>
-    <div class="theme-toggle">
+    <div class="theme-toggle" style="position:absolute;right:0;top:0;">
       <button id="theme-switch" class="theme-switch" aria-label="Toggle dark mode"><span class="knob"></span></button>
     </div>
     <script>
