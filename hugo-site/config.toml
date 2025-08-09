@@ -19,3 +19,5 @@ title = "Scott Taylor — Personal Site"
   home = ["HTML","RSS"]
   section = ["HTML","RSS"]
   page = ["HTML"]
+
+disableKinds = ["taxonomy", "term"]
