@@ -192,13 +192,18 @@ div.highlight code {
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .gap-2 { gap: 0.5rem; }
+.gap-8 { gap: 2rem; }
 .mb-4 { margin-bottom: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
 .mb-8 { margin-bottom: 2rem; }
 .mb-10 { margin-bottom: 2.5rem; }
 .mt-16 { margin-top: 4rem; }
 .pt-8 { padding-top: 2rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-8 { padding-top: 2rem; padding-bottom: 2rem; }
 .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-0 { padding-left: 0; padding-right: 0; }
 .border-t { border-top-width: 1px; }
 .border-border { border-color: hsl(var(--border)); }
 .text-sm { font-size: 0.875rem; }
@@ -209,4 +214,12 @@ div.highlight code {
 .decoration-1 { text-decoration-thickness: 1px; }
 .underline-offset-4 { text-underline-offset: 4px; }
 .max-w-none { max-width: none; }
+.max-w-6xl { max-width: 72rem; }
+.flex-1 { flex: 1 1 0%; }
 .prose-lg { font-size: 1.125rem; line-height: 1.75; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+
+@media (min-width: 640px) {
+  .sm\:py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+  .sm\:px-0 { padding-left: 0; padding-right: 0; }
+}
