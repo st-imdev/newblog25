@@ -1,15 +1,14 @@
 {{ define "main" }}
-<section class="container">
-  <article class="max-w-prose">
-    <header>
-      <p class="small muted" style="text-transform:capitalize;">{{ .Section }}</p>
+<section class="container py-16">
+  <article class="max-w-prose lead">
+    <header class="mb-8">
+      <p class="small muted"><a class="link-underline" href="/">← Back to home</a></p>
       <h1 class="h1">{{ .Title }}</h1>
-      {{ with .Date }}<p class="small muted">{{ .Format "Jan 2, 2006" }}</p>{{ end }}
+      {{ with .Date }}<p class="small muted">{{ .Format "Jan 2006" }}</p>{{ end }}
     </header>
-    <div class="lead">
+    <div class="content">
       {{ .Content }}
     </div>
-    <p class="section"><a class="link-underline" href="/">← Back to home</a></p>
   </article>
 </section>
 {{ end }}
