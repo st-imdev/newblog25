@@ -28,39 +28,7 @@
       </ul>
     </section>
 
-    <section class="section">
-      <h2 class="h2">Essays</h2>
-      <ul class="list">
-        {{ range (where .Site.RegularPages "Section" "essays") }}
-          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-        {{ end }}
-      </ul>
-    </section>
-
-    <section class="section">
-      <h2 class="h2">Research</h2>
-      <ul class="list">
-        <li><a class="link-underline" href="/research/">Google Scholar</a></li>
-      </ul>
-    </section>
-
-    <section class="section">
-      <h2 class="h2">Op-eds</h2>
-      <ul class="list">
-        {{ range (where .Site.RegularPages "Section" "op-eds") }}
-          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a> {{ with .Params.outlet }}<span class="small muted">({{ . }})</span>{{ end }}</li>
-        {{ end }}
-      </ul>
-    </section>
-
-    <section class="section">
-      <h2 class="h2">Interviews</h2>
-      <ul class="list">
-        {{ range (where .Site.RegularPages "Section" "interviews") }}
-          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a> {{ with .Params.year }}<span class="small muted">({{ . }})</span>{{ end }}</li>
-        {{ end }}
-      </ul>
-    </section>
+    
 
     <section class="section">
       <h2 class="h2">Currently building</h2>
