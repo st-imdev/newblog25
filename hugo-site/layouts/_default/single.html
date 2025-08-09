@@ -1,13 +1,31 @@
 {{ define "main" }}
-<section class="container py-16">
-  <article class="max-w-prose lead">
-    <header class="mb-8">
-      <p class="small muted"><a class="link-underline" href="/">← Back to home</a></p>
-      <h1 class="h1">{{ .Title }}</h1>
-      {{ with .Date }}<p class="small muted">{{ .Format "Jan 2006" }}</p>{{ end }}
-    </header>
-    {{ $content := .Content | replaceRE `==([^=]+)==` `<span class="highlight">$1</span>` | safeHTML }}
-    <div class="content">{{ $content }}</div>
+<section class="container py-8">
+  <article class="max-w-prose">
+    <!-- Back Navigation -->
+    <div class="mb-6">
+      <a href="/" class="back-link inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group">
+        <span class="back-arrow">←</span>
+        Back to home
+      </a>
+    </div>
+    
+    <div class="animate-fade-in">
+      <header class="mb-8">
+        <h1 class="h1 mb-4">{{ .Title }}</h1>
+        {{ with .Date }}
+        <p class="text-sm text-muted-foreground">{{ .Format "January 2006" }}</p>
+        {{ end }}
+      </header>
+
+      {{ $content := .Content | replaceRE `==([^=]+)==` `<span class="highlight">$1</span>` | safeHTML }}
+      <div class="content prose prose-lg max-w-none">{{ $content }}</div>
+
+      <footer class="post-footer">
+        <a href="/" class="text-muted-foreground hover:text-foreground transition-colors underline decoration-1 underline-offset-4">
+          ← Back to home
+        </a>
+      </footer>
+    </div>
   </article>
 </section>
 {{ end }}
