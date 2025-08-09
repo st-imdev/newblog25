@@ -16,6 +16,13 @@
 <meta property="og:url" content="{{ .Permalink }}"/>
 <meta name="twitter:card" content="summary_large_image"/>
 
+<script>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark') document.documentElement.classList.add('dark');
+  } catch (e) {}
+</script>
+
 {{ if .IsHome }}
 <script type="application/ld+json">
 {{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Scott Taylor" "url" .Permalink) | safeJS }}
