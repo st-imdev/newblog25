@@ -1,0 +1,13 @@
+[build]
+  base = "hugo-site"
+  publish = "public"
+  command = "hugo"
+
+[build.environment]
+  HUGO_VERSION = "0.127.0"
+  HUGO_ENV = "production"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    cache-control = "public, max-age=0, must-revalidate"

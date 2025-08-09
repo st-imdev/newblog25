@@ -1,0 +1,63 @@
+{{ define "main" }}
+<section class="container">
+  <header class="max-w-prose" style="margin-bottom:2.5rem;">
+    <h1 class="h1">Dario Amodei</h1>
+    <p class="small" style="position:absolute;left:-9999px;">Personal site clone for demo purposes</p>
+  </header>
+
+  <article class="max-w-prose lead">
+    <p>
+      Dario Amodei is the CEO of <a class="link-underline" href="https://www.anthropic.com/" target="_blank" rel="noreferrer">Anthropic</a>, a public benefit corporation dedicated to building AI systems that are steerable, interpretable, and safe.
+    </p>
+    <p>
+      Previously, Dario served as Vice President of Research at OpenAI, where he led the development of large language models like GPT‑2 and GPT‑3. Before that, he worked at Google Brain as a Senior Research Scientist.
+    </p>
+    <p>
+      Dario earned his doctorate degree in biophysics from Princeton University as a Hertz Fellow, and was a postdoctoral scholar at the Stanford University School of Medicine.
+    </p>
+
+    <section class="section">
+      <h2 class="h2">Short posts</h2>
+      <ul class="list">
+        {{ range first 10 (where .Site.RegularPages "Section" "posts") }}
+          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{ end }}
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="h2">Essays</h2>
+      <ul class="list">
+        {{ range (where .Site.RegularPages "Section" "essays") }}
+          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{ end }}
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="h2">Research</h2>
+      <ul class="list">
+        <li><a class="link-underline" href="/research/">Google Scholar</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="h2">Op-eds</h2>
+      <ul class="list">
+        {{ range (where .Site.RegularPages "Section" "op-eds") }}
+          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a> {{ with .Params.outlet }}<span class="small muted">({{ . }})</span>{{ end }}</li>
+        {{ end }}
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="h2">Interviews</h2>
+      <ul class="list">
+        {{ range (where .Site.RegularPages "Section" "interviews") }}
+          <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a> {{ with .Params.year }}<span class="small muted">({{ . }})</span>{{ end }}</li>
+        {{ end }}
+      </ul>
+    </section>
+  </article>
+</section>
+{{ end }}
