@@ -17,10 +17,10 @@
 
 {{ if .IsHome }}
 <script type="application/ld+json">
-{{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Dario Amodei" "url" .Permalink) | safeJS }}
+{{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Scott Taylor" "url" .Permalink) | safeJS }}
 </script>
 {{ else if .IsPage }}
 <script type="application/ld+json">
-{{ jsonify (dict "@context" "https://schema.org" "@type" "Article" "headline" .Title "datePublished" (.Date | time.Format "2006-01-02") "author" (dict "@type" "Person" "name" "Dario Amodei")) | safeJS }}
+{{ jsonify (dict "@context" "https://schema.org" "@type" "Article" "headline" .Title "datePublished" (.Date | time.Format "2006-01-02") "author" (dict "@type" "Person" "name" "Scott Taylor")) | safeJS }}
 </script>
 {{ end }}
