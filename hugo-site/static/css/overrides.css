@@ -54,16 +54,36 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
 /* Headings */
 .h1 { font-weight: 700; letter-spacing: -0.01em; }
 
-/* Highlight syntax */
-.highlight {
+/* Highlight syntax for inline highlights */
+span.highlight {
   background: linear-gradient(104deg, transparent 0.9%, hsl(45, 100%, 85%) 2.4%, hsl(45, 100%, 85%) 5.8%, transparent 93%);
   border-radius: 1em 0.5em;
   text-decoration: inherit;
   transition: background-color 0.25s ease;
 }
 
-.dark .highlight {
+.dark span.highlight {
   background: linear-gradient(104deg, transparent 0.9%, hsl(45, 60%, 30%) 2.4%, hsl(45, 60%, 30%) 5.8%, transparent 93%);
+}
+
+/* Image styling */
+.content img {
+  width: 100%;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.content figure {
+  margin: 2rem 0;
+}
+
+.content figcaption {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
 }
 
 /* Post page specific styles */
@@ -96,6 +116,51 @@ footer.post-footer {
   margin-top: 4rem;
   padding-top: 2rem;
   border-top: 1px solid hsl(var(--border));
+}
+
+/* Code block styling to match React app */
+.content pre,
+pre {
+  background: #282c34;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.content pre code,
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #abb2bf;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* Hugo's highlight shortcode */
+div.highlight {
+  background: #282c34 !important;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+
+div.highlight pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+div.highlight code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  color: #abb2bf !important;
 }
 
 /* Back navigation arrow animation */
