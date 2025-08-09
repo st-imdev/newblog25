@@ -1,13 +1,17 @@
 [build]
-  base = "hugo-site"
-  publish = "public"
-  command = "hugo"
+  publish = "dist"
+  command = "npm ci && npm run build"
 
 [build.environment]
-  HUGO_VERSION = "0.148.1"
-  HUGO_ENV = "production"
+  NODE_VERSION = "20"
 
 [[headers]]
   for = "/*"
   [headers.values]
     cache-control = "public, max-age=0, must-revalidate"
+
+# SPA routing for client-side router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
