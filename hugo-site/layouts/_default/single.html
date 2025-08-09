@@ -22,8 +22,10 @@
         {{ $content := .Content | replaceRE `==([^=]+)==` `<span class="highlight">$1</span>` | safeHTML }}
         <div class="content prose prose-lg max-w-none">{{ $content }}</div>
 
-        <footer class="mt-16 pt-8 border-t border-border">
-          <a href="/" class="text-muted-foreground hover:text-foreground transition-colors underline decoration-1 underline-offset-4">
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid hsl(var(--border));">
+          <a href="/" style="color: hsl(var(--muted-foreground)); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color 0.15s ease;" 
+             onmouseover="this.style.color='hsl(var(--foreground))'" 
+             onmouseout="this.style.color='hsl(var(--muted-foreground))'">
             ← Back to home
           </a>
         </footer>

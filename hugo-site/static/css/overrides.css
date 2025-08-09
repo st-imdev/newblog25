@@ -111,12 +111,7 @@ span.highlight {
   font-size: 1.2rem !important;
 }
 
-/* Footer styles */
-footer.post-footer {
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid hsl(var(--border));
-}
+/* Footer styles - removed to prevent double borders */
 
 /* Code block styling to match React app */
 .content pre,
@@ -204,8 +199,6 @@ div.highlight code {
 .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
 .px-0 { padding-left: 0; padding-right: 0; }
-.border-t { border-top-width: 1px; }
-.border-border { border-color: hsl(var(--border)); }
 .text-sm { font-size: 0.875rem; }
 .text-muted-foreground { color: hsl(var(--muted-foreground)); }
 .hover\:text-foreground:hover { color: hsl(var(--foreground)); }
