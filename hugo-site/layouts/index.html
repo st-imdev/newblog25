@@ -1,32 +1,31 @@
 {{ define "main" }}
 <section class="container py-16 animate-fade-in">
-  <header class="mb-10" style="position:relative;">
-    <div class="max-w-prose mx-auto">
-      <h1 class="h1">Scott Taylor</h1>
-      <p class="small" style="position:absolute;left:-9999px;">Personal site of Scott Taylor</p>
-    </div>
-    <div class="theme-toggle" style="position:absolute;right:0;top:0;">
-      <button id="theme-switch" class="theme-switch" aria-label="Toggle dark mode"><span class="knob"></span></button>
-    </div>
-    <script>
-      (function(){
-        var el = document.getElementById('theme-switch');
-        if(!el) return;
-        function apply(state){
-          if(state==='dark'){ document.documentElement.classList.add('dark'); el.setAttribute('data-state','dark'); }
-          else { document.documentElement.classList.remove('dark'); el.removeAttribute('data-state'); }
-          try{ localStorage.setItem('theme', state); }catch(e){}
-        }
-        try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
-        el.addEventListener('click', function(){
-          var dark = document.documentElement.classList.contains('dark');
-          apply(dark ? 'light' : 'dark');
-        });
-      })();
-    </script>
-  </header>
-
   <article class="max-w-prose lead">
+    <header class="mb-10 flex justify-between items-center">
+      <div>
+        <h1 class="h1">Scott Taylor</h1>
+        <p class="small" style="position:absolute;left:-9999px;">Personal site of Scott Taylor</p>
+      </div>
+      <div class="theme-toggle">
+        <button id="theme-switch" class="theme-switch" aria-label="Toggle dark mode"><span class="knob"></span></button>
+      </div>
+      <script>
+        (function(){
+          var el = document.getElementById('theme-switch');
+          if(!el) return;
+          function apply(state){
+            if(state==='dark'){ document.documentElement.classList.add('dark'); el.setAttribute('data-state','dark'); }
+            else { document.documentElement.classList.remove('dark'); el.removeAttribute('data-state'); }
+            try{ localStorage.setItem('theme', state); }catch(e){}
+          }
+          try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+          el.addEventListener('click', function(){
+            var dark = document.documentElement.classList.contains('dark');
+            apply(dark ? 'light' : 'dark');
+          });
+        })();
+      </script>
+    </header>
     <p>
       Scott Taylor is an AI entrepreneur and co-founder of <a class="link-underline" href="https://entourage.tech/" target="_blank" rel="noreferrer">entourage</a>, a network where agents continuously learn from each other's discoveries.
     </p>
