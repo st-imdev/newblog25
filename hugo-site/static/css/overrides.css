@@ -168,6 +168,50 @@ div.highlight code {
   transform: translateX(-4px);
 }
 
+/* Theme toggle styles */
+.theme-toggle {
+  position: relative;
+}
+
+.theme-switch {
+  width: 3rem;
+  height: 1.5rem;
+  background: hsl(var(--muted));
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.theme-switch:hover {
+  background: hsl(var(--muted-foreground) / 0.2);
+}
+
+.theme-switch .knob {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-switch[data-state="dark"] .knob {
+  transform: translateX(1.5rem);
+}
+
+.dark .theme-switch {
+  background: hsl(var(--muted));
+}
+
+.dark .theme-switch .knob {
+  background: hsl(var(--foreground));
+}
+
 /* Animation classes from React app */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(10px); }
