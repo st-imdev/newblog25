@@ -6,9 +6,8 @@
       <h1 class="h1">{{ .Title }}</h1>
       {{ with .Date }}<p class="small muted">{{ .Format "Jan 2006" }}</p>{{ end }}
     </header>
-    <div class="content">
-      {{ .Content }}
-    </div>
+    {{ $content := .Content | replaceRE `==([^=]+)==` `<span class="highlight">$1</span>` | safeHTML }}
+    <div class="content">{{ $content }}</div>
   </article>
 </section>
 {{ end }}

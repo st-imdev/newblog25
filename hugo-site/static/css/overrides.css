@@ -6,6 +6,7 @@
 
 /* Back link spacing */
 .container .small.muted a { text-decoration: none; }
+.container .small.muted a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Inline code chips */
 .container code { 
