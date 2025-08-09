@@ -43,7 +43,7 @@
         {{ range first 5 (where .Site.RegularPages.ByDate.Reverse "Section" "posts") }}
           <li>
             <a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a>
-            {{ with .Params.date }}<span class="small muted">({{ . | time.Format "Jan 2006" }})</span>{{ end }}
+            {{ with .Params.date }}<span class="small muted">({{ . | time.Format "January 2006" }})</span>{{ end }}
           </li>
         {{ end }}
       </ul>
