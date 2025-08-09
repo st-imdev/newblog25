@@ -1,17 +1,14 @@
 [build]
-  publish = "dist"
-  command = "npm ci && npm run build"
+  base = "hugo-site"
+  publish = "public"
+  command = "hugo -d ../public"
 
 [build.environment]
-  NODE_VERSION = "20"
+  HUGO_VERSION = "0.148.1"
 
 [[headers]]
   for = "/*"
   [headers.values]
     cache-control = "public, max-age=0, must-revalidate"
 
-# SPA routing for client-side router
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# No SPA redirects; Hugo generates real pages

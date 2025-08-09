@@ -1,0 +1,26 @@
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>{{ with .Title }}{{ . }} — {{ end }}{{ .Site.Title }}</title>
+<meta name="description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"/>
+<link rel="canonical" href="{{ .Permalink }}"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Newsreader:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ "/css/styles.css" | relURL }}"/>
+
+<!-- Open Graph / Twitter -->
+<meta property="og:title" content="{{ .Title }}"/>
+<meta property="og:description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"/>
+<meta property="og:type" content="{{ if .IsHome }}website{{ else }}article{{ end }}"/>
+<meta property="og:url" content="{{ .Permalink }}"/>
+<meta name="twitter:card" content="summary_large_image"/>
+
+{{ if .IsHome }}
+<script type="application/ld+json">
+{{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Scott Taylor" "url" .Permalink) | safeJS }}
+</script>
+{{ else if .IsPage }}
+<script type="application/ld+json">
+{{ jsonify (dict "@context" "https://schema.org" "@type" "Article" "headline" .Title "datePublished" (.Date | time.Format "2006-01-02") "author" (dict "@type" "Person" "name" "Scott Taylor")) | safeJS }}
+</script>
+{{ end }}

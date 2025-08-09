@@ -1,0 +1,21 @@
+baseURL = "/"
+languageCode = "en-us"
+title = "Scott Taylor — Personal Site"
+
+[pagination]
+  pagerSize = 10
+
+[params]
+  description = "Bio, short posts, essays, research, and thoughts by Scott Taylor. AI entrepreneur and co-founder of entourage."
+  author = "Scott Taylor"
+
+[permalinks]
+  posts = "/posts/:slug/"
+  essays = "/essays/:slug/"
+  "op-eds" = "/op-eds/:slug/"
+  interviews = "/interviews/:slug/"
+
+[outputs]
+  home = ["HTML","RSS"]
+  section = ["HTML","RSS"]
+  page = ["HTML"]

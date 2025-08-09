@@ -1,0 +1,15 @@
+{{ define "main" }}
+<section class="container">
+  <article class="max-w-prose">
+    <header>
+      <p class="small muted" style="text-transform:capitalize;">{{ .Section }}</p>
+      <h1 class="h1">{{ .Title }}</h1>
+      {{ with .Date }}<p class="small muted">{{ .Format "Jan 2, 2006" }}</p>{{ end }}
+    </header>
+    <div class="lead">
+      {{ .Content }}
+    </div>
+    <p class="section"><a class="link-underline" href="/">← Back to home</a></p>
+  </article>
+</section>
+{{ end }}

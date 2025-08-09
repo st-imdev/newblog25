@@ -1,0 +1,13 @@
+{{ define "main" }}
+<section class="container">
+  <article class="max-w-prose">
+    <h1 class="h1">{{ .Title }}</h1>
+    <ul class="list">
+      {{ range .Pages }}
+        <li><a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a> {{ with .Date }}<span class="small muted">— {{ .Format "2006-01-02" }}</span>{{ end }}</li>
+      {{ end }}
+    </ul>
+    <p class="section"><a class="link-underline" href="/">← Back to home</a></p>
+  </article>
+</section>
+{{ end }}
