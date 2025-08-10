@@ -129,12 +129,13 @@
     .style('opacity', 0.9);
 
   // Add inner circles for knowledge state
+  const isDarkMode = document.documentElement.classList.contains('dark');
   const innerCircles = node.append('circle')
     .attr('class', 'knowledge')
     .attr('r', 0)
-    .style('fill', 'hsl(var(--accent))')
-    .style('opacity', 0.9)
-    .style('filter', 'brightness(1.1)');
+    .style('fill', isDarkMode ? 'hsl(var(--accent-foreground))' : 'hsl(var(--accent))')
+    .style('opacity', 1)
+    .style('filter', isDarkMode ? 'brightness(2)' : 'brightness(1)');
 
   // Fade in animation
   svg.transition()
@@ -206,6 +207,10 @@
         // Update link opacity
         svg.selectAll('.link')
           .style('opacity', isDark ? 0.4 : 0.2);
+        // Update knowledge circle colors
+        svg.selectAll('.knowledge')
+          .style('fill', isDark ? 'hsl(var(--accent-foreground))' : 'hsl(var(--accent))')
+          .style('filter', isDark ? 'brightness(2)' : 'brightness(1)');
       }
     });
   });
