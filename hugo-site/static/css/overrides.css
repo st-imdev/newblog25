@@ -94,6 +94,20 @@ span.highlight {
   color: hsl(var(--foreground));
 }
 
+/* Content links should also be visible */
+.content a {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: hsl(var(--accent) / 0.3);
+  transition: all 0.2s ease;
+}
+
+.content a:hover {
+  text-decoration-color: hsl(var(--accent));
+}
+
 .content h2 {
   font-size: 1.125rem !important;
   font-weight: 600 !important;
@@ -220,6 +234,25 @@ div.highlight code {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
+}
+
+/* Link styles - make links more visible */
+.link-underline {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: hsl(var(--accent) / 0.3);
+  transition: all 0.2s ease;
+}
+
+.link-underline:hover {
+  text-decoration-color: hsl(var(--accent));
+  color: hsl(var(--accent));
+}
+
+.dark .link-underline {
+  color: hsl(var(--accent));
 }
 
 /* Utility classes */
