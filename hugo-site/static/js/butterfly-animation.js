@@ -130,37 +130,41 @@ function initButterflies() {
       const dy = other.y - this.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
       
-      // Flirting behavior when close
-      if (distance < 100) {
+      // Flirting behavior when close - much more intimate
+      if (distance < 150) {
         if (!this.isFlirting) {
           this.isFlirting = true;
           this.flirtTarget = other;
+          this.circleAngle = Math.random() * Math.PI * 2;
         }
         
-        // Circle around each other
-        const angle = Math.atan2(dy, dx);
-        const perpAngle = angle + Math.PI / 2;
-        this.targetX = other.x + Math.cos(perpAngle) * 50;
-        this.targetY = other.y + Math.sin(perpAngle) * 50;
+        // Tight circling around each other
+        this.circleAngle += 0.05; // Faster rotation
+        const circleRadius = 20 + Math.sin(now * 0.001) * 10; // Varying circle size
+        const centerX = (this.x + other.x) / 2;
+        const centerY = (this.y + other.y) / 2;
         
-        // Occasional close approach
-        if (Math.random() < 0.01) {
-          this.targetX = other.x + (Math.random() - 0.5) * 30;
-          this.targetY = other.y + (Math.random() - 0.5) * 30;
+        this.targetX = centerX + Math.cos(this.circleAngle) * circleRadius;
+        this.targetY = centerY + Math.sin(this.circleAngle) * circleRadius;
+        
+        // Very close approaches - almost touching
+        if (Math.random() < 0.02) {
+          this.targetX = other.x + (Math.random() - 0.5) * 10;
+          this.targetY = other.y + (Math.random() - 0.5) * 10;
         }
       } else {
         this.isFlirting = false;
         
-        // Random wandering with occasional attraction
-        if (timeSinceChange > 2000 + Math.random() * 2000) {
-          if (Math.random() < 0.3) {
-            // Move towards other butterfly sometimes
-            this.targetX = other.x + (Math.random() - 0.5) * 200;
-            this.targetY = other.y + (Math.random() - 0.5) * 200;
+        // More frequent attraction to each other
+        if (timeSinceChange > 1500 + Math.random() * 1500) {
+          if (Math.random() < 0.6) { // Much higher chance to seek each other
+            // Move towards other butterfly
+            this.targetX = other.x + (Math.random() - 0.5) * 100;
+            this.targetY = other.y + (Math.random() - 0.5) * 100;
           } else {
-            // Random target
-            this.targetX = Math.random() * width;
-            this.targetY = Math.random() * height;
+            // Random target but not too far
+            this.targetX = this.x + (Math.random() - 0.5) * 200;
+            this.targetY = this.y + (Math.random() - 0.5) * 200;
           }
           this.lastChangeTime = now;
         }
@@ -172,7 +176,7 @@ function initButterflies() {
       const targetDist = Math.sqrt(targetDx * targetDx + targetDy * targetDy);
       
       if (targetDist > 1) {
-        const speed = this.isFlirting ? 0.03 : 0.02;
+        const speed = this.isFlirting ? 0.05 : 0.03; // Faster movement
         this.vx += (targetDx / targetDist) * speed;
         this.vy += (targetDy / targetDist) * speed;
       }
@@ -204,8 +208,8 @@ function initButterflies() {
         this.targetY = height / 2;
       }
       
-      // Wing flapping
-      this.wingAngle = Math.sin(now * 0.01) * 20;
+      // More active wing flapping
+      this.wingAngle = Math.sin(now * 0.015) * 35;
     }
   }
   
@@ -274,8 +278,8 @@ function initButterflies() {
     b2Group.selectAll('.right-wings')
       .attr('transform', `rotate(${butterfly2.wingAngle})`);
     
-    // Add subtle connection line when flirting
-    if (butterfly1.isFlirting && Math.random() < 0.02) {
+    // Add more frequent connection lines when flirting
+    if (butterfly1.isFlirting && Math.random() < 0.05) {
       const connection = svg.append('line')
         .attr('x1', butterfly1.x)
         .attr('y1', butterfly1.y)
@@ -283,10 +287,27 @@ function initButterflies() {
         .attr('y2', butterfly2.y)
         .style('stroke', 'hsl(var(--accent))')
         .style('stroke-width', 0.5)
-        .style('opacity', 0.3);
+        .style('opacity', 0.4);
       
       connection.transition()
-        .duration(1000)
+        .duration(800)
+        .style('opacity', 0)
+        .remove();
+    }
+    
+    // Add small circles when they're very close
+    const dist = Math.sqrt(Math.pow(butterfly1.x - butterfly2.x, 2) + Math.pow(butterfly1.y - butterfly2.y, 2));
+    if (dist < 30 && Math.random() < 0.1) {
+      const spark = svg.append('circle')
+        .attr('cx', (butterfly1.x + butterfly2.x) / 2)
+        .attr('cy', (butterfly1.y + butterfly2.y) / 2)
+        .attr('r', 2)
+        .style('fill', 'hsl(var(--accent))')
+        .style('opacity', 0.6);
+      
+      spark.transition()
+        .duration(500)
+        .attr('r', 8)
         .style('opacity', 0)
         .remove();
     }
