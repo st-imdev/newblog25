@@ -13,25 +13,91 @@
     .attr('height', height)
     .style('opacity', 0);
 
+  // Generate random node positions with good spacing
+  function generateNodePositions(count) {
+    const positions = [];
+    const margin = 40; // Keep nodes away from edges
+    const minDistance = 60; // Minimum distance between nodes
+    
+    for (let i = 0; i < count; i++) {
+      let validPosition = false;
+      let attempts = 0;
+      let x, y;
+      
+      while (!validPosition && attempts < 100) {
+        x = margin + Math.random() * (width - 2 * margin);
+        y = margin + Math.random() * (height - 2 * margin);
+        
+        validPosition = true;
+        // Check distance from other nodes
+        for (let j = 0; j < positions.length; j++) {
+          const dist = Math.sqrt(
+            Math.pow(x - positions[j].x, 2) + 
+            Math.pow(y - positions[j].y, 2)
+          );
+          if (dist < minDistance) {
+            validPosition = false;
+            break;
+          }
+        }
+        attempts++;
+      }
+      
+      positions.push({
+        id: i + 1,
+        x: x || margin + Math.random() * (width - 2 * margin),
+        y: y || margin + Math.random() * (height - 2 * margin),
+        knowledge: 0
+      });
+    }
+    return positions;
+  }
+
   // Nodes data - representing AI agents
-  const nodes = [
-    { id: 1, x: width * 0.2, y: height * 0.5, knowledge: 0 },
-    { id: 2, x: width * 0.4, y: height * 0.3, knowledge: 0 },
-    { id: 3, x: width * 0.6, y: height * 0.7, knowledge: 0 },
-    { id: 4, x: width * 0.8, y: height * 0.4, knowledge: 0 },
-    { id: 5, x: width * 0.5, y: height * 0.5, knowledge: 0 }
-  ];
+  const nodes = generateNodePositions(5);
+
+  // Generate random connections ensuring all nodes are connected
+  function generateLinks(nodeCount) {
+    const links = [];
+    const connected = new Set([0]);
+    const unconnected = new Set();
+    
+    // Initialize unconnected nodes
+    for (let i = 1; i < nodeCount; i++) {
+      unconnected.add(i);
+    }
+    
+    // Connect all nodes to ensure no isolated nodes
+    while (unconnected.size > 0) {
+      const from = Array.from(connected)[Math.floor(Math.random() * connected.size)];
+      const to = Array.from(unconnected)[Math.floor(Math.random() * unconnected.size)];
+      links.push({ source: from, target: to });
+      connected.add(to);
+      unconnected.delete(to);
+    }
+    
+    // Add some extra random connections for mesh effect
+    const extraConnections = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < extraConnections; i++) {
+      const source = Math.floor(Math.random() * nodeCount);
+      const target = Math.floor(Math.random() * nodeCount);
+      if (source !== target) {
+        // Check if link already exists
+        const exists = links.some(l => 
+          (l.source === source && l.target === target) ||
+          (l.source === target && l.target === source)
+        );
+        if (!exists) {
+          links.push({ source, target });
+        }
+      }
+    }
+    
+    return links;
+  }
 
   // Links data - connections between nodes
-  const links = [
-    { source: 0, target: 1 },
-    { source: 1, target: 2 },
-    { source: 2, target: 3 },
-    { source: 3, target: 4 },
-    { source: 4, target: 0 },
-    { source: 1, target: 4 },
-    { source: 2, target: 4 }
-  ];
+  const links = generateLinks(nodes.length);
 
   // Create links
   const link = svg.selectAll('.link')
@@ -66,7 +132,8 @@
     .attr('class', 'knowledge')
     .attr('r', 0)
     .style('fill', 'hsl(var(--accent))')
-    .style('opacity', 0.8);
+    .style('opacity', 0.9)
+    .style('filter', 'brightness(1.1)');
 
   // Fade in animation
   svg.transition()
@@ -90,7 +157,8 @@
       .attr('cx', source.x)
       .attr('cy', source.y)
       .style('fill', 'hsl(var(--accent))')
-      .style('opacity', 0.6);
+      .style('opacity', 0.8)
+      .style('filter', 'brightness(1.2)');
 
     // Animate particle moving from source to target
     particle.transition()
