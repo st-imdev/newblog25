@@ -42,9 +42,9 @@
     .attr('y1', d => nodes[d.source].y)
     .attr('x2', d => nodes[d.target].x)
     .attr('y2', d => nodes[d.target].y)
-    .style('stroke', 'hsl(var(--border))')
+    .style('stroke', 'hsl(var(--muted-foreground))')
     .style('stroke-width', 1)
-    .style('opacity', 0.3);
+    .style('opacity', 0.2);
 
   // Create node groups
   const node = svg.selectAll('.node')
@@ -57,9 +57,9 @@
   node.append('circle')
     .attr('r', 8)
     .style('fill', 'hsl(var(--background))')
-    .style('stroke', 'hsl(var(--foreground))')
+    .style('stroke', 'hsl(var(--muted-foreground))')
     .style('stroke-width', 1.5)
-    .style('opacity', 0.8);
+    .style('opacity', 0.9);
 
   // Add inner circles for knowledge state
   const innerCircles = node.append('circle')

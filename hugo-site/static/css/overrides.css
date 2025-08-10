@@ -64,6 +64,16 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
   margin: 0;
 }
 
+/* Network animation dark mode adjustments */
+.dark #network-animation svg {
+  filter: brightness(1.1);
+}
+
+#network-animation {
+  position: relative;
+  overflow: visible;
+}
+
 /* Highlight syntax for inline highlights */
 span.highlight {
   background: linear-gradient(104deg, transparent 0.9%, hsl(45, 100%, 85%) 2.4%, hsl(45, 100%, 85%) 5.8%, transparent 93%);
