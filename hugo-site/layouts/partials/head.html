@@ -24,6 +24,9 @@
 </script>
 
 {{ if .IsHome }}
+<!-- D3.js for network animation -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script defer src="{{ "/js/network-animation.js" | relURL }}"></script>
 <script type="application/ld+json">
 {{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Scott Taylor" "url" .Permalink) | safeJS }}
 </script>
