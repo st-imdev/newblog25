@@ -54,6 +54,16 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
 /* Headings */
 .h1 { font-weight: 700; letter-spacing: -0.01em; }
 
+/* Larger post title */
+.post-title {
+  font-family: "Newsreader", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 40pt; /* larger than homepage h1 */
+  line-height: 1.1;
+  margin: 0;
+}
+
 /* Highlight syntax for inline highlights */
 span.highlight {
   background: linear-gradient(104deg, transparent 0.9%, hsl(45, 100%, 85%) 2.4%, hsl(45, 100%, 85%) 5.8%, transparent 93%);
