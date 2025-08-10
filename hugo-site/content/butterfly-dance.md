@@ -4,7 +4,7 @@ date: 2024-01-01
 draft: false
 ---
 
-<div id="butterfly-animation" style="width: 100%; height: 500px; position: relative; overflow: hidden; background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #E0F6FF 100%); border-radius: 12px;"></div>
+<div id="butterfly-animation" style="width: 100%; height: 500px; position: relative; overflow: hidden; border-radius: 12px;"></div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
@@ -23,43 +23,15 @@ draft: false
     .style('top', 0)
     .style('left', 0);
   
-  // Create gradient for butterfly wings
-  const defs = svg.append('defs');
-  
-  // Butterfly 1 gradient (pink/purple)
-  const gradient1 = defs.append('radialGradient')
-    .attr('id', 'butterfly1-gradient');
-  gradient1.append('stop')
-    .attr('offset', '0%')
-    .attr('stop-color', '#FF69B4')
-    .attr('stop-opacity', 0.8);
-  gradient1.append('stop')
-    .attr('offset', '100%')
-    .attr('stop-color', '#9370DB')
-    .attr('stop-opacity', 0.6);
-  
-  // Butterfly 2 gradient (blue/turquoise)
-  const gradient2 = defs.append('radialGradient')
-    .attr('id', 'butterfly2-gradient');
-  gradient2.append('stop')
-    .attr('offset', '0%')
-    .attr('stop-color', '#00CED1')
-    .attr('stop-opacity', 0.8);
-  gradient2.append('stop')
-    .attr('offset', '100%')
-    .attr('stop-color', '#4169E1')
-    .attr('stop-opacity', 0.6);
-  
   // Butterfly class
   class Butterfly {
-    constructor(id, x, y, color, gradientId) {
+    constructor(id, x, y, opacity) {
       this.id = id;
       this.x = x;
       this.y = y;
       this.vx = (Math.random() - 0.5) * 2;
       this.vy = (Math.random() - 0.5) * 2;
-      this.color = color;
-      this.gradientId = gradientId;
+      this.opacity = opacity;
       this.wingAngle = 0;
       this.size = 20;
       this.targetX = x;
@@ -70,34 +42,43 @@ draft: false
     }
     
     drawButterfly(g) {
+      const isDark = document.documentElement.classList.contains('dark');
+      const color = isDark ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))';
+      
+      // Set overall opacity
+      g.style('opacity', this.opacity);
+      
       // Body
       g.append('ellipse')
         .attr('class', 'body')
         .attr('cx', 0)
         .attr('cy', 0)
-        .attr('rx', 2)
-        .attr('ry', 8)
-        .style('fill', '#333');
+        .attr('rx', 1.5)
+        .attr('ry', 6)
+        .style('fill', color)
+        .style('opacity', 0.8);
       
       // Left wings
       const leftWing = g.append('g')
         .attr('class', 'left-wings');
       
-      // Upper left wing
+      // Upper left wing - simplified shape
       leftWing.append('path')
         .attr('class', 'wing upper-left')
-        .attr('d', 'M 0,-5 Q -15,-15 -12,-25 Q -8,-28 0,-20 Z')
-        .style('fill', `url(#${this.gradientId})`)
-        .style('stroke', this.color)
-        .style('stroke-width', 0.5);
+        .attr('d', 'M 0,-3 Q -12,-10 -10,-18 Q -6,-20 0,-15 Z')
+        .style('fill', 'none')
+        .style('stroke', color)
+        .style('stroke-width', 0.8)
+        .style('opacity', 0.6);
       
       // Lower left wing
       leftWing.append('path')
         .attr('class', 'wing lower-left')
-        .attr('d', 'M 0,5 Q -12,8 -15,15 Q -10,18 0,10 Z')
-        .style('fill', `url(#${this.gradientId})`)
-        .style('stroke', this.color)
-        .style('stroke-width', 0.5);
+        .attr('d', 'M 0,3 Q -10,6 -12,12 Q -8,14 0,8 Z')
+        .style('fill', 'none')
+        .style('stroke', color)
+        .style('stroke-width', 0.8)
+        .style('opacity', 0.6);
       
       // Right wings
       const rightWing = g.append('g')
@@ -106,35 +87,39 @@ draft: false
       // Upper right wing
       rightWing.append('path')
         .attr('class', 'wing upper-right')
-        .attr('d', 'M 0,-5 Q 15,-15 12,-25 Q 8,-28 0,-20 Z')
-        .style('fill', `url(#${this.gradientId})`)
-        .style('stroke', this.color)
-        .style('stroke-width', 0.5);
+        .attr('d', 'M 0,-3 Q 12,-10 10,-18 Q 6,-20 0,-15 Z')
+        .style('fill', 'none')
+        .style('stroke', color)
+        .style('stroke-width', 0.8)
+        .style('opacity', 0.6);
       
       // Lower right wing
       rightWing.append('path')
         .attr('class', 'wing lower-right')
-        .attr('d', 'M 0,5 Q 12,8 15,15 Q 10,18 0,10 Z')
-        .style('fill', `url(#${this.gradientId})`)
-        .style('stroke', this.color)
-        .style('stroke-width', 0.5);
+        .attr('d', 'M 0,3 Q 10,6 12,12 Q 8,14 0,8 Z')
+        .style('fill', 'none')
+        .style('stroke', color)
+        .style('stroke-width', 0.8)
+        .style('opacity', 0.6);
       
       // Antennae
       g.append('line')
-        .attr('x1', -1)
-        .attr('y1', -8)
-        .attr('x2', -3)
-        .attr('y2', -12)
-        .style('stroke', '#333')
-        .style('stroke-width', 0.5);
+        .attr('x1', -0.5)
+        .attr('y1', -6)
+        .attr('x2', -2)
+        .attr('y2', -9)
+        .style('stroke', color)
+        .style('stroke-width', 0.4)
+        .style('opacity', 0.6);
       
       g.append('line')
-        .attr('x1', 1)
-        .attr('y1', -8)
-        .attr('x2', 3)
-        .attr('y2', -12)
-        .style('stroke', '#333')
-        .style('stroke-width', 0.5);
+        .attr('x1', 0.5)
+        .attr('y1', -6)
+        .attr('x2', 2)
+        .attr('y2', -9)
+        .style('stroke', color)
+        .style('stroke-width', 0.4)
+        .style('opacity', 0.6);
     }
     
     update(other) {
@@ -225,21 +210,19 @@ draft: false
     }
   }
   
-  // Create butterflies
+  // Create butterflies with different opacities for subtle distinction
   const butterfly1 = new Butterfly(
     'butterfly1',
     width * 0.3,
     height * 0.5,
-    '#FF69B4',
-    'butterfly1-gradient'
+    0.7
   );
   
   const butterfly2 = new Butterfly(
     'butterfly2',
     width * 0.7,
     height * 0.5,
-    '#00CED1',
-    'butterfly2-gradient'
+    0.5
   );
   
   // Create butterfly groups
@@ -253,34 +236,20 @@ draft: false
     .attr('transform', `translate(${butterfly2.x},${butterfly2.y})`);
   butterfly2.drawButterfly(b2Group);
   
-  // Add some flowers for decoration
-  const flowerPositions = [
+  // Add minimal dots for spatial reference
+  const dots = [
     {x: width * 0.2, y: height * 0.8},
     {x: width * 0.5, y: height * 0.85},
     {x: width * 0.8, y: height * 0.75}
   ];
   
-  flowerPositions.forEach(pos => {
-    const flower = svg.append('g')
-      .attr('transform', `translate(${pos.x},${pos.y})`);
-    
-    // Petals
-    for (let i = 0; i < 5; i++) {
-      const angle = (i * 72) * Math.PI / 180;
-      flower.append('ellipse')
-        .attr('cx', Math.cos(angle) * 8)
-        .attr('cy', Math.sin(angle) * 8)
-        .attr('rx', 6)
-        .attr('ry', 10)
-        .attr('transform', `rotate(${i * 72})`)
-        .style('fill', '#FFB6C1')
-        .style('opacity', 0.7);
-    }
-    
-    // Center
-    flower.append('circle')
-      .attr('r', 5)
-      .style('fill', '#FFD700');
+  dots.forEach(pos => {
+    svg.append('circle')
+      .attr('cx', pos.x)
+      .attr('cy', pos.y)
+      .attr('r', 2)
+      .style('fill', 'hsl(var(--muted-foreground))')
+      .style('opacity', 0.2);
   });
   
   // Animation loop
@@ -306,18 +275,19 @@ draft: false
     b2Group.selectAll('.right-wings')
       .attr('transform', `rotate(${butterfly2.wingAngle})`);
     
-    // Add hearts when flirting
+    // Add subtle connection line when flirting
     if (butterfly1.isFlirting && Math.random() < 0.02) {
-      const heart = svg.append('text')
-        .attr('x', (butterfly1.x + butterfly2.x) / 2)
-        .attr('y', (butterfly1.y + butterfly2.y) / 2)
-        .text('💕')
-        .style('font-size', '20px')
-        .style('opacity', 1);
+      const connection = svg.append('line')
+        .attr('x1', butterfly1.x)
+        .attr('y1', butterfly1.y)
+        .attr('x2', butterfly2.x)
+        .attr('y2', butterfly2.y)
+        .style('stroke', 'hsl(var(--accent))')
+        .style('stroke-width', 0.5)
+        .style('opacity', 0.3);
       
-      heart.transition()
-        .duration(2000)
-        .attr('y', (butterfly1.y + butterfly2.y) / 2 - 50)
+      connection.transition()
+        .duration(1000)
         .style('opacity', 0)
         .remove();
     }
