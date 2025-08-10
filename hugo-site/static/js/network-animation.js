@@ -100,6 +100,7 @@
   const links = generateLinks(nodes.length);
 
   // Create links
+  const isDarkMode = document.documentElement.classList.contains('dark');
   const link = svg.selectAll('.link')
     .data(links)
     .enter().append('line')
@@ -110,7 +111,7 @@
     .attr('y2', d => nodes[d.target].y)
     .style('stroke', 'hsl(var(--muted-foreground))')
     .style('stroke-width', 1)
-    .style('opacity', 0.2);
+    .style('opacity', isDarkMode ? 0.4 : 0.2);
 
   // Create node groups
   const node = svg.selectAll('.node')
@@ -152,13 +153,14 @@
     const target = nodes[targetIdx];
 
     // Create a particle for knowledge transfer
+    const isDark = document.documentElement.classList.contains('dark');
     const particle = svg.append('circle')
-      .attr('r', 3)
+      .attr('r', 4)
       .attr('cx', source.x)
       .attr('cy', source.y)
-      .style('fill', 'hsl(var(--accent))')
-      .style('opacity', 0.8)
-      .style('filter', 'brightness(1.2)');
+      .style('fill', isDark ? 'hsl(var(--accent-foreground))' : 'hsl(var(--accent))')
+      .style('opacity', 1)
+      .style('filter', isDark ? 'brightness(2)' : 'brightness(1)');
 
     // Animate particle moving from source to target
     particle.transition()
@@ -195,6 +197,23 @@
   
   // Initial transfer
   setTimeout(transferKnowledge, 500);
+
+  // Update colors when theme changes
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'class') {
+        const isDark = document.documentElement.classList.contains('dark');
+        // Update link opacity
+        svg.selectAll('.link')
+          .style('opacity', isDark ? 0.4 : 0.2);
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
 
   // Handle resize
   let resizeTimer;
