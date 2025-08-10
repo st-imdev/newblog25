@@ -28,6 +28,7 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
   padding: 0.15rem 0.4rem;
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
   border: 1px solid hsl(var(--border));
 }
 
