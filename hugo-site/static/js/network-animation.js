@@ -129,7 +129,6 @@
     .style('opacity', 0.9);
 
   // Add inner circles for knowledge state
-  const isDarkMode = document.documentElement.classList.contains('dark');
   const innerCircles = node.append('circle')
     .attr('class', 'knowledge')
     .attr('r', 0)
