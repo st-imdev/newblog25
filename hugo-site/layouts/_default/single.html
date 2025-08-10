@@ -1,31 +1,5 @@
 {{ define "main" }}
 <main class="min-h-screen bg-background text-foreground">
-  <!-- Top header: name + toggle -->
-  <section class="container py-8">
-    <header class="mb-6 flex justify-between items-center">
-      <a href="/" class="h1" style="text-decoration:none;">Scott Taylor</a>
-      <div class="theme-toggle">
-        <button id="theme-switch" class="theme-switch" aria-label="Toggle dark mode"><span class="knob"></span></button>
-      </div>
-    </header>
-    <script>
-      (function(){
-        var el = document.getElementById('theme-switch');
-        if(!el) return;
-        function apply(state){
-          if(state==='dark'){ document.documentElement.classList.add('dark'); el.setAttribute('data-state','dark'); }
-          else { document.documentElement.classList.remove('dark'); el.removeAttribute('data-state'); }
-          try{ localStorage.setItem('theme', state); }catch(e){}
-        }
-        try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
-        el.addEventListener('click', function(){
-          var dark = document.documentElement.classList.contains('dark');
-          apply(dark ? 'light' : 'dark');
-        });
-      })();
-    </script>
-  </section>
-
   <div class="container py-4 sm:py-8 flex gap-8 max-w-6xl">
     {{ $toc := .TableOfContents }}
     {{ $hasToc := gt (len (findRE "<li>" $toc)) 0 }}
@@ -40,6 +14,31 @@
     {{ end }}
     <!-- Main Content -->
     <div class="flex-1 px-4 sm:px-0 {{ if $hasToc }}max-w-2xl{{ else }}max-w-prose{{ end }}">
+      <!-- Header within content container to match homepage -->
+      <section class="py-8">
+        <header class="mb-6 flex justify-between items-center">
+          <a href="/" class="h1" style="text-decoration:none;">Scott Taylor</a>
+          <div class="theme-toggle">
+            <button id="theme-switch" class="theme-switch" aria-label="Toggle dark mode"><span class="knob"></span></button>
+          </div>
+        </header>
+        <script>
+          (function(){
+            var el = document.getElementById('theme-switch');
+            if(!el) return;
+            function apply(state){
+              if(state==='dark'){ document.documentElement.classList.add('dark'); el.setAttribute('data-state','dark'); }
+              else { document.documentElement.classList.remove('dark'); el.removeAttribute('data-state'); }
+              try{ localStorage.setItem('theme', state); }catch(e){}
+            }
+            try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+            el.addEventListener('click', function(){
+              var dark = document.documentElement.classList.contains('dark');
+              apply(dark ? 'light' : 'dark');
+            });
+          })();
+        </script>
+      </section>
       <!-- Back Navigation -->
       <div class="mb-6">
         <a href="/" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group">
