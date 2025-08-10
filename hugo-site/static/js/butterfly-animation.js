@@ -1,6 +1,15 @@
-(function() {
+// Wait for D3 to be loaded
+function initButterflies() {
+  if (typeof d3 === 'undefined') {
+    setTimeout(initButterflies, 100);
+    return;
+  }
+  
   const container = document.getElementById('butterfly-animation');
-  if (!container) return;
+  if (!container) {
+    setTimeout(initButterflies, 100);
+    return;
+  }
   
   const width = container.offsetWidth;
   const height = 500;
@@ -292,4 +301,11 @@
     const newWidth = container.offsetWidth;
     svg.attr('width', newWidth);
   });
-})();
+}
+
+// Start the animation
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initButterflies);
+} else {
+  initButterflies();
+}
