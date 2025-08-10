@@ -47,77 +47,125 @@ function initButterflies() {
       // Set overall opacity
       g.style('opacity', this.opacity);
       
-      // Body
+      // Body (smaller, more proportional)
       g.append('ellipse')
         .attr('class', 'body')
         .attr('cx', 0)
         .attr('cy', 0)
-        .attr('rx', 1.5)
-        .attr('ry', 6)
+        .attr('rx', 1)
+        .attr('ry', 4)
         .style('fill', color)
-        .style('opacity', 0.8);
+        .style('opacity', 0.7);
       
       // Left wings
       const leftWing = g.append('g')
         .attr('class', 'left-wings');
       
-      // Upper left wing - simplified shape
+      // Upper left wing - more butterfly-like shape
       leftWing.append('path')
         .attr('class', 'wing upper-left')
-        .attr('d', 'M 0,-3 Q -12,-10 -10,-18 Q -6,-20 0,-15 Z')
+        .attr('d', 'M 0,-2 C -8,-8 -15,-10 -18,-8 C -20,-6 -18,-2 -15,0 C -12,1 -8,0 -5,-1 Q -2,-2 0,-2 Z')
         .style('fill', 'none')
         .style('stroke', color)
-        .style('stroke-width', 0.8)
-        .style('opacity', 0.6);
+        .style('stroke-width', 0.6)
+        .style('opacity', 0.5);
       
-      // Lower left wing
+      // Lower left wing - smaller, rounded
       leftWing.append('path')
         .attr('class', 'wing lower-left')
-        .attr('d', 'M 0,3 Q -10,6 -12,12 Q -8,14 0,8 Z')
+        .attr('d', 'M 0,2 C -5,3 -8,6 -10,8 C -11,10 -10,12 -8,11 C -6,10 -3,6 -2,4 Q -1,2 0,2 Z')
         .style('fill', 'none')
         .style('stroke', color)
-        .style('stroke-width', 0.8)
-        .style('opacity', 0.6);
+        .style('stroke-width', 0.6)
+        .style('opacity', 0.5);
       
-      // Right wings
+      // Add wing details - veins
+      leftWing.append('line')
+        .attr('x1', -2)
+        .attr('y1', -1)
+        .attr('x2', -12)
+        .attr('y2', -5)
+        .style('stroke', color)
+        .style('stroke-width', 0.3)
+        .style('opacity', 0.3);
+      
+      leftWing.append('line')
+        .attr('x1', -2)
+        .attr('y1', 1)
+        .attr('x2', -8)
+        .attr('y2', 6)
+        .style('stroke', color)
+        .style('stroke-width', 0.3)
+        .style('opacity', 0.3);
+      
+      // Right wings (mirror of left)
       const rightWing = g.append('g')
         .attr('class', 'right-wings');
       
       // Upper right wing
       rightWing.append('path')
         .attr('class', 'wing upper-right')
-        .attr('d', 'M 0,-3 Q 12,-10 10,-18 Q 6,-20 0,-15 Z')
+        .attr('d', 'M 0,-2 C 8,-8 15,-10 18,-8 C 20,-6 18,-2 15,0 C 12,1 8,0 5,-1 Q 2,-2 0,-2 Z')
         .style('fill', 'none')
         .style('stroke', color)
-        .style('stroke-width', 0.8)
-        .style('opacity', 0.6);
+        .style('stroke-width', 0.6)
+        .style('opacity', 0.5);
       
       // Lower right wing
       rightWing.append('path')
         .attr('class', 'wing lower-right')
-        .attr('d', 'M 0,3 Q 10,6 12,12 Q 8,14 0,8 Z')
+        .attr('d', 'M 0,2 C 5,3 8,6 10,8 C 11,10 10,12 8,11 C 6,10 3,6 2,4 Q 1,2 0,2 Z')
         .style('fill', 'none')
         .style('stroke', color)
-        .style('stroke-width', 0.8)
+        .style('stroke-width', 0.6)
+        .style('opacity', 0.5);
+      
+      // Wing veins
+      rightWing.append('line')
+        .attr('x1', 2)
+        .attr('y1', -1)
+        .attr('x2', 12)
+        .attr('y2', -5)
+        .style('stroke', color)
+        .style('stroke-width', 0.3)
+        .style('opacity', 0.3);
+      
+      rightWing.append('line')
+        .attr('x1', 2)
+        .attr('y1', 1)
+        .attr('x2', 8)
+        .attr('y2', 6)
+        .style('stroke', color)
+        .style('stroke-width', 0.3)
+        .style('opacity', 0.3);
+      
+      // Antennae with club tips
+      g.append('path')
+        .attr('d', 'M -0.5,-4 Q -1,-6 -2,-7')
+        .style('stroke', color)
+        .style('stroke-width', 0.3)
+        .style('fill', 'none')
         .style('opacity', 0.6);
       
-      // Antennae
-      g.append('line')
-        .attr('x1', -0.5)
-        .attr('y1', -6)
-        .attr('x2', -2)
-        .attr('y2', -9)
-        .style('stroke', color)
-        .style('stroke-width', 0.4)
+      g.append('circle')
+        .attr('cx', -2)
+        .attr('cy', -7)
+        .attr('r', 0.5)
+        .style('fill', color)
         .style('opacity', 0.6);
       
-      g.append('line')
-        .attr('x1', 0.5)
-        .attr('y1', -6)
-        .attr('x2', 2)
-        .attr('y2', -9)
+      g.append('path')
+        .attr('d', 'M 0.5,-4 Q 1,-6 2,-7')
         .style('stroke', color)
-        .style('stroke-width', 0.4)
+        .style('stroke-width', 0.3)
+        .style('fill', 'none')
+        .style('opacity', 0.6);
+      
+      g.append('circle')
+        .attr('cx', 2)
+        .attr('cy', -7)
+        .attr('r', 0.5)
+        .style('fill', color)
         .style('opacity', 0.6);
     }
     
