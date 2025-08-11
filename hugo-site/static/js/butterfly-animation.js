@@ -365,10 +365,19 @@ function initButterflies() {
   
   animate();
   
-  // Handle resize
+  // Handle resize - only if width actually changes
+  let lastWidth = width;
+  let resizeTimer;
   window.addEventListener('resize', function() {
-    const newWidth = container.offsetWidth;
-    svg.attr('width', newWidth);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      const newWidth = container.offsetWidth;
+      // Only update if width actually changed (not just height from mobile scroll)
+      if (Math.abs(newWidth - lastWidth) > 10) {
+        lastWidth = newWidth;
+        svg.attr('width', newWidth);
+      }
+    }, 500); // Debounce to avoid mobile scroll issues
   });
 }
 

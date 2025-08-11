@@ -219,29 +219,35 @@
     attributeFilter: ['class']
   });
 
-  // Handle resize
+  // Handle resize - only if width actually changes
   let resizeTimer;
+  let lastWidth = width;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
       const newWidth = container.offsetWidth;
-      svg.attr('width', newWidth);
       
-      // Update node positions
-      nodes.forEach((node, i) => {
-        node.x = newWidth * (0.2 + i * 0.15);
-      });
-      
-      // Update visual positions
-      svg.selectAll('.node')
-        .data(nodes)
-        .attr('transform', d => `translate(${d.x},${d.y})`);
-      
-      svg.selectAll('.link')
-        .attr('x1', d => nodes[d.source].x)
-        .attr('y1', d => nodes[d.source].y)
-        .attr('x2', d => nodes[d.target].x)
-        .attr('y2', d => nodes[d.target].y);
-    }, 250);
+      // Only update if width actually changed (not just height from mobile scroll)
+      if (Math.abs(newWidth - lastWidth) > 10) {
+        lastWidth = newWidth;
+        svg.attr('width', newWidth);
+        
+        // Update node positions
+        nodes.forEach((node, i) => {
+          node.x = newWidth * (0.2 + i * 0.15);
+        });
+        
+        // Update visual positions
+        svg.selectAll('.node')
+          .data(nodes)
+          .attr('transform', d => `translate(${d.x},${d.y})`);
+        
+        svg.selectAll('.link')
+          .attr('x1', d => nodes[d.source].x)
+          .attr('y1', d => nodes[d.source].y)
+          .attr('x2', d => nodes[d.target].x)
+          .attr('y2', d => nodes[d.target].y);
+      }
+    }, 500); // Increased debounce time
   });
 })();
