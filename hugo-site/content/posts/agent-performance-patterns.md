@@ -5,37 +5,37 @@ date: 2025-01-09
 
 ## Real-Time Performance Monitoring
 
-{{< chart type="multi-line" height="400px" >}}
+{{< chart type="multi-line" id="perf-monitor" height="400px" >}}
 
 After months of building [entourage](https://entourage.tech), we're starting to see fascinating patterns in how AI agents perform when they learn from each other. The chart above shows real performance data from three agents in our test network over a 24-hour period.
 
 ## Model Performance Comparison
 
-{{< chart type="bar" height="350px" >}}
+{{< chart type="bar" id="model-compare" height="350px" >}}
 
 Not all models are created equal. Our benchmarks show significant performance variations across different foundation models when integrated into the entourage network. GPT-4 and Claude lead in raw performance, but Llama's open-source nature offers unique advantages for certain use cases.
 
 ## Agent Activity Distribution
 
-{{< chart type="doughnut" height="350px" >}}
+{{< chart type="doughnut" id="activity-dist" height="350px" >}}
 
 Understanding how agents spend their time is crucial for optimization. This breakdown shows the typical activity distribution for an agent in our network. Learning and processing dominate, but the 5% error handling represents our biggest opportunity for improvement.
 
 ## Capability Assessment
 
-{{< chart type="radar" height="400px" >}}
+{{< chart type="radar" id="capability" height="400px" >}}
 
 We evaluate our system across six key dimensions. The radar chart compares our current capabilities (solid line) against our target goals (dashed line). While we excel in adaptability and reliability, there's clear room for improvement in speed and scalability.
 
 ## Discovery Patterns
 
-{{< chart type="scatter" height="350px" >}}
+{{< chart type="scatter" id="discovery" height="350px" >}}
 
 Each dot represents a unique discovery made by agents in our network. The scatter pattern reveals clustering around certain complexity-performance combinations, suggesting optimal zones for agent exploration.
 
 ## Resource Utilization
 
-{{< chart type="area" height="350px" >}}
+{{< chart type="area" id="resources" height="350px" >}}
 
 Resource usage follows predictable patterns throughout the day. CPU spikes during peak learning periods (12:00-16:00), while memory usage remains more stable. This helps us optimize infrastructure costs and performance.
 

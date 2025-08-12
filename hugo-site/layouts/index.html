@@ -45,7 +45,7 @@
     <section>
       <h2 class="h2">Recent thoughts</h2>
       <ul class="list">
-        {{ range first 5 (where .Site.RegularPages.ByDate.Reverse "Section" "posts") }}
+        {{ range (where .Site.RegularPages.ByDate.Reverse "Section" "posts") }}
           <li>
             <a class="link-underline" href="{{ .RelPermalink }}">{{ .Title }}</a>
             {{ with .Params.date }}<span class="small muted">({{ . | time.Format "January 2006" }})</span>{{ end }}

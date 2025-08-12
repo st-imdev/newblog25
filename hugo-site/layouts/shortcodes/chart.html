@@ -1,5 +1,5 @@
 {{ $type := .Get "type" }}
-{{ $id := .Get "id" | default (printf "chart-%d" (now.Unix)) }}
+{{ $id := .Get "id" | default (printf "chart-%s-%d" $type (now.UnixNano)) }}
 {{ $height := .Get "height" | default "400px" }}
 
 <div id="{{ $id }}" class="chart-container" style="width: 100%; height: {{ $height }}; margin: 2rem 0; position: relative;">
@@ -16,9 +16,11 @@
     const canvas = container.querySelector('canvas');
     if (!canvas) return;
     
-    // Get colors
+    // Get minimalist colors
     const isDark = document.documentElement.classList.contains('dark');
-    const accentColor = isDark ? '#60a5fa' : '#3b82f6';
+    const primaryColor = isDark ? '#e5e5e5' : '#171717';
+    const secondaryColor = isDark ? '#a3a3a3' : '#525252';
+    const tertiaryColor = isDark ? '#737373' : '#737373';
     const bgColor = isDark ? '#1a1a1a' : '#ffffff';
     const textColor = isDark ? '#a3a3a3' : '#525252';
     const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
@@ -31,14 +33,14 @@
         datasets: [{
           label: 'Growth',
           data: [20, 35, 45, 60, 72, 85, 95],
-          borderColor: accentColor,
+          borderColor: primaryColor,
           backgroundColor: function(context) {
             const chart = context.chart;
             const {ctx, chartArea} = chart;
             if (!chartArea) return null;
             const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, isDark ? 'rgba(96, 165, 250, 0.05)' : 'rgba(59, 130, 246, 0.05)');
-            gradient.addColorStop(1, isDark ? 'rgba(96, 165, 250, 0.3)' : 'rgba(59, 130, 246, 0.3)');
+            gradient.addColorStop(0, isDark ? 'rgba(229, 229, 229, 0.05)' : 'rgba(23, 23, 23, 0.05)');
+            gradient.addColorStop(1, isDark ? 'rgba(229, 229, 229, 0.3)' : 'rgba(23, 23, 23, 0.3)');
             return gradient;
           },
           fill: true,
@@ -46,7 +48,7 @@
           pointRadius: 4,
           pointHoverRadius: 6,
           pointBackgroundColor: bgColor,
-          pointBorderColor: accentColor,
+          pointBorderColor: primaryColor,
           pointBorderWidth: 2,
           pointHoverBorderWidth: 3
         }]
@@ -128,8 +130,8 @@
           {
             label: 'Agent Alpha',
             data: generateData(50, 20),
-            borderColor: accentColor,
-            backgroundColor: isDark ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+            borderColor: primaryColor,
+            backgroundColor: isDark ? 'rgba(229, 229, 229, 0.1)' : 'rgba(23, 23, 23, 0.1)',
             tension: 0.3,
             pointRadius: 0,
             pointHoverRadius: 4,
@@ -239,13 +241,13 @@
           label: 'Performance Score',
           data: [92, 89, 85, 78, 75],
           backgroundColor: [
-            accentColor,
-            isDark ? 'rgba(96, 165, 250, 0.7)' : 'rgba(59, 130, 246, 0.7)',
-            isDark ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.5)',
-            isDark ? 'rgba(96, 165, 250, 0.3)' : 'rgba(59, 130, 246, 0.3)',
-            isDark ? 'rgba(96, 165, 250, 0.2)' : 'rgba(59, 130, 246, 0.2)'
+            primaryColor,
+            isDark ? 'rgba(229, 229, 229, 0.8)' : 'rgba(23, 23, 23, 0.8)',
+            isDark ? 'rgba(229, 229, 229, 0.6)' : 'rgba(23, 23, 23, 0.6)',
+            isDark ? 'rgba(229, 229, 229, 0.4)' : 'rgba(23, 23, 23, 0.4)',
+            isDark ? 'rgba(229, 229, 229, 0.2)' : 'rgba(23, 23, 23, 0.2)'
           ],
-          borderColor: accentColor,
+          borderColor: primaryColor,
           borderWidth: 1,
           borderRadius: 4
         }]
@@ -306,11 +308,11 @@
         datasets: [{
           data: [35, 25, 20, 15, 5],
           backgroundColor: [
-            accentColor,
-            isDark ? '#60a5fa' : '#3b82f6',
-            isDark ? '#a3a3a3' : '#525252',
-            isDark ? '#e5e5e5' : '#171717',
-            isDark ? '#ef4444' : '#dc2626'
+            primaryColor,
+            secondaryColor,
+            tertiaryColor,
+            isDark ? 'rgba(229, 229, 229, 0.4)' : 'rgba(23, 23, 23, 0.4)',
+            isDark ? 'rgba(229, 229, 229, 0.2)' : 'rgba(23, 23, 23, 0.2)'
           ],
           borderWidth: 0
         }]
@@ -357,12 +359,12 @@
           {
             label: 'Current System',
             data: [65, 75, 80, 60, 70, 85],
-            borderColor: accentColor,
+            borderColor: primaryColor,
             backgroundColor: isDark ? 'rgba(96, 165, 250, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-            pointBackgroundColor: accentColor,
+            pointBackgroundColor: primaryColor,
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: accentColor
+            pointHoverBorderColor: primaryColor
           },
           {
             label: 'Target Goals',
@@ -439,8 +441,8 @@
         datasets: [{
           label: 'Agent Discoveries',
           data: scatterData,
-          backgroundColor: accentColor,
-          borderColor: accentColor,
+          backgroundColor: primaryColor,
+          borderColor: primaryColor,
           pointRadius: 4,
           pointHoverRadius: 6
         }]
@@ -515,14 +517,14 @@
           {
             label: 'CPU Usage',
             data: [30, 25, 35, 65, 80, 70, 40],
-            borderColor: accentColor,
+            borderColor: primaryColor,
             backgroundColor: function(context) {
               const chart = context.chart;
               const {ctx, chartArea} = chart;
               if (!chartArea) return null;
               const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
               gradient.addColorStop(0, 'transparent');
-              gradient.addColorStop(1, accentColor);
+              gradient.addColorStop(1, primaryColor);
               return gradient;
             },
             fill: true,
