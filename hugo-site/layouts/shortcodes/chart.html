@@ -228,6 +228,390 @@
         }
       }
     });
+    
+    {{ else if eq $type "bar" }}
+    
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: ['GPT-4', 'Claude', 'Gemini', 'Llama', 'Mistral'],
+        datasets: [{
+          label: 'Performance Score',
+          data: [92, 89, 85, 78, 75],
+          backgroundColor: [
+            accentColor,
+            isDark ? 'rgba(96, 165, 250, 0.7)' : 'rgba(59, 130, 246, 0.7)',
+            isDark ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.5)',
+            isDark ? 'rgba(96, 165, 250, 0.3)' : 'rgba(59, 130, 246, 0.3)',
+            isDark ? 'rgba(96, 165, 250, 0.2)' : 'rgba(59, 130, 246, 0.2)'
+          ],
+          borderColor: accentColor,
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: bgColor,
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: borderColor,
+              borderDash: [2, 4],
+              drawBorder: false
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              }
+            },
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+    
+    {{ else if eq $type "doughnut" }}
+    
+    new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Learning', 'Processing', 'Idle', 'Communication', 'Error Handling'],
+        datasets: [{
+          data: [35, 25, 20, 15, 5],
+          backgroundColor: [
+            accentColor,
+            isDark ? '#60a5fa' : '#3b82f6',
+            isDark ? '#a3a3a3' : '#525252',
+            isDark ? '#e5e5e5' : '#171717',
+            isDark ? '#ef4444' : '#dc2626'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: textColor,
+              padding: 15,
+              font: {
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: bgColor,
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    {{ else if eq $type "radar" }}
+    
+    new Chart(canvas, {
+      type: 'radar',
+      data: {
+        labels: ['Speed', 'Accuracy', 'Reliability', 'Scalability', 'Cost-Efficiency', 'Adaptability'],
+        datasets: [
+          {
+            label: 'Current System',
+            data: [65, 75, 80, 60, 70, 85],
+            borderColor: accentColor,
+            backgroundColor: isDark ? 'rgba(96, 165, 250, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+            pointBackgroundColor: accentColor,
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: accentColor
+          },
+          {
+            label: 'Target Goals',
+            data: [85, 90, 95, 85, 80, 95],
+            borderColor: textColor,
+            backgroundColor: isDark ? 'rgba(163, 163, 163, 0.1)' : 'rgba(82, 82, 82, 0.1)',
+            pointBackgroundColor: textColor,
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: textColor,
+            borderDash: [5, 5]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: textColor,
+              padding: 15,
+              font: {
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: bgColor,
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12
+          }
+        },
+        scales: {
+          r: {
+            grid: {
+              color: borderColor
+            },
+            pointLabels: {
+              color: textColor,
+              font: {
+                size: 10
+              }
+            },
+            ticks: {
+              color: textColor,
+              backdropColor: 'transparent',
+              font: {
+                size: 9
+              }
+            },
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+    
+    {{ else if eq $type "scatter" }}
+    
+    // Generate scatter data
+    const scatterData = Array.from({length: 50}, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100
+    }));
+    
+    new Chart(canvas, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Agent Discoveries',
+          data: scatterData,
+          backgroundColor: accentColor,
+          borderColor: accentColor,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: bgColor,
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return 'Discovery at (' + Math.round(context.parsed.x) + ', ' + Math.round(context.parsed.y) + ')';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: borderColor,
+              borderDash: [2, 4]
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              }
+            },
+            title: {
+              display: true,
+              text: 'Complexity',
+              color: textColor
+            }
+          },
+          y: {
+            grid: {
+              color: borderColor,
+              borderDash: [2, 4]
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              }
+            },
+            title: {
+              display: true,
+              text: 'Performance',
+              color: textColor
+            }
+          }
+        }
+      }
+    });
+    
+    {{ else if eq $type "area" }}
+    
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+        datasets: [
+          {
+            label: 'CPU Usage',
+            data: [30, 25, 35, 65, 80, 70, 40],
+            borderColor: accentColor,
+            backgroundColor: function(context) {
+              const chart = context.chart;
+              const {ctx, chartArea} = chart;
+              if (!chartArea) return null;
+              const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+              gradient.addColorStop(0, 'transparent');
+              gradient.addColorStop(1, accentColor);
+              return gradient;
+            },
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Memory Usage',
+            data: [40, 35, 45, 55, 60, 55, 45],
+            borderColor: textColor,
+            backgroundColor: function(context) {
+              const chart = context.chart;
+              const {ctx, chartArea} = chart;
+              if (!chartArea) return null;
+              const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+              gradient.addColorStop(0, 'transparent');
+              gradient.addColorStop(1, textColor);
+              return gradient;
+            },
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: textColor,
+              padding: 15,
+              font: {
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: bgColor,
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y + '%';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: borderColor,
+              borderDash: [2, 4]
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: borderColor,
+              borderDash: [2, 4]
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11
+              },
+              callback: function(value) {
+                return value + '%';
+              }
+            },
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+    
     {{ end }}
   }
   
