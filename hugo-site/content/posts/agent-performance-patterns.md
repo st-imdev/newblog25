@@ -3,10 +3,7 @@ title: "Agent Performance Patterns: What We're Learning at entourage"
 date: 2025-01-09
 ---
 
-<div id="agent-network-chart" style="width: 100%; height: 400px; margin: 2rem 0;"></div>
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="/js/agent-network-chart.js"></script>
+{{< chart type="multi-line" height="400px" >}}
 
 After months of building [entourage](https://entourage.tech), we're starting to see fascinating patterns in how AI agents perform when they learn from each other. The chart above shows real performance data from three agents in our test network over a 24-hour period.
 

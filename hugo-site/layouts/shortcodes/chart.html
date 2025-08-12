@@ -1,0 +1,231 @@
+{{ $type := .Get "type" }}
+{{ $id := .Get "id" | default (printf "chart-%d" (now.Unix)) }}
+{{ $height := .Get "height" | default "400px" }}
+
+<div id="{{ $id }}" class="chart-container" style="width: 100%; height: {{ $height }}; margin: 2rem 0; position: relative;">
+  <div class="chart-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: hsl(var(--muted-foreground)); font-size: 12px;">Loading chart...</div>
+</div>
+
+{{ if eq $type "growth" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('{{ $id }}');
+  ctx.innerHTML = '<canvas></canvas>';
+  const canvas = ctx.querySelector('canvas');
+  
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      datasets: [{
+        label: 'Growth',
+        data: [20, 35, 45, 60, 72, 85, 95],
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#3b82f6',
+        backgroundColor: function(context) {
+          const chart = context.chart;
+          const {ctx, chartArea} = chart;
+          if (!chartArea) return null;
+          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          const color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#3b82f6';
+          gradient.addColorStop(0, `hsla(${color}, 0.05)`);
+          gradient.addColorStop(1, `hsla(${color}, 0.3)`);
+          return gradient;
+        },
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#fff',
+        pointBorderWidth: 2,
+        pointHoverBorderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'hsl(var(--background))',
+          titleColor: 'hsl(var(--foreground))',
+          bodyColor: 'hsl(var(--muted-foreground))',
+          borderColor: 'hsl(var(--border))',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              const labels = ['Foundation', 'Building', 'Testing', 'Learning', 'Iterating', 'Growing', 'Scaling'];
+              return labels[context.dataIndex] + ': ' + context.parsed.y + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: 'hsl(var(--muted-foreground))',
+            font: {
+              size: 11
+            }
+          }
+        },
+        y: {
+          grid: {
+            color: 'hsl(var(--border))',
+            borderDash: [2, 4],
+            drawBorder: false
+          },
+          ticks: {
+            color: 'hsl(var(--muted-foreground))',
+            font: {
+              size: 11
+            },
+            callback: function(value) {
+              return value + '%';
+            }
+          },
+          beginAtZero: true,
+          max: 100
+        }
+      }
+    }
+  });
+});
+</script>
+
+{{ else if eq $type "multi-line" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('{{ $id }}');
+  ctx.innerHTML = '<canvas></canvas>';
+  const canvas = ctx.querySelector('canvas');
+  
+  // Generate sample data
+  const hours = Array.from({length: 24}, (_, i) => i + ':00');
+  const generateData = (base, variance) => {
+    return hours.map((_, i) => base + Math.sin(i * 0.5) * variance + Math.random() * 10);
+  };
+  
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: hours,
+      datasets: [
+        {
+          label: 'Agent Alpha',
+          data: generateData(50, 20),
+          borderColor: 'hsl(var(--accent))',
+          backgroundColor: 'hsla(var(--accent), 0.1)',
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          borderWidth: 2
+        },
+        {
+          label: 'Agent Beta',
+          data: generateData(45, 15),
+          borderColor: 'hsl(var(--muted-foreground))',
+          backgroundColor: 'hsla(var(--muted-foreground), 0.1)',
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          borderWidth: 2
+        },
+        {
+          label: 'Agent Gamma',
+          data: generateData(40, 25),
+          borderColor: 'hsl(var(--foreground))',
+          backgroundColor: 'hsla(var(--foreground), 0.1)',
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          borderWidth: 2,
+          borderDash: [5, 5]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: {
+            color: 'hsl(var(--foreground))',
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              size: 11
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'hsl(var(--background))',
+          titleColor: 'hsl(var(--foreground))',
+          bodyColor: 'hsl(var(--muted-foreground))',
+          borderColor: 'hsl(var(--border))',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            label: function(context) {
+              return context.dataset.label + ': ' + Math.round(context.parsed.y) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'hsl(var(--border))',
+            borderDash: [2, 4],
+            drawBorder: false
+          },
+          ticks: {
+            color: 'hsl(var(--muted-foreground))',
+            font: {
+              size: 10
+            },
+            maxTicksLimit: 12
+          }
+        },
+        y: {
+          grid: {
+            color: 'hsl(var(--border))',
+            borderDash: [2, 4],
+            drawBorder: false
+          },
+          ticks: {
+            color: 'hsl(var(--muted-foreground))',
+            font: {
+              size: 11
+            },
+            callback: function(value) {
+              return value + '%';
+            }
+          },
+          beginAtZero: true,
+          max: 100
+        }
+      }
+    }
+  });
+});
+</script>
+{{ end }}

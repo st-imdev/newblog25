@@ -3,10 +3,7 @@ title: "The Compound Effect of Learning"
 date: 2025-01-10
 ---
 
-<div id="minimal-chart" style="width: 100%; height: 300px; margin: 2rem 0;"></div>
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="/js/minimal-chart.js"></script>
+{{< chart type="growth" height="300px" >}}
 
 The most underappreciated aspect of continuous learning is its compound nature. Like interest accumulating in an account, knowledge builds upon itself exponentially rather than linearly.
 
