@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; }
+    #quadrant-container { width: 100%; max-width: 700px; margin: 0 auto; }
+    .dark { background: #1a1a1a; color: #e0e0e0; }
+  </style>
+</head>
+<body>
+  <h1>Quadrant Test</h1>
+  <button onclick="document.body.classList.toggle('dark')">Toggle Dark Mode</button>
+  <div id="quadrant-container"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    function drawQuadrant() {
+      const container = d3.select('#quadrant-container');
+      container.selectAll('*').remove();
+      
+      const containerWidth = container.node().getBoundingClientRect().width;
+      const isMobile = containerWidth < 500;
+      
+      const margin = isMobile 
+        ? {top: 30, right: 20, bottom: 50, left: 50}
+        : {top: 40, right: 40, bottom: 60, left: 70};
+      
+      const width = containerWidth - margin.left - margin.right;
+      const height = isMobile ? containerWidth * 0.8 : 400;
+      const innerHeight = height - margin.top - margin.bottom;
+      
+      const svg = container.append('svg')
+        .attr('width', containerWidth)
+        .attr('height', height);
+      
+      const g = svg.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+      
+      // Scales
+      const x = d3.scaleLinear().domain([0, 1]).range([0, width]);
+      const y = d3.scaleLinear().domain([0, 1]).range([innerHeight, 0]);
+      
+      // Colors
+      const isDark = document.body.classList.contains('dark');
+      const colors = {
+        grid: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
+        axis: isDark ? '#737373' : '#666',
+        text: isDark ? '#e5e5e5' : '#171717',
+        point: isDark ? '#a3a3a3' : '#666',
+        q2bg: isDark ? 'rgba(34, 197, 94, 0.08)' : 'rgba(34, 197, 94, 0.05)',
+        q3bg: isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)'
+      };
+      
+      // Background quadrants
+      g.append('rect')
+        .attr('x', x(0.5))
+        .attr('y', y(1))
+        .attr('width', x(0.5))
+        .attr('height', y(0.5))
+        .attr('fill', colors.q2bg);
+      
+      g.append('rect')
+        .attr('x', 0)
+        .attr('y', y(1))
+        .attr('width', x(0.5))
+        .attr('height', y(0.5))
+        .attr('fill', colors.q3bg);
+      
+      // Grid lines
+      g.append('line')
+        .attr('x1', x(0.5))
+        .attr('x2', x(0.5))
+        .attr('y1', 0)
+        .attr('y2', innerHeight)
+        .attr('stroke', colors.grid)
+        .attr('stroke-dasharray', '4,4');
+      
+      g.append('line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', y(0.5))
+        .attr('y2', y(0.5))
+        .attr('stroke', colors.grid)
+        .attr('stroke-dasharray', '4,4');
+      
+      // Axes
+      const xAxis = d3.axisBottom(x)
+        .ticks(2)
+        .tickFormat(d => d === 0 ? 'Low' : d === 1 ? 'High' : '');
+      
+      const yAxis = d3.axisLeft(y)
+        .ticks(2)
+        .tickFormat(d => d === 0 ? 'Low' : d === 1 ? 'High' : '');
+      
+      g.append('g')
+        .attr('transform', `translate(0,${innerHeight})`)
+        .call(xAxis)
+        .call(g => {
+          g.select('.domain').remove();
+          g.selectAll('.tick line').attr('stroke', colors.axis);
+          g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
+        });
+      
+      g.append('g')
+        .call(yAxis)
+        .call(g => {
+          g.select('.domain').remove();
+          g.selectAll('.tick line').attr('stroke', colors.axis);
+          g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
+        });
+      
+      // Axis labels
+      svg.append('text')
+        .attr('x', margin.left + width / 2)
+        .attr('y', height - 10)
+        .attr('text-anchor', 'middle')
+        .attr('fill', colors.text)
+        .style('font-size', '14px')
+        .style('font-weight', '500')
+        .text('Certainty');
+      
+      svg.append('text')
+        .attr('transform', `rotate(-90)`)
+        .attr('x', -(margin.top + innerHeight / 2))
+        .attr('y', 15)
+        .attr('text-anchor', 'middle')
+        .attr('fill', colors.text)
+        .style('font-size', '14px')
+        .style('font-weight', '500')
+        .text('Skin in the Game');
+      
+      // Quadrant labels
+      const labels = [
+        {x: 0.75, y: 0.25, text: 'High certainty, low skin'},
+        {x: 0.75, y: 0.75, text: 'High certainty, high skin'},
+        {x: 0.25, y: 0.75, text: 'Low certainty, high skin'},
+        {x: 0.25, y: 0.25, text: 'Low certainty, low skin'}
+      ];
+      
+      g.selectAll('.quad-label')
+        .data(labels)
+        .enter().append('text')
+        .attr('class', 'quad-label')
+        .attr('x', d => x(d.x))
+        .attr('y', d => y(d.y))
+        .attr('text-anchor', 'middle')
+        .attr('fill', colors.text)
+        .style('font-size', isMobile ? '12px' : '14px')
+        .style('font-weight', '500')
+        .text(d => d.text);
+      
+      // Points
+      const points = [
+        {x: 0.8, y: 0.2, label: 'Viral sermons'},
+        {x: 0.8, y: 0.8, label: 'Operators'},
+        {x: 0.2, y: 0.8, label: 'Practitioners'},
+        {x: 0.2, y: 0.2, label: 'Think-pieces'}
+      ];
+      
+      g.selectAll('.point')
+        .data(points)
+        .enter().append('circle')
+        .attr('class', 'point')
+        .attr('cx', d => x(d.x))
+        .attr('cy', d => y(d.y))
+        .attr('r', 5)
+        .attr('fill', colors.point)
+        .attr('opacity', 0.8);
+      
+      if (!isMobile) {
+        g.selectAll('.point-label')
+          .data(points)
+          .enter().append('text')
+          .attr('class', 'point-label')
+          .attr('x', d => x(d.x) + 8)
+          .attr('y', d => y(d.y) + 3)
+          .attr('fill', colors.point)
+          .style('font-size', '11px')
+          .text(d => d.label);
+      }
+    }
+    
+    // Initial draw
+    drawQuadrant();
+    
+    // Redraw on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(drawQuadrant, 250);
+    });
+    
+    // Redraw on dark mode toggle
+    document.querySelector('button').addEventListener('click', () => {
+      setTimeout(drawQuadrant, 10);
+    });
+  </script>
+</body>
+</html>

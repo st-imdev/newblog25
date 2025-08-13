@@ -121,7 +121,7 @@
         </div>
       </div>
       <div class="tweet-actions-right">
-        <div class="tweet-heart" id="tweet-heart-1755092176901953000">
+        <div class="tweet-heart" id="tweet-heart-1755092497248207000">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
           </svg>
@@ -271,100 +271,55 @@
 
 
 
-<div id="advice-2x2" class="quadrant-container" style="width:100%;margin:3rem 0;"></div>
-
-<style>
-.quadrant-container {
-  position: relative;
-  width: 100%;
-  max-width: 700px;
-  margin: 3rem auto;
-}
-
-@media (max-width: 640px) {
-  .quadrant-container {
-    margin: 2rem auto;
-  }
-}
-
-.quadrant-label {
-  font-weight: 500;
-  fill: var(--foreground, #171717);
-}
-
-.quadrant-point-label {
-  font-size: 11px;
-  fill: var(--muted-foreground, #737373);
-}
-
-@media (max-width: 640px) {
-  .quadrant-point-label {
-    display: none;
-  }
-}
-
-.quadrant-axis-label {
-  fill: var(--muted-foreground, #737373);
-  font-size: 12px;
-}
-
-.quadrant-axis-title {
-  fill: var(--foreground, #171717);
-  font-weight: 500;
-}
-
-.dark .quadrant-label {
-  fill: #e5e5e5;
-}
-
-.dark .quadrant-point-label {
-  fill: #9ca3af;
-}
-
-.dark .quadrant-axis-label {
-  fill: #a3a3a3;
-}
-
-.dark .quadrant-axis-title {
-  fill: #e5e5e5;
-}
-</style>
+<div id="advice-2x2-container" class="quadrant-d3-container" style="width:100%;max-width:700px;margin:3rem auto;"></div>
 
 <script>
-(function(){
-  var id = "advice-2x2";
-  var titleX = "Certainty";
-  var titleY = "Skin in the Game";
-  var labels = {
+(function() {
+  
+  var containerId = "advice-2x2-container";
+  var xLabel = "Certainty";
+  var yLabel = "Skin in the Game";
+  var quadrantLabels = {
     q1: "High certainty, low skin",
     q2: "High certainty, high skin",
     q3: "Low certainty, high skin",
     q4: "Low certainty, low skin"
   };
-
+  
   function drawQuadrant() {
-    var container = document.getElementById(id);
-    if (!container || typeof d3 === 'undefined') return;
+    
+    if (typeof d3 === 'undefined') {
+      console.log('D3 not yet loaded, waiting...');
+      return;
+    }
+    
+    var container = d3.select('#' + containerId);
+    if (container.empty()) {
+      console.log('Container not found:', containerId);
+      return;
+    }
     
     
-    container.innerHTML = '';
+    container.selectAll('*').remove();
     
+    var containerWidth = container.node().getBoundingClientRect().width;
+    if (containerWidth === 0) {
+      console.log('Container has no width, retrying...');
+      setTimeout(drawQuadrant, 100);
+      return;
+    }
     
-    var containerWidth = container.offsetWidth || 700;
     var isMobile = containerWidth < 500;
-    
     
     var margin = isMobile 
       ? {top: 30, right: 20, bottom: 50, left: 50}
-      : {top: 40, right: 40, bottom: 60, left: 60};
+      : {top: 40, right: 40, bottom: 60, left: 70};
     
     var width = containerWidth - margin.left - margin.right;
     var height = isMobile ? containerWidth * 0.8 : 400;
     var innerHeight = height - margin.top - margin.bottom;
     
-    
-    var svg = d3.select(container)
-      .append('svg')
+    var svg = container.append('svg')
       .attr('width', containerWidth)
       .attr('height', height);
     
@@ -372,50 +327,34 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
     
-    var x = d3.scaleLinear()
-      .domain([0, 1])
-      .range([0, width]);
-    
-    var y = d3.scaleLinear()
-      .domain([0, 1])
-      .range([innerHeight, 0]);
+    var x = d3.scaleLinear().domain([0, 1]).range([0, width]);
+    var y = d3.scaleLinear().domain([0, 1]).range([innerHeight, 0]);
     
     
     var isDark = document.documentElement.classList.contains('dark');
-    var gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    var axisColor = isDark ? '#737373' : '#737373';
-    var primaryColor = isDark ? '#e5e5e5' : '#171717';
-    var pointColor = isDark ? '#a3a3a3' : '#666666';
+    var colors = {
+      grid: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
+      axis: isDark ? '#737373' : '#666',
+      text: isDark ? '#e5e5e5' : '#171717',
+      point: isDark ? '#a3a3a3' : '#666',
+      q2bg: isDark ? 'rgba(34, 197, 94, 0.08)' : 'rgba(34, 197, 94, 0.05)',
+      q3bg: isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)'
+    };
     
     
-    var quadrantData = [
-      {x: 0, y: 0.5, w: 0.5, h: 0.5, label: labels.q4, class: 'q4'}, 
-      {x: 0.5, y: 0.5, w: 0.5, h: 0.5, label: labels.q1, class: 'q1'}, 
-      {x: 0, y: 0, w: 0.5, h: 0.5, label: labels.q3, class: 'q3'}, 
-      {x: 0.5, y: 0, w: 0.5, h: 0.5, label: labels.q2, class: 'q2'} 
-    ];
+    g.append('rect')
+      .attr('x', x(0.5))
+      .attr('y', y(1))
+      .attr('width', x(0.5))
+      .attr('height', y(0.5))
+      .attr('fill', colors.q2bg);
     
-    
-    g.selectAll('.quadrant-bg')
-      .data(quadrantData)
-      .enter().append('rect')
-      .attr('class', function(d) { return 'quadrant-bg ' + d.class; })
-      .attr('x', function(d) { return x(d.x); })
-      .attr('y', function(d) { return y(d.y + d.h); })
-      .attr('width', function(d) { return x(d.w); })
-      .attr('height', function(d) { return y(0) - y(d.h); })
-      .attr('fill', function(d, i) {
-        if (isDark) {
-          return i =<span class="highlight"> 3 ? 'rgba(34, 197, 94, 0.05)' : 
-                 i </span>= 2 ? 'rgba(59, 130, 246, 0.05)' : 
-                 'transparent';
-        } else {
-          return i =<span class="highlight"> 3 ? 'rgba(34, 197, 94, 0.03)' : 
-                 i </span>= 2 ? 'rgba(59, 130, 246, 0.03)' : 
-                 'transparent';
-        }
-      })
-      .attr('stroke', 'none');
+    g.append('rect')
+      .attr('x', 0)
+      .attr('y', y(1))
+      .attr('width', x(0.5))
+      .attr('height', y(0.5))
+      .attr('fill', colors.q3bg);
     
     
     g.append('line')
@@ -423,18 +362,16 @@
       .attr('x2', x(0.5))
       .attr('y1', 0)
       .attr('y2', innerHeight)
-      .attr('stroke', gridColor)
-      .attr('stroke-width', 1)
-      .attr('stroke-dasharray', '3,3');
+      .attr('stroke', colors.grid)
+      .attr('stroke-dasharray', '4,4');
     
     g.append('line')
       .attr('x1', 0)
       .attr('x2', width)
       .attr('y1', y(0.5))
       .attr('y2', y(0.5))
-      .attr('stroke', gridColor)
-      .attr('stroke-width', 1)
-      .attr('stroke-dasharray', '3,3');
+      .attr('stroke', colors.grid)
+      .attr('stroke-dasharray', '4,4');
     
     
     var xAxis = d3.axisBottom(x)
@@ -444,9 +381,11 @@
     g.append('g')
       .attr('transform', 'translate(0,' + innerHeight + ')')
       .call(xAxis)
-      .attr('class', 'quadrant-axis')
-      .selectAll('text')
-      .attr('class', 'quadrant-axis-label');
+      .call(function(g) {
+        g.select('.domain').remove();
+        g.selectAll('.tick line').attr('stroke', colors.axis);
+        g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
+      });
     
     
     var yAxis = d3.axisLeft(y)
@@ -455,142 +394,126 @@
     
     g.append('g')
       .call(yAxis)
-      .attr('class', 'quadrant-axis')
-      .selectAll('text')
-      .attr('class', 'quadrant-axis-label');
-    
-    
-    g.selectAll('.quadrant-axis path').remove();
-    g.selectAll('.quadrant-axis line').attr('stroke', axisColor);
+      .call(function(g) {
+        g.select('.domain').remove();
+        g.selectAll('.tick line').attr('stroke', colors.axis);
+        g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
+      });
     
     
     svg.append('text')
       .attr('x', margin.left + width / 2)
       .attr('y', height - 10)
       .attr('text-anchor', 'middle')
-      .attr('class', 'quadrant-axis-title')
-      .style('font-size', isMobile ? '13px' : '14px')
-      .text(titleX);
+      .attr('fill', colors.text)
+      .style('font-size', '14px')
+      .style('font-weight', '500')
+      .text(xLabel);
     
     svg.append('text')
       .attr('transform', 'rotate(-90)')
       .attr('x', -(margin.top + innerHeight / 2))
       .attr('y', 15)
       .attr('text-anchor', 'middle')
-      .attr('class', 'quadrant-axis-title')
-      .style('font-size', isMobile ? '13px' : '14px')
-      .text(titleY);
+      .attr('fill', colors.text)
+      .style('font-size', '14px')
+      .style('font-weight', '500')
+      .text(yLabel);
     
     
-    var labelFontSize = isMobile ? '12px' : '14px';
-    var labelData = [
-      {x: 0.25, y: 0.75, text: labels.q4}, 
-      {x: 0.75, y: 0.75, text: labels.q1}, 
-      {x: 0.25, y: 0.25, text: labels.q3}, 
-      {x: 0.75, y: 0.25, text: labels.q2}  
+    var labels = [
+      {x: 0.75, y: 0.25, text: quadrantLabels.q1}, 
+      {x: 0.75, y: 0.75, text: quadrantLabels.q2}, 
+      {x: 0.25, y: 0.75, text: quadrantLabels.q3}, 
+      {x: 0.25, y: 0.25, text: quadrantLabels.q4}  
     ];
     
-    g.selectAll('.quadrant-label')
-      .data(labelData)
+    g.selectAll('.quad-label')
+      .data(labels)
       .enter().append('text')
-      .attr('class', 'quadrant-label')
+      .attr('class', 'quad-label')
       .attr('x', function(d) { return x(d.x); })
       .attr('y', function(d) { return y(d.y); })
       .attr('text-anchor', 'middle')
-      .style('font-size', labelFontSize)
-      .text(function(d) { return d.text; })
-      .call(wrap, width * 0.4); 
+      .attr('fill', colors.text)
+      .style('font-size', isMobile ? '12px' : '14px')
+      .style('font-weight', '500')
+      .text(function(d) { return d.text; });
     
     
     var points = [
-      {x: 0.8, y: 0.2, label: 'Viral sermons', quadrant: 'q1'},
-      {x: 0.8, y: 0.8, label: 'Operators', quadrant: 'q2'},
-      {x: 0.2, y: 0.8, label: 'Practitioners', quadrant: 'q3'},
-      {x: 0.2, y: 0.2, label: 'Think-pieces', quadrant: 'q4'}
+      {x: 0.8, y: 0.2, label: 'Viral sermons'},
+      {x: 0.8, y: 0.8, label: 'Operators'},
+      {x: 0.2, y: 0.8, label: 'Practitioners'},
+      {x: 0.2, y: 0.2, label: 'Think-pieces'}
     ];
     
-    
-    g.selectAll('.quadrant-point')
+    g.selectAll('.point')
       .data(points)
       .enter().append('circle')
-      .attr('class', 'quadrant-point')
+      .attr('class', 'point')
       .attr('cx', function(d) { return x(d.x); })
       .attr('cy', function(d) { return y(d.y); })
-      .attr('r', isMobile ? 4 : 5)
-      .attr('fill', pointColor)
-      .attr('opacity', 0.7);
+      .attr('r', 5)
+      .attr('fill', colors.point)
+      .attr('opacity', 0.8);
     
     
     if (!isMobile) {
-      g.selectAll('.quadrant-point-label')
+      g.selectAll('.point-label')
         .data(points)
         .enter().append('text')
-        .attr('class', 'quadrant-point-label')
+        .attr('class', 'point-label')
         .attr('x', function(d) { return x(d.x) + 8; })
         .attr('y', function(d) { return y(d.y) + 3; })
+        .attr('fill', colors.point)
+        .style('font-size', '11px')
         .text(function(d) { return d.label; });
     }
     
-    
-    function wrap(text, width) {
-      text.each(function() {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1,
-            y = text.attr("y"),
-            x = text.attr("x"),
-            dy = 0,
-            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-        
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-          }
-        }
-      });
-    }
+    console.log('Quadrant drawn successfully for', containerId);
   }
-
   
-  function loadD3AndInit() {
+  
+  function initQuadrant() {
     if (typeof d3 !== 'undefined') {
+      console.log('D3 already loaded, drawing quadrant');
       drawQuadrant();
+      
       
       var resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(drawQuadrant, 250);
       });
-      return;
+    } else {
+      console.log('Loading D3...');
+      var script = document.createElement('script');
+      script.src = 'https://d3js.org/d3.v7.min.js';
+      script.onload = function() {
+        console.log('D3 loaded, drawing quadrant');
+        drawQuadrant();
+        
+        
+        var resizeTimer;
+        window.addEventListener('resize', function() {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(drawQuadrant, 250);
+        });
+      };
+      script.onerror = function() {
+        console.error('Failed to load D3');
+      };
+      document.head.appendChild(script);
     }
-    
-    var script = document.createElement('script');
-    script.src = 'https://d3js.org/d3.v7.min.js';
-    script.onload = function() {
-      drawQuadrant();
-      
-      var resizeTimer;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(drawQuadrant, 250);
-      });
-    };
-    document.head.appendChild(script);
   }
-
+  
   
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadD3AndInit);
+    document.addEventListener('DOMContentLoaded', initQuadrant);
   } else {
-    loadD3AndInit();
+    
+    setTimeout(initQuadrant, 10);
   }
 })();
 </script>
