@@ -28,6 +28,7 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
   padding: 0.15rem 0.4rem;
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
   border: 1px solid hsl(var(--border));
 }
 
@@ -48,11 +49,31 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
 .container ul li { margin: 0.35rem 0; font-size: 1.2rem !important; }
 
 /* Ordered list spacing */
-.container ol { padding-left: 1.25rem; }
+.container ol { list-style: decimal; padding-left: 1.25rem; }
 .container ol li { margin: 0.35rem 0; font-size: 1.2rem !important; }
 
 /* Headings */
 .h1 { font-weight: 700; letter-spacing: -0.01em; }
+
+/* Larger post title */
+.post-title {
+  font-family: "Newsreader", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 40pt; /* larger than homepage h1 */
+  line-height: 1.1;
+  margin: 0;
+}
+
+/* Network animation dark mode adjustments */
+.dark #network-animation svg {
+  filter: brightness(1.1);
+}
+
+#network-animation {
+  position: relative;
+  overflow: visible;
+}
 
 /* Highlight syntax for inline highlights */
 span.highlight {
@@ -63,7 +84,7 @@ span.highlight {
 }
 
 .dark span.highlight {
-  background: linear-gradient(104deg, transparent 0.9%, hsl(45, 60%, 30%) 2.4%, hsl(45, 60%, 30%) 5.8%, transparent 93%);
+  background: linear-gradient(104deg, transparent 0.9%, hsl(200, 60%, 25%) 2.4%, hsl(200, 60%, 25%) 5.8%, transparent 93%);
 }
 
 /* Image styling */
@@ -94,6 +115,17 @@ span.highlight {
   color: hsl(var(--foreground));
 }
 
+/* Content links use classic underline, same color as text */
+.content a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-color: currentColor;
+}
+
+.content a:hover { color: inherit; text-decoration-color: currentColor; }
+
 .content h2 {
   font-size: 1.125rem !important;
   font-weight: 600 !important;
@@ -104,6 +136,10 @@ span.highlight {
 
 .content ul, .content ol {
   margin: 1.5rem 0;
+}
+
+.content ol {
+  list-style: decimal;
 }
 
 .content li {
@@ -168,6 +204,50 @@ div.highlight code {
   transform: translateX(-4px);
 }
 
+/* Theme toggle styles */
+.theme-toggle {
+  position: relative;
+}
+
+.theme-switch {
+  width: 44px;
+  height: 24px;
+  background: transparent;
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 9999px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.theme-switch:hover {
+  opacity: 0.8;
+}
+
+.theme-switch .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: hsl(var(--foreground));
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.theme-switch[data-state="dark"] .knob {
+  transform: translateX(20px);
+}
+
+.dark .theme-switch {
+  border-color: hsl(var(--foreground));
+}
+
+.dark .theme-switch .knob {
+  background: hsl(var(--foreground));
+}
+
 /* Animation classes from React app */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(10px); }
@@ -177,6 +257,11 @@ div.highlight code {
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
 }
+
+/* Link styles - classic underline, no hover color shift */
+.link-underline { color: inherit; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: currentColor; }
+.link-underline::after { content: none !important; }
+.link-underline:hover { color: inherit; text-decoration-color: currentColor; }
 
 /* Utility classes */
 .min-h-screen { min-height: 100vh; }

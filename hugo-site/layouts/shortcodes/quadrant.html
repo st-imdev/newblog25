@@ -7,25 +7,25 @@
 {{ $q4 := .Get "q4" | default "Low certainty, low skin" }}
 
 <div id="{{ $id }}-container" class="quadrant-d3-container" style="width:100%;max-width:700px;margin:3rem auto;min-height:400px;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;position:relative;">
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#999;">Loading quadrant...</div>
+  <div id="{{ $id }}-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#999;">Loading quadrant...</div>
 </div>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-// Wait for D3 to load
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    var containerId = "{{ $id }}-container";
-    var xLabel = "{{ $x }}";
-    var yLabel = "{{ $y }}";
-    var quadrantLabels = {
-      q1: "{{ $q1 }}",
-      q2: "{{ $q2 }}",
-      q3: "{{ $q3 }}",
-      q4: "{{ $q4 }}"
-    };
-    
-    console.log('Starting quadrant draw for:', containerId);
+// Inline D3 loader and quadrant drawer
+(function() {
+  var containerId = "{{ $id }}-container";
+  var loadingId = "{{ $id }}-loading";
+  var xLabel = "{{ $x }}";
+  var yLabel = "{{ $y }}";
+  var quadrantLabels = {
+    q1: "{{ $q1 }}",
+    q2: "{{ $q2 }}",
+    q3: "{{ $q3 }}",
+    q4: "{{ $q4 }}"
+  };
+  
+  function drawQuadrant() {
+    console.log('Drawing quadrant for:', containerId);
     
     var container = d3.select('#' + containerId);
     if (container.empty()) {
@@ -33,14 +33,15 @@ window.addEventListener('load', function() {
       return;
     }
     
-    // Clear loading message
+    // Clear container
     container.html('');
     
     var containerWidth = container.node().getBoundingClientRect().width;
     console.log('Container width:', containerWidth);
     
     if (containerWidth === 0) {
-      console.error('Container has no width');
+      console.error('Container has no width, retrying...');
+      setTimeout(drawQuadrant, 500);
       return;
     }
     
@@ -158,10 +159,10 @@ window.addEventListener('load', function() {
     
     // Quadrant labels
     var labels = [
-      {x: 0.75, y: 0.25, text: quadrantLabels.q1}, // High-Low
-      {x: 0.75, y: 0.75, text: quadrantLabels.q2}, // High-High
-      {x: 0.25, y: 0.75, text: quadrantLabels.q3}, // Low-High
-      {x: 0.25, y: 0.25, text: quadrantLabels.q4}  // Low-Low
+      {x: 0.75, y: 0.25, text: quadrantLabels.q1},
+      {x: 0.75, y: 0.75, text: quadrantLabels.q2},
+      {x: 0.25, y: 0.75, text: quadrantLabels.q3},
+      {x: 0.25, y: 0.25, text: quadrantLabels.q4}
     ];
     
     g.selectAll('.quad-label')
@@ -194,7 +195,6 @@ window.addEventListener('load', function() {
       .attr('fill', colors.point)
       .attr('opacity', 0.8);
     
-    // Point labels (hide on mobile)
     if (!isMobile) {
       g.selectAll('.point-label')
         .data(points)
@@ -208,45 +208,48 @@ window.addEventListener('load', function() {
     }
     
     console.log('Quadrant drawn successfully');
-    
-    // Handle resize
-    var resizeTimer;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-        // Redraw the entire chart
-        container.html('');
-        drawQuadrant();
-      }, 250);
-    });
-    
-    function drawQuadrant() {
-      // Re-run the entire drawing code
-      // (This is a simplified version - in production you'd refactor this)
-      var containerWidth = container.node().getBoundingClientRect().width;
-      if (containerWidth === 0) return;
+  }
+  
+  // Check if D3 is already loaded
+  function checkAndLoadD3() {
+    if (typeof d3 !== 'undefined') {
+      console.log('D3 already available, drawing...');
+      drawQuadrant();
+    } else {
+      console.log('Loading D3...');
+      var attempts = 0;
+      var maxAttempts = 20;
       
-      var isMobile = containerWidth < 500;
-      var margin = isMobile 
-        ? {top: 30, right: 20, bottom: 50, left: 50}
-        : {top: 40, right: 40, bottom: 60, left: 70};
+      // First try to load D3 if not already loading
+      if (!document.querySelector('script[src*="d3.v7"]')) {
+        var script = document.createElement('script');
+        script.src = 'https://d3js.org/d3.v7.min.js';
+        script.async = true;
+        document.head.appendChild(script);
+      }
       
-      var width = containerWidth - margin.left - margin.right;
-      var height = isMobile ? containerWidth * 0.8 : 400;
-      var innerHeight = height - margin.top - margin.bottom;
-      
-      var svg = container.append('svg')
-        .attr('width', containerWidth)
-        .attr('height', height)
-        .style('background', 'white');
-      
-      var g = svg.append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-      
-      // ... rest of drawing code (same as above)
-      // For brevity, I'm not repeating it all here
+      // Poll for D3 to be available
+      var checkInterval = setInterval(function() {
+        attempts++;
+        if (typeof d3 !== 'undefined') {
+          console.log('D3 loaded after', attempts, 'attempts');
+          clearInterval(checkInterval);
+          drawQuadrant();
+        } else if (attempts >= maxAttempts) {
+          console.error('Failed to load D3 after', maxAttempts, 'attempts');
+          clearInterval(checkInterval);
+          document.getElementById(loadingId).innerHTML = 'Failed to load visualization library';
+        }
+      }, 500);
     }
-    
-  }, 500); // Give D3 time to load
-});
+  }
+  
+  // Start the process
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAndLoadD3);
+  } else {
+    // Small delay to ensure container is rendered
+    setTimeout(checkAndLoadD3, 100);
+  }
+})();
 </script>

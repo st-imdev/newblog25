@@ -27,9 +27,11 @@
 <script defer data-domain="st.im" src="https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.tagged-events.js"></script>
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 
-{{ if .IsHome }}
-<!-- D3.js for network animation -->
+<!-- D3.js for visualizations -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
+
+{{ if .IsHome }}
+<!-- Network animation for homepage -->
 <script defer src="{{ "/js/network-animation.js" | relURL }}"></script>
 <script type="application/ld+json">
 {{ jsonify (dict "@context" "https://schema.org" "@type" "Person" "name" "Scott Taylor" "url" .Permalink) | safeJS }}
