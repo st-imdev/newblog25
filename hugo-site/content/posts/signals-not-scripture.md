@@ -10,7 +10,7 @@ Open your feed and someone is barking life rules at millions.
 
 Move out at 18. Grind 16 hours. Cold plunge or you’ll fail.
 
-The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click. Inspired by [this post](https://x.com/levelsio/status/1955007146728493451).
+The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click.
 
 {{< highlight >}}The incentive is structural.{{< /highlight >}} Aggregators capture demand, rank content by predicted engagement, and pay creators in attention. Attention rewards {{< highlight >}}clarity, novelty, conflict{{< /highlight >}}—the sharp edges of an argument, not the careful middle. If truth is a multi-variable equation, the feed asks for a slogan. {{< highlight >}}Interaction is the KPI; certainty is the hack.{{< /highlight >}}
 
@@ -18,7 +18,7 @@ The internet didn’t invent bossiness; it industrialised it. Platforms optimise
 
 Humans play status games: advice signals rank—“I know the way.” Algorithms amplify arousal: outrage and absolutes travel faster than caveats. Context collapses: one rule, thousands of lives. Moral grandstanding earns tribe points. Identity-protective reasoning makes public backtracking feel like losing face. Survivor bias turns “what worked for me” into “what works.” The Dunning–Kruger curve hands the mic to the most certain beginners. Prescriptions also soothe anxiety: telling others how to live calms the fear we don’t know how to live ourselves. In short: {{< highlight >}}advice performs better than it informs.{{< /highlight >}}
 
-Consider a familiar decree: {{< highlight >}}“Leave your parents’ house by 18 if you want to succeed.”{{< /highlight >}}
+Consider a familiar decree: [“Leave your parents’ house by 18 if you want to succeed.”](https://x.com/levelsio/status/1955007146728493451)
 
 Why does it ricochet around the timeline? It’s memetically fit: short, moral, and a bit cruel—the kind of line people quote to look tough. It’s a status flex for the poster (“I did it”), identity armour for the tribe (“we’re self-reliant”), and a cheap hit of certainty for the reader.
 

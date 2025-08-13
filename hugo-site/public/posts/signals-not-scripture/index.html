@@ -124,7 +124,7 @@
         </div>
       </div>
       <div class="tweet-actions-right">
-        <div class="tweet-heart" id="tweet-heart-1755093442366031000">
+        <div class="tweet-heart" id="tweet-heart-1755094486096924000">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
           </svg>
@@ -223,7 +223,7 @@
 
 <p>Open your feed and someone is barking life rules at millions.</p>
 <p>Move out at 18. Grind 16 hours. Cold plunge or you’ll fail.</p>
-<p>The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click. Inspired by <a href="https://x.com/levelsio/status/1955007146728493451">this post</a>.</p>
+<p>The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click.</p>
 <p><span class="highlight">The incentive is structural.</span>
 
 
@@ -242,10 +242,7 @@
 
 
 </p>
-<p>Consider a familiar decree: <span class="highlight">“Leave your parents’ house by 18 if you want to succeed.”</span>
-
-
-</p>
+<p>Consider a familiar decree: <a href="https://x.com/levelsio/status/1955007146728493451">“Leave your parents’ house by 18 if you want to succeed.”</a></p>
 <p>Why does it ricochet around the timeline? It’s memetically fit: short, moral, and a bit cruel—the kind of line people quote to look tough. It’s a status flex for the poster (“I did it”), identity armour for the tribe (“we’re self-reliant”), and a cheap hit of certainty for the reader.</p>
 <p>But it’s classic <span class="highlight">context collapse</span>
 
@@ -279,247 +276,176 @@
 </div>
 
 <script>
+console.log('🟦 QUADRANT SHORTCODE SCRIPT STARTING for ID: advice-2x2');
+
 
 (function() {
+  console.log('🟦 Inside IIFE for quadrant advice-2x2');
+  
   var containerId = "advice-2x2-container";
   var loadingId = "advice-2x2-loading";
-  var xLabel = "Certainty";
-  var yLabel = "Skin in the Game";
-  var quadrantLabels = {
-    q1: "High certainty, low skin",
-    q2: "High certainty, high skin",
-    q3: "Low certainty, high skin",
-    q4: "Low certainty, low skin"
-  };
+  
+  console.log('🟦 Container ID:', containerId);
+  console.log('🟦 Current D3 status:', typeof d3);
+  console.log('🟦 Document ready state:', document.readyState);
+  
+  
+  var containerCheck = document.getElementById(containerId);
+  console.log('🟦 Container exists in DOM?', !!containerCheck);
   
   function drawQuadrant() {
-    console.log('Drawing quadrant for:', containerId);
+    console.log('🟩 drawQuadrant() called for', containerId);
+    console.log('🟩 D3 available?', typeof d3 !<span class="highlight"> 'undefined');
+    
+    if (typeof d3 </span>= 'undefined') {
+      console.error('🔴 D3 is undefined in drawQuadrant!');
+      return false;
+    }
+    
+    console.log('🟩 D3 version:', d3.version);
     
     var container = d3.select('#' + containerId);
     if (container.empty()) {
-      console.error('Container not found:', containerId);
-      return;
+      console.error('🔴 Container not found with D3 selector:', containerId);
+      return false;
     }
     
-    
+    console.log('🟩 Container found, clearing content...');
     container.html('');
     
     var containerWidth = container.node().getBoundingClientRect().width;
-    console.log('Container width:', containerWidth);
+    console.log('🟩 Container width:', containerWidth);
     
     if (containerWidth === 0) {
-      console.error('Container has no width, retrying...');
+      console.error('🔴 Container has no width, will retry in 500ms...');
       setTimeout(drawQuadrant, 500);
-      return;
+      return false;
     }
     
-    var isMobile = containerWidth < 500;
-    
-    var margin = isMobile 
-      ? {top: 30, right: 20, bottom: 50, left: 50}
-      : {top: 40, right: 40, bottom: 60, left: 70};
-    
-    var width = containerWidth - margin.left - margin.right;
-    var height = isMobile ? containerWidth * 0.8 : 400;
-    var innerHeight = height - margin.top - margin.bottom;
-    
-    var svg = container.append('svg')
-      .attr('width', containerWidth)
-      .attr('height', height)
-      .style('background', 'white');
-    
-    var g = svg.append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    
-    
-    var x = d3.scaleLinear().domain([0, 1]).range([0, width]);
-    var y = d3.scaleLinear().domain([0, 1]).range([innerHeight, 0]);
-    
-    
-    var isDark = document.documentElement.classList.contains('dark');
-    var colors = {
-      grid: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
-      axis: isDark ? '#737373' : '#666',
-      text: isDark ? '#e5e5e5' : '#171717',
-      point: isDark ? '#a3a3a3' : '#666',
-      q2bg: isDark ? 'rgba(34, 197, 94, 0.08)' : 'rgba(34, 197, 94, 0.05)',
-      q3bg: isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)'
-    };
-    
-    
-    g.append('rect')
-      .attr('x', x(0.5))
-      .attr('y', y(1))
-      .attr('width', x(0.5))
-      .attr('height', y(0.5))
-      .attr('fill', colors.q2bg);
-    
-    g.append('rect')
-      .attr('x', 0)
-      .attr('y', y(1))
-      .attr('width', x(0.5))
-      .attr('height', y(0.5))
-      .attr('fill', colors.q3bg);
-    
-    
-    g.append('line')
-      .attr('x1', x(0.5))
-      .attr('x2', x(0.5))
-      .attr('y1', 0)
-      .attr('y2', innerHeight)
-      .attr('stroke', colors.grid)
-      .attr('stroke-dasharray', '4,4');
-    
-    g.append('line')
-      .attr('x1', 0)
-      .attr('x2', width)
-      .attr('y1', y(0.5))
-      .attr('y2', y(0.5))
-      .attr('stroke', colors.grid)
-      .attr('stroke-dasharray', '4,4');
-    
-    
-    var xAxis = d3.axisBottom(x)
-      .ticks(2)
-      .tickFormat(function(d) { return d =<span class="highlight"> 0 ? 'Low' : d </span>= 1 ? 'High' : ''; });
-    
-    g.append('g')
-      .attr('transform', 'translate(0,' + innerHeight + ')')
-      .call(xAxis)
-      .call(function(g) {
-        g.select('.domain').remove();
-        g.selectAll('.tick line').attr('stroke', colors.axis);
-        g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
-      });
-    
-    
-    var yAxis = d3.axisLeft(y)
-      .ticks(2)
-      .tickFormat(function(d) { return d =<span class="highlight"> 0 ? 'Low' : d </span>= 1 ? 'High' : ''; });
-    
-    g.append('g')
-      .call(yAxis)
-      .call(function(g) {
-        g.select('.domain').remove();
-        g.selectAll('.tick line').attr('stroke', colors.axis);
-        g.selectAll('.tick text').attr('fill', colors.axis).style('font-size', '12px');
-      });
-    
-    
-    svg.append('text')
-      .attr('x', margin.left + width / 2)
-      .attr('y', height - 10)
-      .attr('text-anchor', 'middle')
-      .attr('fill', colors.text)
-      .style('font-size', '14px')
-      .style('font-weight', '500')
-      .text(xLabel);
-    
-    svg.append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('x', -(margin.top + innerHeight / 2))
-      .attr('y', 15)
-      .attr('text-anchor', 'middle')
-      .attr('fill', colors.text)
-      .style('font-size', '14px')
-      .style('font-weight', '500')
-      .text(yLabel);
-    
-    
-    var labels = [
-      {x: 0.75, y: 0.25, text: quadrantLabels.q1},
-      {x: 0.75, y: 0.75, text: quadrantLabels.q2},
-      {x: 0.25, y: 0.75, text: quadrantLabels.q3},
-      {x: 0.25, y: 0.25, text: quadrantLabels.q4}
-    ];
-    
-    g.selectAll('.quad-label')
-      .data(labels)
-      .enter().append('text')
-      .attr('class', 'quad-label')
-      .attr('x', function(d) { return x(d.x); })
-      .attr('y', function(d) { return y(d.y); })
-      .attr('text-anchor', 'middle')
-      .attr('fill', colors.text)
-      .style('font-size', isMobile ? '12px' : '14px')
-      .style('font-weight', '500')
-      .text(function(d) { return d.text; });
-    
-    
-    var points = [
-      {x: 0.8, y: 0.2, label: 'Viral sermons'},
-      {x: 0.8, y: 0.8, label: 'Operators'},
-      {x: 0.2, y: 0.8, label: 'Practitioners'},
-      {x: 0.2, y: 0.2, label: 'Think-pieces'}
-    ];
-    
-    g.selectAll('.point')
-      .data(points)
-      .enter().append('circle')
-      .attr('class', 'point')
-      .attr('cx', function(d) { return x(d.x); })
-      .attr('cy', function(d) { return y(d.y); })
-      .attr('r', 5)
-      .attr('fill', colors.point)
-      .attr('opacity', 0.8);
-    
-    if (!isMobile) {
-      g.selectAll('.point-label')
-        .data(points)
-        .enter().append('text')
-        .attr('class', 'point-label')
-        .attr('x', function(d) { return x(d.x) + 8; })
-        .attr('y', function(d) { return y(d.y) + 3; })
-        .attr('fill', colors.point)
-        .style('font-size', '11px')
-        .text(function(d) { return d.label; });
+    try {
+      console.log('🟩 Starting to draw quadrant...');
+      
+      var isMobile = containerWidth < 500;
+      var margin = isMobile 
+        ? {top: 30, right: 20, bottom: 50, left: 50}
+        : {top: 40, right: 40, bottom: 60, left: 70};
+      
+      var width = containerWidth - margin.left - margin.right;
+      var height = isMobile ? containerWidth * 0.8 : 400;
+      var innerHeight = height - margin.top - margin.bottom;
+      
+      console.log('🟩 Creating SVG:', containerWidth, 'x', height);
+      
+      var svg = container.append('svg')
+        .attr('width', containerWidth)
+        .attr('height', height)
+        .style('background', 'white')
+        .style('border', '1px solid #ccc');
+      
+      var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      
+      
+      g.append('text')
+        .attr('x', width / 2)
+        .attr('y', innerHeight / 2)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '24px')
+        .attr('fill', 'green')
+        .text('QUADRANT RENDERED!');
+      
+      console.log('✅ QUADRANT DRAWN SUCCESSFULLY for', containerId);
+      return true;
+      
+    } catch (e) {
+      console.error('🔴 Error drawing quadrant:', e);
+      console.error(e.stack);
+      return false;
     }
-    
-    console.log('Quadrant drawn successfully');
   }
   
-  
   function checkAndLoadD3() {
+    console.log('🟨 checkAndLoadD3() called');
+    console.log('🟨 typeof d3:', typeof d3);
+    console.log('🟨 typeof window.d3:', typeof window.d3);
+    
     if (typeof d3 !== 'undefined') {
-      console.log('D3 already available, drawing...');
-      drawQuadrant();
+      console.log('✅ D3 already available, drawing immediately');
+      var success = drawQuadrant();
+      if (!success) {
+        console.log('🟨 Draw failed, will retry...');
+      }
     } else {
-      console.log('Loading D3...');
+      console.log('🟨 D3 not available, need to wait or load it');
+      
+      
+      var d3Scripts = document.querySelectorAll('script[src*="d3"]');
+      console.log('🟨 Found D3 script tags:', d3Scripts.length);
+      d3Scripts.forEach(function(script) {
+        console.log('  - Script src:', script.src);
+        console.log('  - Script async:', script.async);
+        console.log('  - Script defer:', script.defer);
+      });
+      
       var attempts = 0;
       var maxAttempts = 20;
       
-      
-      if (!document.querySelector('script[src*="d3.v7"]')) {
-        var script = document.createElement('script');
-        script.src = 'https://d3js.org/d3.v7.min.js';
-        script.async = true;
-        document.head.appendChild(script);
-      }
-      
-      
       var checkInterval = setInterval(function() {
         attempts++;
+        console.log('🟨 Checking for D3, attempt', attempts, '- typeof d3:', typeof d3);
+        
         if (typeof d3 !== 'undefined') {
-          console.log('D3 loaded after', attempts, 'attempts');
+          console.log('✅ D3 loaded after', attempts, 'attempts!');
           clearInterval(checkInterval);
           drawQuadrant();
         } else if (attempts >= maxAttempts) {
-          console.error('Failed to load D3 after', maxAttempts, 'attempts');
+          console.error('🔴 Failed to load D3 after', maxAttempts, 'attempts');
           clearInterval(checkInterval);
-          document.getElementById(loadingId).innerHTML = 'Failed to load visualization library';
+          var loadingEl = document.getElementById(loadingId);
+          if (loadingEl) {
+            loadingEl.innerHTML = 'Failed to load visualization library';
+          }
         }
       }, 500);
     }
   }
   
+  console.log('🟦 Setting up initialization...');
   
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkAndLoadD3);
-  } else {
-    
-    setTimeout(checkAndLoadD3, 100);
+  
+  
+  
+  setTimeout(function() {
+    console.log('🟦 Strategy 1: Direct delayed call');
+    checkAndLoadD3();
+  }, 100);
+  
+  
+  if (document.readyState =<span class="highlight"> 'loading') {
+    console.log('🟦 Strategy 2: Waiting for DOMContentLoaded');
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🟦 DOMContentLoaded fired');
+      checkAndLoadD3();
+    });
   }
+  
+  
+  window.addEventListener('load', function() {
+    console.log('🟦 Strategy 3: Window load event fired');
+    setTimeout(function() {
+      if (typeof d3 !</span> 'undefined' && document.getElementById(containerId)) {
+        var container = document.getElementById(containerId);
+        if (container && container.innerHTML.includes('Loading')) {
+          console.log('🟨 Window load: Container still loading, trying to draw');
+          drawQuadrant();
+        }
+      }
+    }, 1000);
+  });
+  
 })();
+
+console.log('🟦 QUADRANT SHORTCODE SCRIPT END for ID: advice-2x2');
 </script>
 <ul>
 <li><em>High certainty, low skin</em> — where most viral sermons live: maximal swagger, no cost to being wrong.</li>

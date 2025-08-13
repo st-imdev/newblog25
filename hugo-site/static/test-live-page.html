@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Page Test</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 20px; }
+    .log { background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 12px; }
+    iframe { width: 100%; height: 600px; border: 2px solid #333; }
+  </style>
+</head>
+<body>
+  <h1>Live Page Test</h1>
+  <button onclick="testLivePage()">Test Live Page</button>
+  <div id="log" class="log"></div>
+  
+  <h2>Page in iframe:</h2>
+  <iframe id="testFrame" src="http://localhost:1313/posts/signals-not-scripture/"></iframe>
+
+  <script>
+    function log(msg, type = 'info') {
+      const logEl = document.getElementById('log');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      logEl.innerHTML += `<div class="${className}">${new Date().toLocaleTimeString()}: ${msg}</div>`;
+      console.log(msg);
+    }
+
+    function testLivePage() {
+      log('Testing live page...');
+      
+      try {
+        const iframe = document.getElementById('testFrame');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const iframeWin = iframe.contentWindow;
+        
+        // Check if D3 is loaded in iframe
+        if (typeof iframeWin.d3 !== 'undefined') {
+          log('✅ D3 is loaded in iframe! Version: ' + iframeWin.d3.version, 'success');
+        } else {
+          log('❌ D3 is NOT loaded in iframe', 'error');
+        }
+        
+        // Check for quadrant container
+        const container = iframeDoc.getElementById('advice-2x2-container');
+        if (container) {
+          log('✅ Quadrant container found', 'success');
+          log('Container innerHTML: ' + container.innerHTML.substring(0, 100) + '...');
+          
+          // Check if it still says "Loading"
+          if (container.innerHTML.includes('Loading quadrant')) {
+            log('⚠️ Container still shows "Loading quadrant"', 'error');
+          }
+        } else {
+          log('❌ Quadrant container NOT found', 'error');
+        }
+        
+        // Check console for errors
+        log('Check browser console for any errors from the iframe');
+        
+      } catch (e) {
+        log('Error accessing iframe: ' + e.message, 'error');
+        log('This might be a CORS issue if testing across domains');
+      }
+    }
+    
+    // Auto-test after iframe loads
+    document.getElementById('testFrame').onload = function() {
+      setTimeout(function() {
+        log('Iframe loaded, running automatic test...');
+        testLivePage();
+      }, 2000); // Wait 2 seconds for D3 to load
+    };
+  </script>
+</body>
+</html>

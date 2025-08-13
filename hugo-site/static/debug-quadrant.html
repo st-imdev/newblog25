@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quadrant Debug Test</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .test-container { border: 2px solid #0066cc; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    .warning { color: orange; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Quadrant Debug Test Page</h1>
+  
+  <div class="test-container">
+    <h2>Test 1: Check D3 Loading</h2>
+    <div id="log1" class="log"></div>
+    <button onclick="testD3Loading()">Test D3 Loading</button>
+  </div>
+
+  <div class="test-container">
+    <h2>Test 2: Simple D3 Test</h2>
+    <div id="simple-d3-test" style="width:400px;height:200px;border:1px solid #ccc;"></div>
+    <div id="log2" class="log"></div>
+    <button onclick="testSimpleD3()">Run Simple D3 Test</button>
+  </div>
+
+  <div class="test-container">
+    <h2>Test 3: Full Quadrant (Manual)</h2>
+    <div id="manual-quadrant" style="width:100%;max-width:700px;height:400px;border:1px solid #ccc;background:#fafafa;"></div>
+    <div id="log3" class="log"></div>
+    <button onclick="drawManualQuadrant()">Draw Manual Quadrant</button>
+  </div>
+
+  <div class="test-container">
+    <h2>Test 4: Hugo Shortcode Simulation</h2>
+    <div id="advice-2x2-container" class="quadrant-d3-container" style="width:100%;max-width:700px;margin:3rem auto;min-height:400px;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;position:relative;">
+      <div id="advice-2x2-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#999;">Loading quadrant...</div>
+    </div>
+    <div id="log4" class="log"></div>
+    <button onclick="runShortcodeSimulation()">Run Shortcode Simulation</button>
+  </div>
+
+  <script>
+    function log(containerId, message, type = 'info') {
+      const logEl = document.getElementById(containerId);
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+      logEl.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(`[${containerId}] ${message}`);
+    }
+
+    // Test 1: Check D3 Loading
+    function testD3Loading() {
+      const logId = 'log1';
+      log(logId, 'Starting D3 loading test...');
+      
+      // Check if D3 exists
+      if (typeof d3 !== 'undefined') {
+        log(logId, 'D3 is already loaded!', 'success');
+        log(logId, 'D3 version: ' + d3.version, 'success');
+        return;
+      }
+      
+      log(logId, 'D3 not found, attempting to load...');
+      
+      // Check if script tag exists
+      const existingScript = document.querySelector('script[src*="d3"]');
+      if (existingScript) {
+        log(logId, 'Found existing D3 script tag: ' + existingScript.src, 'warning');
+      }
+      
+      // Load D3
+      const script = document.createElement('script');
+      script.src = 'https://d3js.org/d3.v7.min.js';
+      
+      script.onload = function() {
+        log(logId, 'D3 script loaded successfully!', 'success');
+        if (typeof d3 !== 'undefined') {
+          log(logId, 'D3 is now available! Version: ' + d3.version, 'success');
+        } else {
+          log(logId, 'Script loaded but d3 is still undefined!', 'error');
+        }
+      };
+      
+      script.onerror = function(e) {
+        log(logId, 'Failed to load D3 script: ' + e, 'error');
+      };
+      
+      log(logId, 'Appending script to document head...');
+      document.head.appendChild(script);
+      
+      // Poll for D3
+      let attempts = 0;
+      const checkInterval = setInterval(function() {
+        attempts++;
+        if (typeof d3 !== 'undefined') {
+          log(logId, `D3 detected after ${attempts} attempts!`, 'success');
+          clearInterval(checkInterval);
+        } else if (attempts > 10) {
+          log(logId, `D3 still not available after ${attempts} attempts`, 'error');
+          clearInterval(checkInterval);
+        }
+      }, 500);
+    }
+
+    // Test 2: Simple D3 Test
+    function testSimpleD3() {
+      const logId = 'log2';
+      log(logId, 'Starting simple D3 test...');
+      
+      if (typeof d3 === 'undefined') {
+        log(logId, 'D3 is not loaded! Run Test 1 first.', 'error');
+        return;
+      }
+      
+      try {
+        const container = d3.select('#simple-d3-test');
+        container.selectAll('*').remove();
+        
+        const svg = container.append('svg')
+          .attr('width', 400)
+          .attr('height', 200)
+          .style('background', '#f0f0f0');
+        
+        svg.append('circle')
+          .attr('cx', 200)
+          .attr('cy', 100)
+          .attr('r', 50)
+          .attr('fill', 'steelblue');
+        
+        svg.append('text')
+          .attr('x', 200)
+          .attr('y', 105)
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'white')
+          .text('D3 Works!');
+        
+        log(logId, 'Simple D3 test completed successfully!', 'success');
+      } catch (e) {
+        log(logId, 'Error in simple D3 test: ' + e.message, 'error');
+      }
+    }
+
+    // Test 3: Manual Quadrant
+    function drawManualQuadrant() {
+      const logId = 'log3';
+      log(logId, 'Starting manual quadrant draw...');
+      
+      if (typeof d3 === 'undefined') {
+        log(logId, 'D3 is not loaded! Run Test 1 first.', 'error');
+        return;
+      }
+      
+      try {
+        const container = d3.select('#manual-quadrant');
+        container.selectAll('*').remove();
+        
+        const width = 700;
+        const height = 400;
+        const margin = {top: 40, right: 40, bottom: 60, left: 70};
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        
+        log(logId, `Creating SVG: ${width}x${height}`);
+        
+        const svg = container.append('svg')
+          .attr('width', width)
+          .attr('height', height)
+          .style('background', 'white');
+        
+        const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+        
+        // Scales
+        const x = d3.scaleLinear().domain([0, 1]).range([0, innerWidth]);
+        const y = d3.scaleLinear().domain([0, 1]).range([innerHeight, 0]);
+        
+        log(logId, 'Drawing grid lines...');
+        
+        // Grid
+        g.append('line')
+          .attr('x1', x(0.5))
+          .attr('x2', x(0.5))
+          .attr('y1', 0)
+          .attr('y2', innerHeight)
+          .attr('stroke', '#ddd')
+          .attr('stroke-dasharray', '4,4');
+        
+        g.append('line')
+          .attr('x1', 0)
+          .attr('x2', innerWidth)
+          .attr('y1', y(0.5))
+          .attr('y2', y(0.5))
+          .attr('stroke', '#ddd')
+          .attr('stroke-dasharray', '4,4');
+        
+        log(logId, 'Adding axes...');
+        
+        // Axes
+        g.append('g')
+          .attr('transform', `translate(0,${innerHeight})`)
+          .call(d3.axisBottom(x).ticks(2).tickFormat(d => d === 0 ? 'Low' : 'High'));
+        
+        g.append('g')
+          .call(d3.axisLeft(y).ticks(2).tickFormat(d => d === 0 ? 'Low' : 'High'));
+        
+        log(logId, 'Adding labels...');
+        
+        // Labels
+        svg.append('text')
+          .attr('x', margin.left + innerWidth / 2)
+          .attr('y', height - 10)
+          .attr('text-anchor', 'middle')
+          .text('Certainty');
+        
+        svg.append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -(margin.top + innerHeight / 2))
+          .attr('y', 15)
+          .attr('text-anchor', 'middle')
+          .text('Skin in the Game');
+        
+        log(logId, 'Manual quadrant drawn successfully!', 'success');
+      } catch (e) {
+        log(logId, 'Error drawing quadrant: ' + e.message, 'error');
+        console.error(e);
+      }
+    }
+
+    // Test 4: Shortcode Simulation
+    function runShortcodeSimulation() {
+      const logId = 'log4';
+      log(logId, 'Running shortcode simulation...');
+      
+      // This simulates the exact code from the Hugo shortcode
+      var containerId = "advice-2x2-container";
+      var loadingId = "advice-2x2-loading";
+      
+      function drawQuadrant() {
+        log(logId, 'drawQuadrant() called');
+        
+        if (typeof d3 === 'undefined') {
+          log(logId, 'D3 is undefined in drawQuadrant!', 'error');
+          return;
+        }
+        
+        var container = d3.select('#' + containerId);
+        if (container.empty()) {
+          log(logId, 'Container not found: ' + containerId, 'error');
+          return;
+        }
+        
+        log(logId, 'Container found, clearing content...');
+        container.html('');
+        
+        var containerWidth = container.node().getBoundingClientRect().width;
+        log(logId, 'Container width: ' + containerWidth);
+        
+        if (containerWidth === 0) {
+          log(logId, 'Container has no width!', 'error');
+          return;
+        }
+        
+        // Draw the quadrant (simplified for testing)
+        var svg = container.append('svg')
+          .attr('width', containerWidth)
+          .attr('height', 400)
+          .style('background', 'white');
+        
+        svg.append('text')
+          .attr('x', containerWidth / 2)
+          .attr('y', 200)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '24px')
+          .text('Quadrant Works!');
+        
+        log(logId, 'Quadrant drawn successfully!', 'success');
+      }
+      
+      function checkAndLoadD3() {
+        if (typeof d3 !== 'undefined') {
+          log(logId, 'D3 already available, drawing...', 'success');
+          drawQuadrant();
+        } else {
+          log(logId, 'D3 not available, loading...', 'warning');
+          
+          if (!document.querySelector('script[src*="d3.v7"]')) {
+            var script = document.createElement('script');
+            script.src = 'https://d3js.org/d3.v7.min.js';
+            script.async = true;
+            document.head.appendChild(script);
+            log(logId, 'Added D3 script tag');
+          }
+          
+          var attempts = 0;
+          var checkInterval = setInterval(function() {
+            attempts++;
+            log(logId, `Checking for D3, attempt ${attempts}...`);
+            
+            if (typeof d3 !== 'undefined') {
+              log(logId, 'D3 loaded after ' + attempts + ' attempts', 'success');
+              clearInterval(checkInterval);
+              drawQuadrant();
+            } else if (attempts >= 10) {
+              log(logId, 'Failed to load D3 after 10 attempts', 'error');
+              clearInterval(checkInterval);
+              document.getElementById(loadingId).innerHTML = 'Failed to load visualization library';
+            }
+          }, 500);
+        }
+      }
+      
+      // Start
+      setTimeout(checkAndLoadD3, 100);
+    }
+  </script>
+</body>
+</html>
