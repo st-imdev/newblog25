@@ -1,0 +1,76 @@
+<div id="{{ .Get "id" | default (printf "quad-%d" (now.UnixNano)) }}" class="quad" style="width:100%;max-width:700px;height:380px;margin:2rem 0;position:relative"></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+(function(){
+  var id = {{ .Get "id" | default (printf "\"quad-%d\"" (now.UnixNano)) }};
+  var titleX = {{ .Get "xLabel" | default "\"Certainty\"" }};
+  var titleY = {{ .Get "yLabel" | default "\"Skin in the Game\"" }};
+  var labels = {
+    q1: {{ .Get "q1" | default "\"High certainty, low skin\"" }},
+    q2: {{ .Get "q2" | default "\"High certainty, high skin\"" }},
+    q3: {{ .Get "q3" | default "\"Low certainty, high skin\"" }},
+    q4: {{ .Get "q4" | default "\"Low certainty, low skin\"" }}
+  };
+
+  var el = document.getElementById(id);
+  if(!el) return;
+  var w = el.clientWidth, h = el.clientHeight;
+  var m = {t:28,r:28,b:40,l:48};
+  var iw = w - m.l - m.r, ih = h - m.t - m.b;
+
+  var isDark = document.documentElement.classList.contains('dark');
+  var axis = isDark ? '#a3a3a3' : '#525252';
+  var grid = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
+  var primary = isDark ? '#e5e5e5' : '#171717';
+  var muted = isDark ? '#9ca3af' : '#6b7280';
+
+  var svg = d3.select(el).append('svg')
+    .attr('width', w).attr('height', h);
+
+  var g = svg.append('g').attr('transform','translate('+m.l+','+m.t+')');
+
+  var x = d3.scaleLinear().domain([0,1]).range([0, iw]);
+  var y = d3.scaleLinear().domain([0,1]).range([ih, 0]);
+
+  // grid
+  g.append('rect').attr('x',0).attr('y',0).attr('width',iw).attr('height',ih).attr('fill','none').attr('stroke',grid);
+  g.append('line').attr('x1',iw/2).attr('x2',iw/2).attr('y1',0).attr('y2',ih).attr('stroke',grid).attr('stroke-dasharray','4,4');
+  g.append('line').attr('y1',ih/2).attr('y2',ih/2).attr('x1',0).attr('x2',iw).attr('stroke',grid).attr('stroke-dasharray','4,4');
+
+  // axes
+  g.append('g').attr('transform','translate(0,'+ih+')')
+    .call(d3.axisBottom(x).ticks(2).tickFormat(function(d){return d===0?'low':d===1?'high':'';}))
+    .call(function(s){ s.selectAll('path, line').attr('stroke', axis); s.selectAll('text').attr('fill', axis).style('font-size','11px'); });
+  g.append('g')
+    .call(d3.axisLeft(y).ticks(2).tickFormat(function(d){return d===0?'low':d===1?'high':'';}))
+    .call(function(s){ s.selectAll('path, line').attr('stroke', axis); s.selectAll('text').attr('fill', axis).style('font-size','11px'); });
+
+  // titles
+  svg.append('text').attr('x', m.l + iw/2).attr('y', h - 6).attr('text-anchor','middle').attr('fill', axis).style('font-size','12px').text(titleX);
+  svg.append('text').attr('transform','translate(12,'+(m.t+ih/2)+') rotate(-90)')
+     .attr('text-anchor','middle').attr('fill', axis).style('font-size','12px').text(titleY);
+
+  // quadrant labels
+  var pad = 10;
+  g.append('text').attr('x', iw*0.75).attr('y', ih*0.25).attr('text-anchor','middle').attr('fill', primary).style('font-size','12px').text(labels.q2);
+  g.append('text').attr('x', iw*0.25).attr('y', ih*0.25).attr('text-anchor','middle').attr('fill', primary).style('font-size','12px').text(labels.q3);
+  g.append('text').attr('x', iw*0.75).attr('y', ih*0.75).attr('text-anchor','middle').attr('fill', primary).style('font-size','12px').text(labels.q1);
+  g.append('text').attr('x', iw*0.25).attr('y', ih*0.75).attr('text-anchor','middle').attr('fill', primary).style('font-size','12px').text(labels.q4);
+
+  // sample dots (optional aesthetics)
+  var points = [
+    {x:0.8, y:0.2, label:'Viral sermons'},
+    {x:0.8, y:0.8, label:'Operators'},
+    {x:0.2, y:0.8, label:'Practitioners'},
+    {x:0.2, y:0.2, label:'Think-pieces'}
+  ];
+
+  g.selectAll('circle.point').data(points).enter().append('circle')
+    .attr('class','point').attr('cx', d=>x(d.x)).attr('cy', d=>y(d.y)).attr('r', 4).attr('fill', primary).attr('opacity',0.9);
+  g.selectAll('text.point-label').data(points).enter().append('text')
+    .attr('class','point-label').attr('x', d=>x(d.x)+8).attr('y', d=>y(d.y)+4).text(d=>d.label)
+    .attr('fill', muted).style('font-size','11px');
+})();
+</script>
+
+
