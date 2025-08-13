@@ -49,7 +49,7 @@ article p { margin: 1rem 0; font-size: 1.2rem !important; }
 .container ul li { margin: 0.35rem 0; font-size: 1.2rem !important; }
 
 /* Ordered list spacing */
-.container ol { padding-left: 1.25rem; }
+.container ol { list-style: decimal; padding-left: 1.25rem; }
 .container ol li { margin: 0.35rem 0; font-size: 1.2rem !important; }
 
 /* Headings */
@@ -136,6 +136,10 @@ span.highlight {
 
 .content ul, .content ol {
   margin: 1.5rem 0;
+}
+
+.content ol {
+  list-style: decimal;
 }
 
 .content li {
