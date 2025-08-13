@@ -6,326 +6,67 @@
 {{ $q3 := .Get "q3" | default "Low certainty, high skin" }}
 {{ $q4 := .Get "q4" | default "Low certainty, low skin" }}
 
-<div id="{{ $id }}" class="quadrant-container" style="width:100%;margin:3rem 0;"></div>
+<div id="{{ $id }}" class="quadrant-wrapper" style="width:100%;max-width:700px;margin:3rem auto;">
+  <div class="quadrant-container" style="width:100%;padding-bottom:60%;position:relative;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;padding:20px;">
+      <svg id="{{ $id }}-svg" style="width:100%;height:100%;" viewBox="0 0 500 300">
+        <!-- Grid lines -->
+        <line x1="250" y1="20" x2="250" y2="280" stroke="#ddd" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="20" y1="150" x2="480" y2="150" stroke="#ddd" stroke-width="1" stroke-dasharray="3,3"/>
+        
+        <!-- Axis labels -->
+        <text x="20" y="295" font-size="11" fill="#666">Low</text>
+        <text x="480" y="295" font-size="11" fill="#666" text-anchor="end">High</text>
+        <text x="10" y="280" font-size="11" fill="#666">Low</text>
+        <text x="10" y="25" font-size="11" fill="#666">High</text>
+        
+        <!-- Axis titles -->
+        <text x="250" y="295" font-size="12" fill="#333" text-anchor="middle" font-weight="500">{{ $x }}</text>
+        <text x="10" y="150" font-size="12" fill="#333" text-anchor="middle" font-weight="500" transform="rotate(-90 10 150)">{{ $y }}</text>
+        
+        <!-- Quadrant labels -->
+        <text x="125" y="80" font-size="13" fill="#333" text-anchor="middle">{{ $q3 }}</text>
+        <text x="375" y="80" font-size="13" fill="#333" text-anchor="middle">{{ $q2 }}</text>
+        <text x="125" y="220" font-size="13" fill="#333" text-anchor="middle">{{ $q4 }}</text>
+        <text x="375" y="220" font-size="13" fill="#333" text-anchor="middle">{{ $q1 }}</text>
+        
+        <!-- Points -->
+        <circle cx="400" cy="210" r="4" fill="#666" opacity="0.7"/>
+        <text x="410" y="213" font-size="10" fill="#888">Viral sermons</text>
+        
+        <circle cx="400" cy="90" r="4" fill="#666" opacity="0.7"/>
+        <text x="410" y="93" font-size="10" fill="#888">Operators</text>
+        
+        <circle cx="100" cy="90" r="4" fill="#666" opacity="0.7"/>
+        <text x="110" y="93" font-size="10" fill="#888">Practitioners</text>
+        
+        <circle cx="100" cy="210" r="4" fill="#666" opacity="0.7"/>
+        <text x="110" y="213" font-size="10" fill="#888">Think-pieces</text>
+      </svg>
+    </div>
+  </div>
+</div>
 
 <style>
-.quadrant-container {
-  position: relative;
-  width: 100%;
-  max-width: 700px;
-  margin: 3rem auto;
-}
-
 @media (max-width: 640px) {
+  .quadrant-wrapper {
+    margin: 2rem auto !important;
+  }
   .quadrant-container {
-    margin: 2rem auto;
+    padding-bottom: 80% !important;
   }
 }
 
-.quadrant-label {
-  font-weight: 500;
-  fill: var(--foreground, #171717);
+.dark .quadrant-container {
+  background: #1a1a1a;
+  border-color: #333;
 }
 
-.quadrant-point-label {
-  font-size: 11px;
-  fill: var(--muted-foreground, #737373);
+.dark .quadrant-container text {
+  fill: #e0e0e0;
 }
 
-@media (max-width: 640px) {
-  .quadrant-point-label {
-    display: none;
-  }
-}
-
-.quadrant-axis-label {
-  fill: var(--muted-foreground, #737373);
-  font-size: 12px;
-}
-
-.quadrant-axis-title {
-  fill: var(--foreground, #171717);
-  font-weight: 500;
-}
-
-.dark .quadrant-label {
-  fill: #e5e5e5;
-}
-
-.dark .quadrant-point-label {
-  fill: #9ca3af;
-}
-
-.dark .quadrant-axis-label {
-  fill: #a3a3a3;
-}
-
-.dark .quadrant-axis-title {
-  fill: #e5e5e5;
+.dark .quadrant-container line {
+  stroke: #444;
 }
 </style>
-
-<script>
-(function(){
-  var id = "{{ $id }}";
-  var titleX = "{{ $x }}";
-  var titleY = "{{ $y }}";
-  var labels = {
-    q1: "{{ $q1 }}",
-    q2: "{{ $q2 }}",
-    q3: "{{ $q3 }}",
-    q4: "{{ $q4 }}"
-  };
-
-  function drawQuadrant() {
-    var container = document.getElementById(id);
-    if (!container || typeof d3 === 'undefined') return;
-    
-    // Clear any existing content
-    container.innerHTML = '';
-    
-    // Get container dimensions
-    var containerWidth = container.offsetWidth || 700;
-    var isMobile = containerWidth < 500;
-    
-    // Set dimensions with mobile considerations
-    var margin = isMobile 
-      ? {top: 30, right: 20, bottom: 50, left: 50}
-      : {top: 40, right: 40, bottom: 60, left: 60};
-    
-    var width = containerWidth - margin.left - margin.right;
-    var height = isMobile ? containerWidth * 0.8 : 400;
-    var innerHeight = height - margin.top - margin.bottom;
-    
-    // Create SVG
-    var svg = d3.select(container)
-      .append('svg')
-      .attr('width', containerWidth)
-      .attr('height', height);
-    
-    var g = svg.append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    
-    // Scales
-    var x = d3.scaleLinear()
-      .domain([0, 1])
-      .range([0, width]);
-    
-    var y = d3.scaleLinear()
-      .domain([0, 1])
-      .range([innerHeight, 0]);
-    
-    // Colors based on theme
-    var isDark = document.documentElement.classList.contains('dark');
-    var gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    var axisColor = isDark ? '#737373' : '#737373';
-    var primaryColor = isDark ? '#e5e5e5' : '#171717';
-    var pointColor = isDark ? '#a3a3a3' : '#666666';
-    
-    // Add quadrant backgrounds for better visual separation
-    var quadrantData = [
-      {x: 0, y: 0.5, w: 0.5, h: 0.5, label: labels.q4, class: 'q4'}, // Low-Low
-      {x: 0.5, y: 0.5, w: 0.5, h: 0.5, label: labels.q1, class: 'q1'}, // High-Low
-      {x: 0, y: 0, w: 0.5, h: 0.5, label: labels.q3, class: 'q3'}, // Low-High
-      {x: 0.5, y: 0, w: 0.5, h: 0.5, label: labels.q2, class: 'q2'} // High-High
-    ];
-    
-    // Add subtle background rectangles
-    g.selectAll('.quadrant-bg')
-      .data(quadrantData)
-      .enter().append('rect')
-      .attr('class', function(d) { return 'quadrant-bg ' + d.class; })
-      .attr('x', function(d) { return x(d.x); })
-      .attr('y', function(d) { return y(d.y + d.h); })
-      .attr('width', function(d) { return x(d.w); })
-      .attr('height', function(d) { return y(0) - y(d.h); })
-      .attr('fill', function(d, i) {
-        if (isDark) {
-          return i === 3 ? 'rgba(34, 197, 94, 0.05)' : // High-High (green tint)
-                 i === 2 ? 'rgba(59, 130, 246, 0.05)' : // Low-High (blue tint)
-                 'transparent';
-        } else {
-          return i === 3 ? 'rgba(34, 197, 94, 0.03)' : // High-High (green tint)
-                 i === 2 ? 'rgba(59, 130, 246, 0.03)' : // Low-High (blue tint)
-                 'transparent';
-        }
-      })
-      .attr('stroke', 'none');
-    
-    // Grid lines
-    g.append('line')
-      .attr('x1', x(0.5))
-      .attr('x2', x(0.5))
-      .attr('y1', 0)
-      .attr('y2', innerHeight)
-      .attr('stroke', gridColor)
-      .attr('stroke-width', 1)
-      .attr('stroke-dasharray', '3,3');
-    
-    g.append('line')
-      .attr('x1', 0)
-      .attr('x2', width)
-      .attr('y1', y(0.5))
-      .attr('y2', y(0.5))
-      .attr('stroke', gridColor)
-      .attr('stroke-width', 1)
-      .attr('stroke-dasharray', '3,3');
-    
-    // X axis
-    var xAxis = d3.axisBottom(x)
-      .ticks(2)
-      .tickFormat(function(d) { return d === 0 ? 'Low' : d === 1 ? 'High' : ''; });
-    
-    g.append('g')
-      .attr('transform', 'translate(0,' + innerHeight + ')')
-      .call(xAxis)
-      .attr('class', 'quadrant-axis')
-      .selectAll('text')
-      .attr('class', 'quadrant-axis-label');
-    
-    // Y axis
-    var yAxis = d3.axisLeft(y)
-      .ticks(2)
-      .tickFormat(function(d) { return d === 0 ? 'Low' : d === 1 ? 'High' : ''; });
-    
-    g.append('g')
-      .call(yAxis)
-      .attr('class', 'quadrant-axis')
-      .selectAll('text')
-      .attr('class', 'quadrant-axis-label');
-    
-    // Remove axis lines but keep ticks
-    g.selectAll('.quadrant-axis path').remove();
-    g.selectAll('.quadrant-axis line').attr('stroke', axisColor);
-    
-    // Axis titles
-    svg.append('text')
-      .attr('x', margin.left + width / 2)
-      .attr('y', height - 10)
-      .attr('text-anchor', 'middle')
-      .attr('class', 'quadrant-axis-title')
-      .style('font-size', isMobile ? '13px' : '14px')
-      .text(titleX);
-    
-    svg.append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('x', -(margin.top + innerHeight / 2))
-      .attr('y', 15)
-      .attr('text-anchor', 'middle')
-      .attr('class', 'quadrant-axis-title')
-      .style('font-size', isMobile ? '13px' : '14px')
-      .text(titleY);
-    
-    // Quadrant labels
-    var labelFontSize = isMobile ? '12px' : '14px';
-    var labelData = [
-      {x: 0.25, y: 0.75, text: labels.q4}, // Low-Low
-      {x: 0.75, y: 0.75, text: labels.q1}, // High-Low
-      {x: 0.25, y: 0.25, text: labels.q3}, // Low-High
-      {x: 0.75, y: 0.25, text: labels.q2}  // High-High
-    ];
-    
-    g.selectAll('.quadrant-label')
-      .data(labelData)
-      .enter().append('text')
-      .attr('class', 'quadrant-label')
-      .attr('x', function(d) { return x(d.x); })
-      .attr('y', function(d) { return y(d.y); })
-      .attr('text-anchor', 'middle')
-      .style('font-size', labelFontSize)
-      .text(function(d) { return d.text; })
-      .call(wrap, width * 0.4); // Wrap text if too long
-    
-    // Sample points
-    var points = [
-      {x: 0.8, y: 0.2, label: 'Viral sermons', quadrant: 'q1'},
-      {x: 0.8, y: 0.8, label: 'Operators', quadrant: 'q2'},
-      {x: 0.2, y: 0.8, label: 'Practitioners', quadrant: 'q3'},
-      {x: 0.2, y: 0.2, label: 'Think-pieces', quadrant: 'q4'}
-    ];
-    
-    // Add points
-    g.selectAll('.quadrant-point')
-      .data(points)
-      .enter().append('circle')
-      .attr('class', 'quadrant-point')
-      .attr('cx', function(d) { return x(d.x); })
-      .attr('cy', function(d) { return y(d.y); })
-      .attr('r', isMobile ? 4 : 5)
-      .attr('fill', pointColor)
-      .attr('opacity', 0.7);
-    
-    // Add point labels (hidden on mobile)
-    if (!isMobile) {
-      g.selectAll('.quadrant-point-label')
-        .data(points)
-        .enter().append('text')
-        .attr('class', 'quadrant-point-label')
-        .attr('x', function(d) { return x(d.x) + 8; })
-        .attr('y', function(d) { return y(d.y) + 3; })
-        .text(function(d) { return d.label; });
-    }
-    
-    // Text wrapping helper
-    function wrap(text, width) {
-      text.each(function() {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1,
-            y = text.attr("y"),
-            x = text.attr("x"),
-            dy = 0,
-            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-        
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-          }
-        }
-      });
-    }
-  }
-
-  // Load D3 and initialize
-  function loadD3AndInit() {
-    if (typeof d3 !== 'undefined') {
-      drawQuadrant();
-      // Add resize listener
-      var resizeTimer;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(drawQuadrant, 250);
-      });
-      return;
-    }
-    
-    var script = document.createElement('script');
-    script.src = 'https://d3js.org/d3.v7.min.js';
-    script.onload = function() {
-      drawQuadrant();
-      // Add resize listener
-      var resizeTimer;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(drawQuadrant, 250);
-      });
-    };
-    document.head.appendChild(script);
-  }
-
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadD3AndInit);
-  } else {
-    loadD3AndInit();
-  }
-})();
-</script>
