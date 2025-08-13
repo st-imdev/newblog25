@@ -79,10 +79,14 @@
     }
 
     function getHeartOrigin(){
-      var box = svg.getBoundingClientRect();
-      // position near bottom-left area similar to tweet like icon row
-      var x = 32; // px in SVG space (since viewBox is 560 wide)
-      var y = 150; // near bottom
+      // Compute heart+count group center in SVG viewBox coordinates
+      var svgRect = svg.getBoundingClientRect();
+      var vb = svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal : {x:0,y:0,width:svg.clientWidth,height:svg.clientHeight};
+      var groupRect = heartButton.getBoundingClientRect();
+      var pxX = (groupRect.left + groupRect.width * 0.35) - svgRect.left; // bias toward the heart icon
+      var pxY = (groupRect.top + groupRect.height/2) - svgRect.top;
+      var x = vb.x + (pxX / svgRect.width) * vb.width;
+      var y = vb.y + (pxY / svgRect.height) * vb.height;
       return { x: x, y: y };
     }
 

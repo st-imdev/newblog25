@@ -1,12 +1,12 @@
 ---
-title: "Signals, Not Scripture"
+title: "Signals, not scripture"
 date: 2025-08-13
 draft: false
 ---
 
 {{< tweet-heart >}}
 
-# Signals, Not Scripture
+# Signals, not scripture
 
 Open your feed and someone is barking life rules at millions. Move out at 18. Grind 16 hours. Cold plunge or you’ll fail. The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click.
 
