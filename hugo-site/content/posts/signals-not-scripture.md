@@ -6,8 +6,6 @@ draft: false
 
 {{< tweet-heart >}}
 
-# Signals, not scripture
-
 Open your feed and someone is barking life rules at millions. Move out at 18. Grind 16 hours. Cold plunge or you’ll fail. The internet didn’t invent bossiness; it industrialised it. Platforms optimise for interaction, and interaction loves confident answers to complicated lives. Advice becomes performance. Certainty becomes theatre. Nuance—well, nuance doesn’t click.
 
 **The incentive is structural.** Aggregators capture demand, rank content by predicted engagement, and pay creators in attention. Attention rewards **clarity, novelty, conflict**—the sharp edges of an argument, not the careful middle. If truth is a multi-variable equation, the feed asks for a slogan. **Interaction is the KPI; certainty is the hack.**
