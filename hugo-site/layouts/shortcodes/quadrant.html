@@ -17,7 +17,8 @@
   function init(){
     var el = document.getElementById(id);
     if(!el || typeof d3 === 'undefined') return;
-    var w = el.clientWidth, h = el.clientHeight;
+    var w = el.clientWidth || 640;
+    var h = el.clientHeight || 380;
     var m = {t:28,r:28,b:40,l:48};
     var iw = w - m.l - m.r, ih = h - m.t - m.b;
 
@@ -41,10 +42,10 @@
 
     g.append('g').attr('transform','translate(0,'+ih+')')
       .call(d3.axisBottom(x).ticks(2).tickFormat(function(d){return d===0?'low':d===1?'high':'';}))
-      .call(function(s){ s.selectAll('path, line').attr('stroke', axis); s.selectAll('text').attr('fill', axis).style('font-size','11px'); });
+      .call(function(s){ s.selectAll('path, line').attr('stroke', axis).attr('stroke-width', 1); s.selectAll('text').attr('fill', axis).style('font-size','12px'); });
     g.append('g')
       .call(d3.axisLeft(y).ticks(2).tickFormat(function(d){return d===0?'low':d===1?'high':'';}))
-      .call(function(s){ s.selectAll('path, line').attr('stroke', axis); s.selectAll('text').attr('fill', axis).style('font-size','11px'); });
+      .call(function(s){ s.selectAll('path, line').attr('stroke', axis).attr('stroke-width', 1); s.selectAll('text').attr('fill', axis).style('font-size','12px'); });
 
     svg.append('text').attr('x', m.l + iw/2).attr('y', h - 6).attr('text-anchor','middle').attr('fill', axis).style('font-size','12px').text(titleX);
     svg.append('text').attr('transform','translate(12,'+(m.t+ih/2)+') rotate(-90)')
@@ -67,12 +68,12 @@
   function ensureD3AndInit(){
     if (typeof d3 !== 'undefined') { init(); return; }
     var existing = document.querySelector('script[data-d3-loaded]');
-    if (existing) { if (window.d3) init(); else existing.addEventListener('load', init); return; }
+    if (existing) { if (window.d3) init(); else existing.addEventListener('load', function(){ requestAnimationFrame(init); }); return; }
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/d3@7';
+    s.src = 'https://d3js.org/d3.v7.min.js';
     s.async = true;
     s.setAttribute('data-d3-loaded','1');
-    s.onload = init;
+    s.onload = function(){ requestAnimationFrame(init); };
     document.head.appendChild(s);
   }
 
