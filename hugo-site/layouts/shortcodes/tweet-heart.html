@@ -1,0 +1,112 @@
+<div class="tweet-skeleton" style="max-width: 560px; margin: 2rem 0;">
+  <style>
+    .tweet-card{border:1px solid hsl(0 0% 85% / 0.6);border-radius:12px;padding:14px;background:var(--card, #fff)}
+    .tweet-row{display:flex;gap:12px}
+    .tweet-avatar{width:40px;height:40px;border-radius:999px;background:linear-gradient(180deg,#ddd,#bbb)}
+    .tweet-lines{flex:1;display:flex;flex-direction:column;gap:8px;margin-top:2px}
+    .tweet-line{height:12px;border-radius:8px;background:linear-gradient(90deg,#eee,#e6e6e6 50%,#eee);background-size:200% 100%;animation:sheen 2.2s linear infinite}
+    .tweet-line.short{width:60%}
+    .tweet-actions{display:flex;gap:18px;margin-top:12px;color:#64748b;align-items:center}
+    .tweet-heart{cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+    .heart-count{font-size:12px}
+    @keyframes sheen{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .tweet-svg{width:560px;height:180px}
+    .hearts{pointer-events:none}
+  </style>
+  <div class="tweet-card">
+    <div class="tweet-row">
+      <div class="tweet-avatar"></div>
+      <div class="tweet-lines">
+        <div class="tweet-line"></div>
+        <div class="tweet-line"></div>
+        <div class="tweet-line short"></div>
+      </div>
+    </div>
+    <div class="tweet-actions">
+      <div class="tweet-heart" id="tweet-heart-{{ .Get 0 | default (now.UnixNano) }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+        </svg>
+        <span class="heart-count">0</span>
+      </div>
+    </div>
+    <svg class="tweet-svg" viewBox="0 0 560 180" preserveAspectRatio="xMinYMin meet">
+      <g class="hearts"></g>
+    </svg>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var root = document.currentScript.previousElementSibling;
+    if(!root) return;
+    var svg = root.querySelector('svg.tweet-svg');
+    var g = svg.querySelector('g.hearts');
+    var heartButton = root.querySelector('.tweet-heart');
+    var countEl = root.querySelector('.heart-count');
+    var count = 0;
+
+    function spawnHeart(x, y, opts){
+      opts = opts||{};
+      var color = opts.color || 'hsl(' + (340 + Math.random()*20) + ' 80% 60%)';
+      var scale = opts.scale || (0.7 + Math.random()*0.6);
+      var dx = (opts.dx != null ? opts.dx : (Math.random()*40));
+      var dy = (opts.dy != null ? opts.dy : (-40 - Math.random()*30));
+      var duration = opts.duration || (900 + Math.random()*600);
+
+      var ns = 'http://www.w3.org/2000/svg';
+      var path = document.createElementNS(ns,'path');
+      path.setAttribute('d','M12 21s-6.716-4.39-9.192-8.06C.64 10.095 1.25 6.89 3.5 5.5 5.45 4.3 7.89 4.78 9.5 6.3L12 8.7l2.5-2.4c1.61-1.52 4.05-2 6-0.8 2.25 1.39 2.86 4.6.69 7.44C18.716 16.61 12 21 12 21z');
+      path.setAttribute('fill', color);
+      path.setAttribute('opacity','0');
+      g.appendChild(path);
+
+      var start = Date.now();
+      var startX = x, startY = y;
+      (function animate(){
+        var t = Date.now() - start;
+        var p = Math.min(1, t / duration);
+        var ease = 1 - Math.pow(1-p, 2);
+        var cx = startX + dx * p;
+        var cy = startY + dy * p;
+        var s = scale * (0.85 + 0.25*Math.sin(p * Math.PI));
+        var op = p < 0.1 ? p*10 : (1-p);
+        path.setAttribute('transform', 'translate(' + cx + ',' + cy + ') scale(' + s + ')');
+        path.setAttribute('opacity', op.toFixed(3));
+        if(p < 1){ requestAnimationFrame(animate); }
+        else { g.removeChild(path); }
+      })();
+    }
+
+    function getHeartOrigin(){
+      var box = svg.getBoundingClientRect();
+      // position near bottom-left area similar to tweet like icon row
+      var x = 32; // px in SVG space (since viewBox is 560 wide)
+      var y = 150; // near bottom
+      return { x: x, y: y };
+    }
+
+    function burst(n){
+      var o = getHeartOrigin();
+      for(var i=0;i<n;i++){
+        setTimeout(function(i){ return function(){
+          spawnHeart(o.x, o.y, { dx: 10 + Math.random()*30, dy: -30 - Math.random()*40, scale: 0.7 + Math.random()*0.5 });
+        };}(i), i*80);
+      }
+    }
+
+    // ambient hearts
+    var ambient = setInterval(function(){ burst(1); }, 1600);
+
+    heartButton.addEventListener('click', function(){
+      count += 1;
+      countEl.textContent = String(count);
+      burst(5);
+      // brief scale effect on icon to mimic tap
+      heartButton.style.transform = 'scale(1.15)';
+      setTimeout(function(){ heartButton.style.transform = 'scale(1)'; }, 140);
+    });
+  })();
+</script>
+
+
