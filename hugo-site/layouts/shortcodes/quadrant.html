@@ -1,15 +1,18 @@
-<div id="{{ .Get "id" | default (printf "quad-%d" (now.UnixNano)) }}" class="quad" style="width:100%;max-width:700px;height:380px;margin:2rem 0;position:relative"></div>
+{{ $id := .Get "id" | default (printf "quad-%d" (now.UnixNano)) }}
+{{ $x := .Get "xLabel" | default "Certainty" }}
+{{ $y := .Get "yLabel" | default "Skin in the Game" }}
+{{ $q1 := .Get "q1" | default "High certainty, low skin" }}
+{{ $q2 := .Get "q2" | default "High certainty, high skin" }}
+{{ $q3 := .Get "q3" | default "Low certainty, high skin" }}
+{{ $q4 := .Get "q4" | default "Low certainty, low skin" }}
+
+<div id="{{ $id }}" class="quad" style="width:100%;max-width:700px;height:380px;margin:2rem 0;position:relative"></div>
 <script>
 (function(){
-  var id = {{ .Get "id" | default (printf "\"quad-%d\"" (now.UnixNano)) }};
-  var titleX = {{ .Get "xLabel" | default "\"Certainty\"" }};
-  var titleY = {{ .Get "yLabel" | default "\"Skin in the Game\"" }};
-  var labels = {
-    q1: {{ .Get "q1" | default "\"High certainty, low skin\"" }},
-    q2: {{ .Get "q2" | default "\"High certainty, high skin\"" }},
-    q3: {{ .Get "q3" | default "\"Low certainty, high skin\"" }},
-    q4: {{ .Get "q4" | default "\"Low certainty, low skin\"" }}
-  };
+  var id = "{{ $id }}";
+  var titleX = "{{ $x }}";
+  var titleY = "{{ $y }}";
+  var labels = { q1: "{{ $q1 }}", q2: "{{ $q2 }}", q3: "{{ $q3 }}", q4: "{{ $q4 }}" };
 
   function init(){
     var el = document.getElementById(id);
@@ -64,7 +67,7 @@
   function ensureD3AndInit(){
     if (typeof d3 !== 'undefined') { init(); return; }
     var existing = document.querySelector('script[data-d3-loaded]');
-    if (existing) { existing.addEventListener('load', init); return; }
+    if (existing) { if (window.d3) init(); else existing.addEventListener('load', init); return; }
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/d3@7';
     s.async = true;
