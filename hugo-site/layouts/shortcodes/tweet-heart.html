@@ -7,7 +7,9 @@
     .tweet-lines{flex:1;display:flex;flex-direction:column;gap:8px;margin-top:2px}
     .tweet-line{height:12px;border-radius:8px;background:linear-gradient(90deg,#eee,#e6e6e6 50%,#eee);background-size:200% 100%;animation:sheen 2.2s linear infinite}
     .tweet-line.short{width:60%}
-    .tweet-actions{display:flex;gap:18px;margin-top:12px;color:#64748b;align-items:center}
+    .tweet-actions{display:flex;justify-content:space-between;margin-top:12px;color:#64748b;align-items:center}
+    .tweet-actions-left,.tweet-actions-right{display:flex;align-items:center;gap:18px}
+    .tweet-icon{display:inline-flex;align-items:center;gap:6px}
     .tweet-heart{cursor:pointer;display:inline-flex;align-items:center;gap:6px}
     .heart-count{font-size:12px}
     @keyframes sheen{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -24,11 +26,27 @@
       </div>
     </div>
     <div class="tweet-actions">
-      <div class="tweet-heart" id="tweet-heart-{{ .Get 0 | default (now.UnixNano) }}">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-        </svg>
-        <span class="heart-count">0</span>
+      <div class="tweet-actions-left">
+        <!-- reply -->
+        <div class="tweet-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 19l-7-7 7-7"/><path d="M3 12h12a8 8 0 0 1 8 8v1"/></svg>
+        </div>
+        <!-- repost -->
+        <div class="tweet-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </div>
+      </div>
+      <div class="tweet-actions-right">
+        <div class="tweet-heart" id="tweet-heart-{{ .Get 0 | default (now.UnixNano) }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+          </svg>
+          <span class="heart-count">0</span>
+        </div>
+        <!-- bookmark/share -->
+        <div class="tweet-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
       </div>
     </div>
     <svg class="tweet-svg" viewBox="0 0 560 140" preserveAspectRatio="xMinYMin meet">
@@ -84,7 +102,7 @@
       var svgRect = svg.getBoundingClientRect();
       var vb = svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal : {x:0,y:0,width:svg.clientWidth,height:svg.clientHeight};
       var groupRect = heartButton.getBoundingClientRect();
-      var pxX = (groupRect.left + groupRect.width * 0.35) - svgRect.left; // bias toward the heart icon
+      var pxX = (groupRect.left + 10) - svgRect.left; // near the heart icon within the right action group
       var pxY = (groupRect.top + groupRect.height/2) - svgRect.top;
       var x = vb.x + (pxX / svgRect.width) * vb.width;
       var y = vb.y + (pxY / svgRect.height) * vb.height;
